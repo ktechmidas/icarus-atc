@@ -1,1 +1,2 @@
-# icarus-prototype
+# project-icarus
+The real thing
