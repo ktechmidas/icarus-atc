@@ -1,6 +1,5 @@
-package com.icarus.prototype;
+package com.icarus.project;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.assets.loaders.AsynchronousAssetLoader;
 import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
@@ -10,8 +9,6 @@ import com.badlogic.gdx.assets.AssetDescriptor;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
-
-import com.icarus.prototype.Airport;
 
 class AirportLoader
     extends SynchronousAssetLoader<Airport, AirportLoader.AirportParameters>

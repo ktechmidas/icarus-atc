@@ -1,4 +1,4 @@
-package com.icarus.prototype;
+package com.icarus.project;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -13,13 +13,8 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
-import com.badlogic.gdx.assets.loaders.SynchronousAssetLoader;
-import com.icarus.prototype.Airport;
-import com.icarus.prototype.AirportLoader;
-import com.icarus.prototype.Waypoint;
-import com.icarus.prototype.Colors;
 
-public class IcarusPrototype extends ApplicationAdapter {
+public class ProjectIcarus extends ApplicationAdapter {
 	private ShapeRenderer shapes;
 	private Airport airport;
 	private BitmapFont labelFont;

@@ -1,5 +1,4 @@
-package com.icarus.prototype;
-import com.icarus.prototype.Waypoint;
+package com.icarus.project;
 
 class Airport {
     public Waypoint[] waypoints;
