@@ -1,4 +1,4 @@
-package com.icarus.prototype;
+package com.icarus.project;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -18,13 +18,13 @@ import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.assets.loaders.SynchronousAssetLoader;
 import java.util.ArrayList;
 
-import com.icarus.prototype.Airport;
-import com.icarus.prototype.AirportLoader;
-import com.icarus.prototype.Waypoint;
-import com.icarus.prototype.Airplane;
-import com.icarus.prototype.Colors;
+import com.icarus.project.Airport;
+import com.icarus.project.AirportLoader;
+import com.icarus.project.Waypoint;
+import com.icarus.project.Airplane;
+import com.icarus.project.Colors;
 
-public class IcarusPrototype extends ApplicationAdapter {
+public class ProjectIcarus extends ApplicationAdapter {
 	private ShapeRenderer shapes;
 	private Airport airport;
 	private ArrayList<Airplane> airplanes;
