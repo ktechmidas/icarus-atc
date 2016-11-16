@@ -1,4 +1,4 @@
-package com.icarus.prototype;
+package com.icarus.project;
 import com.badlogic.gdx.graphics.Color;
 
 class Colors {
