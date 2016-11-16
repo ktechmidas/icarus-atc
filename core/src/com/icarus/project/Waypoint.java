@@ -1,12 +1,15 @@
-package com.icarus.prototype;
+package com.icarus.project;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.Align;
 import com.google.gson.JsonObject;
 
 class Waypoint {
     public String name;
     public Vector2 position;
-    private float size = 10.0f;
+    private static float size = 30.0f;
 
     public Waypoint(String name, Vector2 position) {
         this.name = name;
@@ -19,6 +22,7 @@ class Waypoint {
     }
 
     public void draw(ShapeRenderer shapes) {
+       shapes.setColor(Colors.colors[3]);
        shapes.triangle(
           -0.7f * size + position.x,
           -0.4041f * size + position.y,
@@ -26,5 +30,10 @@ class Waypoint {
           -0.4041f * size + position.y,
           0.0f * size + position.x,
           0.8083f * size + position.y);
+    }
+
+    public void drawLabel(BitmapFont font, SpriteBatch batch) {
+       font.setColor(Colors.colors[3]);
+       font.draw(batch, name, position.x - 100, position.y - 20, 200, Align.center, false);
     }
 }
