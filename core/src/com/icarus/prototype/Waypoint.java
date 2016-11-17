@@ -1,4 +1,5 @@
 package com.icarus.prototype;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -10,7 +11,7 @@ import com.icarus.prototype.Colors;
 class Waypoint {
     public String name;
     public Vector2 position;
-    private float size = 20.0f;
+    private static float size = 20.0f;
 
     public Waypoint(String name, Vector2 position) {
         this.name = name;
@@ -36,5 +37,10 @@ class Waypoint {
     public void drawLabel(BitmapFont font, SpriteBatch batch) {
        font.setColor(Colors.colors[3]);
        font.draw(batch, name, position.x - 100, position.y - 15, 200, Align.center, false);
+    }
+
+    public static void scaleSize (float factor){
+        size *= factor;
+        Gdx.app.log("Waypoint", "" + size);
     }
 }

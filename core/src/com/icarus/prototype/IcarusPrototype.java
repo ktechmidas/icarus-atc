@@ -118,6 +118,8 @@ public class IcarusPrototype extends ApplicationAdapter implements GestureDetect
 	@Override
 	public boolean zoom(float initialDistance, float distance) {
         camera.zoom = (initialDistance / distance) * currentZoom;
+//		Waypoint.scaleSize(camera.zoom / currentZoom * 1.1f);
+//        Gdx.app.log("Main", "" + camera.zoom / currentZoom);
         camera.update();
 		return true;
 	}
