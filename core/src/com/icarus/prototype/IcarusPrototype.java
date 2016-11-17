@@ -14,13 +14,8 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
-import com.badlogic.gdx.assets.loaders.SynchronousAssetLoader;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
-import com.icarus.prototype.Airport;
-import com.icarus.prototype.AirportLoader;
-import com.icarus.prototype.Waypoint;
-import com.icarus.prototype.Colors;
 
 public class IcarusPrototype extends ApplicationAdapter implements GestureDetector.GestureListener {
 	private ShapeRenderer shapes;
@@ -30,6 +25,9 @@ public class IcarusPrototype extends ApplicationAdapter implements GestureDetect
 
     private OrthographicCamera camera;
     private float currentZoom;
+    private float maxZoom; //Maximum possible zoomed in distance
+    private float minZoom; //Maximum possible zoomed out distance
+    private float fontSize = 40;
 	
 	@Override
 	public void create () {
@@ -46,6 +44,8 @@ public class IcarusPrototype extends ApplicationAdapter implements GestureDetect
 		manager.load("ShareTechMono-Regular.ttf", BitmapFont.class, labelFontParams);
 
 		manager.finishLoading();
+
+
 		airport = manager.get("airports/test.json");
 		labelFont = manager.get("ShareTechMono-Regular.ttf");
 		shapes = new ShapeRenderer();
@@ -53,6 +53,9 @@ public class IcarusPrototype extends ApplicationAdapter implements GestureDetect
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.input.setInputProcessor(new GestureDetector(this));
+
+        minZoom = 2.0f;
+        maxZoom = 0.1f;
 	}
 
 	@Override
@@ -117,9 +120,10 @@ public class IcarusPrototype extends ApplicationAdapter implements GestureDetect
 
 	@Override
 	public boolean zoom(float initialDistance, float distance) {
-        camera.zoom = (initialDistance / distance) * currentZoom;
-//		Waypoint.scaleSize(camera.zoom / currentZoom * 1.1f);
-//        Gdx.app.log("Main", "" + camera.zoom / currentZoom);
+		float tempZoom = camera.zoom;
+        camera.zoom = Math.max(Math.min((initialDistance / distance) * currentZoom, minZoom), maxZoom);
+		Waypoint.scaleSize(camera.zoom / tempZoom);
+//        labelFont.getData().setScale(camera.zoom / tempZoom);
         camera.update();
 		return true;
 	}

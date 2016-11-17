@@ -24,8 +24,8 @@ class Waypoint {
     }
 
     public void draw(ShapeRenderer shapes) {
-       shapes.setColor(Colors.colors[3]);
-       shapes.triangle(
+        shapes.setColor(Colors.colors[3]);
+        shapes.triangle(
           -0.7f * size + position.x,
           -0.4041f * size + position.y,
           0.7f * size + position.x,
@@ -35,8 +35,8 @@ class Waypoint {
     }
 
     public void drawLabel(BitmapFont font, SpriteBatch batch) {
-       font.setColor(Colors.colors[3]);
-       font.draw(batch, name, position.x - 100, position.y - 15, 200, Align.center, false);
+        font.setColor(Colors.colors[3]);
+        font.draw(batch, name, position.x - 100, position.y - 15, 200, Align.center, false);
     }
 
     public static void scaleSize (float factor){
