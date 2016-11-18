@@ -25,8 +25,8 @@ public class IcarusPrototype extends ApplicationAdapter implements GestureDetect
 
     private OrthographicCamera camera;
     private float currentZoom;
-    private float maxZoom; //Maximum possible zoomed in distance
-    private float minZoom; //Maximum possible zoomed out distance
+    private float maxZoomIn = 0.1f; //Maximum possible zoomed in distance
+    private float maxZoomOut = 2.0f; //Maximum possible zoomed out distance
     private float fontSize = 40;
 	
 	@Override
@@ -53,9 +53,6 @@ public class IcarusPrototype extends ApplicationAdapter implements GestureDetect
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.input.setInputProcessor(new GestureDetector(this));
-
-        minZoom = 2.0f;
-        maxZoom = 0.1f;
 	}
 
 	@Override
@@ -77,6 +74,10 @@ public class IcarusPrototype extends ApplicationAdapter implements GestureDetect
 		}
         batch.end();
 	}
+
+//	private float setScale(){ //TODO
+//
+//	}
 	
 	@Override
 	public void dispose () {
@@ -121,8 +122,8 @@ public class IcarusPrototype extends ApplicationAdapter implements GestureDetect
 	@Override
 	public boolean zoom(float initialDistance, float distance) {
 		float tempZoom = camera.zoom;
-        camera.zoom = Math.max(Math.min((initialDistance / distance) * currentZoom, minZoom), maxZoom);
-		Waypoint.scaleSize(camera.zoom / tempZoom);
+        camera.zoom = Math.max(Math.min((initialDistance / distance) * currentZoom, maxZoomOut), maxZoomIn);
+		Waypoint.scaleWaypoint(camera.zoom / tempZoom);
 //        labelFont.getData().setScale(camera.zoom / tempZoom);
         camera.update();
 		return true;
