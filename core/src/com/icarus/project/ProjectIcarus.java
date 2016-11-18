@@ -27,7 +27,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     private float currentZoom;
     private float maxZoomIn = 0.1f; //Maximum possible zoomed in distance
     private float maxZoomOut = 2.0f; //Maximum possible zoomed out distance
-//    private float fontSize = 40;
+    private float fontSize = 40;
 	
 	@Override
 	public void create () {
