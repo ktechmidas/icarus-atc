@@ -15,14 +15,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
-import com.badlogic.gdx.assets.loaders.SynchronousAssetLoader;
 import java.util.ArrayList;
-
-import com.icarus.project.Airport;
-import com.icarus.project.AirportLoader;
-import com.icarus.project.Waypoint;
-import com.icarus.project.Airplane;
-import com.icarus.project.Colors;
 
 public class ProjectIcarus extends ApplicationAdapter {
 	private ShapeRenderer shapes;
