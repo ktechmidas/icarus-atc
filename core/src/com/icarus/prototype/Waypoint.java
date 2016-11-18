@@ -36,7 +36,7 @@ class Waypoint {
 
     public void drawLabel(BitmapFont font, SpriteBatch batch) {
         font.setColor(Colors.colors[3]);
-//        font.getData().setScale(scale); //TODO
+//        font.getData().setScale(scale); //TODO Liam
         font.draw(batch, name, position.x - 100, position.y - 15, 200, Align.center, false);
     }
 

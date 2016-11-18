@@ -75,7 +75,7 @@ public class IcarusPrototype extends ApplicationAdapter implements GestureDetect
         batch.end();
 	}
 
-//	private float setScale(){ //TODO
+//	private float setScale(){ //TODO Liam
 //
 //	}
 	
