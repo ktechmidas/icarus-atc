@@ -1,4 +1,4 @@
-package com.icarus.prototype;
+package com.icarus.project;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Align;
 import com.google.gson.JsonObject;
-import com.icarus.prototype.Colors;
 
 class Waypoint {
     public String name;

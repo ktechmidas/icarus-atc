@@ -1,17 +1,16 @@
-package com.icarus.prototype;
+package com.icarus.project;
 
 import org.robovm.apple.foundation.NSAutoreleasePool;
 import org.robovm.apple.uikit.UIApplication;
 
 import com.badlogic.gdx.backends.iosrobovm.IOSApplication;
 import com.badlogic.gdx.backends.iosrobovm.IOSApplicationConfiguration;
-import com.icarus.prototype.IcarusPrototype;
 
 public class IOSLauncher extends IOSApplication.Delegate {
     @Override
     protected IOSApplication createApplication() {
         IOSApplicationConfiguration config = new IOSApplicationConfiguration();
-        return new IOSApplication(new IcarusPrototype(), config);
+        return new IOSApplication(new ProjectIcarus(), config);
     }
 
     public static void main(String[] argv) {

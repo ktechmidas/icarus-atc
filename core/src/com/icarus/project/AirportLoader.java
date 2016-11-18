@@ -1,6 +1,5 @@
-package com.icarus.prototype;
+package com.icarus.project;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.assets.loaders.AsynchronousAssetLoader;
 import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
@@ -11,14 +10,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
 
-import com.icarus.prototype.Airport;
-
 class AirportLoader
-    extends SynchronousAssetLoader<Airport, AirportLoader.AirportParameters>
+    extends SynchronousAssetLoader<com.icarus.project.Airport, AirportLoader.AirportParameters>
 {
     private static Gson gson = new Gson();
 
-    public class AirportParameters extends AssetLoaderParameters<Airport> {
+    public class AirportParameters extends AssetLoaderParameters<com.icarus.project.Airport> {
         public AirportParameters() {
         }
     }
@@ -31,7 +28,7 @@ class AirportLoader
         return new Array();
     }
 
-    public Airport load(
+    public com.icarus.project.Airport load(
             AssetManager manager,
             String filename,
             FileHandle file,
@@ -44,6 +41,6 @@ class AirportLoader
             JsonObject obj = array.get(i).getAsJsonObject();
             waypoints[i] = new Waypoint(obj);
         }
-        return new Airport(waypoints);
+        return new com.icarus.project.Airport(waypoints);
     }
 }
