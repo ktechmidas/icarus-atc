@@ -19,25 +19,25 @@ import com.badlogic.gdx.math.Vector2;
 
 public class ProjectIcarus extends ApplicationAdapter implements GestureDetector.GestureListener {
 	private ShapeRenderer shapes;
-	private com.icarus.project.Airport airport;
+	private Airport airport;
 	private BitmapFont labelFont;
 	private SpriteBatch batch;
 
     private OrthographicCamera camera;
     private float currentZoom;
-    private float maxZoom; //Maximum possible zoomed in distance
-    private float minZoom; //Maximum possible zoomed out distance
+    private float maxZoomIn = 0.1f; //Maximum possible zoomed in distance
+    private float maxZoomOut = 2.0f; //Maximum possible zoomed out distance
 //    private float fontSize = 40;
 	
 	@Override
 	public void create () {
 		AssetManager manager = new AssetManager();
 		FileHandleResolver resolver = new InternalFileHandleResolver();
-		manager.setLoader(com.icarus.project.Airport.class, new AirportLoader(resolver));
+		manager.setLoader(Airport.class, new AirportLoader(resolver));
 		manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
 		manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
 
-		manager.load("airports/test.json", com.icarus.project.Airport.class);
+		manager.load("airports/test.json", Airport.class);
 		FreeTypeFontLoaderParameter labelFontParams = new FreeTypeFontLoaderParameter();
 		labelFontParams.fontFileName = "ShareTechMono-Regular.ttf";
 		labelFontParams.fontParameters.size = 40;
@@ -53,31 +53,32 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.input.setInputProcessor(new GestureDetector(this));
-
-        minZoom = 2.0f;
-        maxZoom = 0.1f;
 	}
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(com.icarus.project.Colors.colors[0].r, com.icarus.project.Colors.colors[0].g, com.icarus.project.Colors.colors[2].b, 1);
+		Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[2].b, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.setProjectionMatrix(camera.combined);
         shapes.setProjectionMatrix(camera.combined);
 
 		shapes.begin(ShapeRenderer.ShapeType.Filled);
-		for(com.icarus.project.Waypoint waypoint: airport.waypoints) {
+		for(Waypoint waypoint: airport.waypoints) {
 			waypoint.draw(shapes);
 		}
 		shapes.end();
 		batch.begin();
-		for(com.icarus.project.Waypoint waypoint: airport.waypoints) {
+		for(Waypoint waypoint: airport.waypoints) {
 			waypoint.drawLabel(labelFont, batch);
 		}
         batch.end();
 	}
-	
+
+//	private float setScale(){ //TODO Liam
+//
+//	}
+
 	@Override
 	public void dispose () {
 		shapes.dispose();
@@ -121,8 +122,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 	@Override
 	public boolean zoom(float initialDistance, float distance) {
 		float tempZoom = camera.zoom;
-        camera.zoom = Math.max(Math.min((initialDistance / distance) * currentZoom, minZoom), maxZoom);
-		com.icarus.project.Waypoint.scaleSize(camera.zoom / tempZoom);
+        camera.zoom = Math.max(Math.min((initialDistance / distance) * currentZoom, maxZoomOut), maxZoomIn);
+		Waypoint.scaleWaypoint(camera.zoom / tempZoom);
 //        labelFont.getData().setScale(camera.zoom / tempZoom);
         camera.update();
 		return true;
