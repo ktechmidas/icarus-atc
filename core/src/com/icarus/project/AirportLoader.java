@@ -9,6 +9,7 @@ import com.badlogic.gdx.assets.AssetDescriptor;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonPrimitive;
 
 class AirportLoader
     extends SynchronousAssetLoader<Airport, AirportLoader.AirportParameters>
@@ -35,12 +36,14 @@ class AirportLoader
             AirportParameters parameter)
     { 
         JsonObject json = gson.fromJson(file.readString(), JsonObject.class);
+        JsonPrimitive width = json.getAsJsonPrimitive("width");
+        JsonPrimitive height = json.getAsJsonPrimitive("height");
         JsonArray array = json.getAsJsonArray("waypoints");
         Waypoint[] waypoints = new Waypoint[array.size()];
         for(int i = 0; i < array.size(); i++) {
             JsonObject obj = array.get(i).getAsJsonObject();
             waypoints[i] = new Waypoint(obj);
         }
-        return new Airport(waypoints);
+        return new Airport(waypoints, width.getAsFloat(), height.getAsFloat());
     }
 }
