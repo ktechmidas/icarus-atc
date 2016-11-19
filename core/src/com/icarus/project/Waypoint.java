@@ -1,4 +1,5 @@
 package com.icarus.project;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -9,12 +10,12 @@ import com.google.gson.JsonObject;
 class Waypoint {
     public String name;
     public Vector2 position;
-    private static float size = 30.0f;
+    private static float waypointSize = 20.0f;
 
     public Waypoint(String name, Vector2 position) {
         this.name = name;
         this.position = position;
-   }
+    }
 
     public Waypoint(JsonObject json) {
         this(json.get("name").getAsString(),
@@ -22,18 +23,29 @@ class Waypoint {
     }
 
     public void draw(ShapeRenderer shapes) {
-       shapes.setColor(Colors.colors[3]);
-       shapes.triangle(
-          -0.7f * size + position.x,
-          -0.4041f * size + position.y,
-          0.7f * size + position.x,
-          -0.4041f * size + position.y,
-          0.0f * size + position.x,
-          0.8083f * size + position.y);
+        shapes.setColor(Colors.colors[3]);
+        shapes.triangle(
+                -0.7f * waypointSize + position.x,
+                -0.4041f * waypointSize + position.y,
+                0.7f * waypointSize + position.x,
+                -0.4041f * waypointSize + position.y,
+                0.0f * waypointSize + position.x,
+                0.8083f * waypointSize + position.y);
     }
 
     public void drawLabel(BitmapFont font, SpriteBatch batch) {
-       font.setColor(Colors.colors[3]);
-       font.draw(batch, name, position.x - 100, position.y - 20, 200, Align.center, false);
+        font.setColor(Colors.colors[3]);
+//        font.getData().setScale(scale); //TODO Liam
+        font.draw(batch, name, position.x - 100, position.y - 15, 200, Align.center, false);
+    }
+
+//    public static void scaleWaypoint(float factor){
+//        waypointSize *= factor;
+//        Gdx.app.log("Waypoint", "" + waypointSize);
+//    }
+
+    public static void scaleWaypoint(float factor){
+        waypointSize *= factor;
+        Gdx.app.log("Waypoint", "" + waypointSize);
     }
 }
