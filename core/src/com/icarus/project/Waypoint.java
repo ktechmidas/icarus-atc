@@ -39,6 +39,11 @@ class Waypoint {
         font.draw(batch, name, position.x - 100, position.y - 15, 200, Align.center, false);
     }
 
+//    public static void scaleWaypoint(float factor){
+//        waypointSize *= factor;
+//        Gdx.app.log("Waypoint", "" + waypointSize);
+//    }
+
     public static void scaleWaypoint(float factor){
         waypointSize *= factor;
         Gdx.app.log("Waypoint", "" + waypointSize);
