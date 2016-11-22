@@ -73,6 +73,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
         camera.zoom = maxZoomOut;
         camera.position.set(airport.width/2, airport.height/2, 0);
+		camera.update();
 	}
 
     private void setToSpriteEdge(){
