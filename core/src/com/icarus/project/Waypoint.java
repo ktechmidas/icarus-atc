@@ -10,7 +10,7 @@ import com.google.gson.JsonObject;
 class Waypoint {
     public String name;
     public Vector2 position;
-    private static float waypointSize = 20.0f;
+    private static float waypointSize = 20.0f; // Initial waypoint size
 
     public Waypoint(String name, Vector2 position) {
         this.name = name;
@@ -35,16 +35,10 @@ class Waypoint {
 
     public void drawLabel(BitmapFont font, SpriteBatch batch) {
         font.setColor(Colors.colors[3]);
-//        font.getData().setScale(scale); //TODO Liam
         font.draw(batch, name, position.x - 100, position.y - 15, 200, Align.center, false);
     }
 
-//    public static void scaleWaypoint(float factor){
-//        waypointSize *= factor;
-//        Gdx.app.log("Waypoint", "" + waypointSize);
-//    }
-
-    public static void scaleWaypoint(float factor){
+    public static void scaleWaypoint(float factor){ // Scale waypoint to maintain apparent size
         waypointSize *= factor;
         Gdx.app.log("Waypoint", "" + waypointSize);
     }

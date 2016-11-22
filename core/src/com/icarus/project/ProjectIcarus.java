@@ -30,14 +30,15 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     private OrthographicCamera camera;
     private float currentZoom;
-    private float maxZoomIn = 0.1f; //Maximum possible zoomed in distance
-    private float maxZoomOut = 2.0f; //Maximum possible zoomed out distance
+    private float maxZoomIn = 0.1f; // Maximum possible zoomed in distance
+    private float maxZoomOut = 2.0f; // Maximum possible zoomed out distance
     private float fontSize = 40;
 
-    private float toBoundaryXPositive;
-    private float toBoundaryXNegative;
-    private float toBoundaryYPositive;
-    private float toBoundaryYNegative;
+    // Pan boundaries
+    private float toBoundaryRight;
+    private float toBoundaryLeft;
+    private float toBoundaryTop;
+    private float toBoundaryBottom;
 
 	@Override
 	public void create () {
@@ -68,29 +69,25 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         Gdx.input.setInputProcessor(new GestureDetector(this));
 
         utils = new Utils();
+        // The maximum zoom level is the smallest dimension compared to the viewer
         maxZoomOut = Math.min(airport.width / Gdx.graphics.getWidth(),
                 airport.height / Gdx.graphics.getHeight());
 
+        // Start the app in maximum zoomed out state
         camera.zoom = maxZoomOut;
         camera.position.set(airport.width/2, airport.height/2, 0);
 		camera.update();
 	}
 
-    private void setToSpriteEdge(){
-        toBoundaryXPositive = (airport.width - camera.position.x
+    private void setToBoundary(){
+        // Calculates the distance from the edge of the camera to the specified boundary
+        toBoundaryRight = (airport.width - camera.position.x
                 - Gdx.graphics.getWidth()/2 * camera.zoom);
-        toBoundaryXNegative = (-camera.position.x + Gdx.graphics.getWidth()/2 * camera.zoom);
-        toBoundaryYPositive = (airport.height - camera.position.y
+        toBoundaryLeft = (-camera.position.x + Gdx.graphics.getWidth()/2 * camera.zoom);
+        toBoundaryTop = (airport.height - camera.position.y
                 - Gdx.graphics.getHeight()/2 * camera.zoom);
-        toBoundaryYNegative = (-camera.position.y + Gdx.graphics.getHeight()/2 * camera.zoom);
+        toBoundaryBottom = (-camera.position.y + Gdx.graphics.getHeight()/2 * camera.zoom);
     }
-
-//    @Override
-//    public void resize(float width, float height) {
-//        camera.viewportWidth = width;
-//        camera.viewportHeight = height;
-//        camera.position.set(width/2f, height/2f, 0); //by default camera position on (0,0,0)
-//    }
 
 	@Override
 	public void render () {
@@ -116,10 +113,6 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 		}
 		batch.end();
 	}
-
-//	private float setScale(){ //TODO Liam
-//
-//	}
 
 	@Override
 	public void dispose () {
@@ -150,20 +143,21 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
 	@Override
 	public boolean pan(float x, float y, float deltaX, float deltaY) {
-        setToSpriteEdge();
+        setToBoundary(); // Calculate distances to boundaries
         float translateX;
         float translateY;
-        if (-deltaX * currentZoom > 0){
-            translateX = utils.absMin(-deltaX * currentZoom, toBoundaryXPositive);
+
+        if (-deltaX * currentZoom > 0){ // If user pans to the right
+            translateX = utils.absMin(-deltaX * currentZoom, toBoundaryRight);
         }
-        else {
-            translateX = utils.absMin(-deltaX * currentZoom, toBoundaryXNegative);
+        else { // If user pans to the left
+            translateX = utils.absMin(-deltaX * currentZoom, toBoundaryLeft);
         }
-        if (deltaY * currentZoom > 0){
-            translateY = utils.absMin(deltaY * currentZoom, toBoundaryYPositive);
+        if (deltaY * currentZoom > 0){ // If user pans up
+            translateY = utils.absMin(deltaY * currentZoom, toBoundaryTop);
         }
-        else {
-            translateY = utils.absMin(deltaY * currentZoom, toBoundaryYNegative);
+        else { // If user pans down
+            translateY = utils.absMin(deltaY * currentZoom, toBoundaryBottom);
         }
 
         camera.translate(translateX, translateY);
@@ -182,20 +176,18 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 		float tempZoom = camera.zoom;
         camera.zoom = Math.max(Math.min((initialDistance / distance) * currentZoom, maxZoomOut),
 				maxZoomIn);
-		Waypoint.scaleWaypoint(camera.zoom / tempZoom);
+		Waypoint.scaleWaypoint(camera.zoom / tempZoom); // Scale waypoint to retain apparent size
 
-        setToSpriteEdge();
+        setToBoundary(); // Calculate distances to boundaries
 
-        if (toBoundaryXPositive < 0 || toBoundaryYPositive < 0){
-            camera.translate(Math.min(0, toBoundaryXPositive),
-                    Math.min(0, toBoundaryYPositive));
+        // Shift the view when zooming to keep view within map
+        if (toBoundaryRight < 0 || toBoundaryTop < 0){
+            camera.translate(Math.min(0, toBoundaryRight),
+                    Math.min(0, toBoundaryTop));
         }
-
-        camera.update();
-
-        if (toBoundaryXNegative > 0 || toBoundaryYNegative > 0){
-            camera.translate(Math.max(0, toBoundaryXNegative),
-                    Math.max(0, toBoundaryYNegative));
+        if (toBoundaryLeft > 0 || toBoundaryBottom > 0){
+            camera.translate(Math.max(0, toBoundaryLeft),
+                    Math.max(0, toBoundaryBottom));
         }
 
         camera.update();
