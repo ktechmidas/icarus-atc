@@ -44,14 +44,8 @@ class Waypoint {
     //This is separate from draw because the labels should go on top of all of the triangles.
     public void drawLabel(BitmapFont font, SpriteBatch batch) {
         font.setColor(Colors.colors[3]);
-//        font.getData().setScale(scale); //TODO Liam
         font.draw(batch, name, position.x - 100, position.y - 15, 200, Align.center, false);
     }
-
-//    public static void scaleWaypoint(float factor){
-//        waypointSize *= factor;
-//        Gdx.app.log("Waypoint", "" + waypointSize);
-//    }
 
     ///Updates the zoom scaling for all waypoints
     public static void scaleWaypoint(float factor){
