@@ -21,10 +21,15 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 
 public class ProjectIcarus extends ApplicationAdapter implements GestureDetector.GestureListener {
+    //Used for drawing waypoints
     private ShapeRenderer shapes;
+    //The currently loaded Airport
     private Airport airport;
+    //The airplanes in the current game
     private ArrayList<Airplane> airplanes;
+    //The font used for labels
     private BitmapFont labelFont;
+    //Used for drawing airplanes
     private SpriteBatch batch;
 
     private OrthographicCamera camera;
@@ -35,26 +40,32 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     @Override
     public void create () {
+        //initialize the AssetManager
         AssetManager manager = new AssetManager();
         FileHandleResolver resolver = new InternalFileHandleResolver();
         manager.setLoader(Airport.class, new AirportLoader(resolver));
         manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
         manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
 
+        //load the airport
         manager.load("airports/test.json", Airport.class);
+        //load the label font
         FreeTypeFontLoaderParameter labelFontParams = new FreeTypeFontLoaderParameter();
         labelFontParams.fontFileName = "fonts/ShareTechMono-Regular.ttf";
         labelFontParams.fontParameters.size = Math.round(20.0f * Gdx.graphics.getDensity());
         manager.load("fonts/ShareTechMono-Regular.ttf", BitmapFont.class, labelFontParams);
-
+        //load the airplane sprite
         manager.load("sprites/airplane.png", Texture.class);
 
         manager.finishLoading();
         airport = manager.get("airports/test.json");
         labelFont = manager.get("fonts/ShareTechMono-Regular.ttf");
         Airplane.texture = manager.get("sprites/airplane.png");
+
         shapes = new ShapeRenderer();
         batch = new SpriteBatch();
+
+        //add a dummy airplane
         airplanes = new ArrayList();
         airplanes.add(new Airplane("TEST", new Vector2(10, 10), new Vector2(5, 2), 100));
 
@@ -70,16 +81,21 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         batch.setProjectionMatrix(camera.combined);
         shapes.setProjectionMatrix(camera.combined);
 
+        //draw waypoint triangles
         shapes.begin(ShapeRenderer.ShapeType.Filled);
         for(Waypoint waypoint: airport.waypoints) {
             waypoint.draw(shapes);
         }
         shapes.end();
+
+        //draw airplanes
         batch.begin();
         for(Airplane airplane: airplanes) {
             airplane.draw(batch);
         }
         batch.end();
+
+        //draw waypoint labels
         batch.begin();
         for(Waypoint waypoint: airport.waypoints) {
             waypoint.drawLabel(labelFont, batch);

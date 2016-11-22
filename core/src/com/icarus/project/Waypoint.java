@@ -8,20 +8,27 @@ import com.badlogic.gdx.utils.Align;
 import com.google.gson.JsonObject;
 
 class Waypoint {
+    //The displayed name for the waypoint
     public String name;
+    //The position in world coordinates
     public Vector2 position;
+    //The display radius of the triangles at current zoom in pixels
     private static float waypointSize = 10.0f * Gdx.graphics.getDensity();
 
+    //Constructs a waypoint directly
     public Waypoint(String name, Vector2 position) {
         this.name = name;
         this.position = position;
     }
 
+    //Constructs a waypoint based on JSON. This is used when loading a level.
     public Waypoint(JsonObject json) {
         this(json.get("name").getAsString(),
                 new Vector2(json.get("x").getAsFloat(), json.get("y").getAsFloat()));
     }
 
+    //Draws the triangle in a given ShapeRender. This assumes that the zoom camera has already been
+    //set up.
     public void draw(ShapeRenderer shapes) {
         shapes.setColor(Colors.colors[3]);
         shapes.triangle(
@@ -33,6 +40,8 @@ class Waypoint {
                 0.8083f * waypointSize + position.y);
     }
 
+    //Draws the label for the waypoint. This assumes that the zoom camera has already been set up.
+    //This is separate from draw because the labels should go on top of all of the triangles.
     public void drawLabel(BitmapFont font, SpriteBatch batch) {
         font.setColor(Colors.colors[3]);
 //        font.getData().setScale(scale); //TODO Liam
@@ -44,6 +53,7 @@ class Waypoint {
 //        Gdx.app.log("Waypoint", "" + waypointSize);
 //    }
 
+    ///Updates the zoom scaling for all waypoints
     public static void scaleWaypoint(float factor){
         waypointSize *= factor;
         Gdx.app.log("Waypoint", "" + waypointSize);
