@@ -44,7 +44,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 		manager.load("airports/test.json", Airport.class);
 		FreeTypeFontLoaderParameter labelFontParams = new FreeTypeFontLoaderParameter();
 		labelFontParams.fontFileName = "fonts/ShareTechMono-Regular.ttf";
-		labelFontParams.fontParameters.size = 40;
+		labelFontParams.fontParameters.size = Math.round(20.0f * Gdx.graphics.getDensity());
 		manager.load("fonts/ShareTechMono-Regular.ttf", BitmapFont.class, labelFontParams);
 
 		manager.load("sprites/airplane.png", Texture.class);

@@ -10,7 +10,7 @@ import com.google.gson.JsonObject;
 class Waypoint {
     public String name;
     public Vector2 position;
-    private static float waypointSize = 20.0f;
+    private static float waypointSize = 10.0f * Gdx.graphics.getDensity();
 
     public Waypoint(String name, Vector2 position) {
         this.name = name;
