@@ -21,11 +21,11 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 
 public class ProjectIcarus extends ApplicationAdapter implements GestureDetector.GestureListener {
-	private ShapeRenderer shapes;
-	private Airport airport;
-	private ArrayList<Airplane> airplanes;
-	private BitmapFont labelFont;
-	private SpriteBatch batch;
+    private ShapeRenderer shapes;
+    private Airport airport;
+    private ArrayList<Airplane> airplanes;
+    private BitmapFont labelFont;
+    private SpriteBatch batch;
 
     private OrthographicCamera camera;
     private float currentZoom;
@@ -33,121 +33,121 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     private float maxZoomOut = 2.0f; //Maximum possible zoomed out distance
     private float fontSize = 40;
 
-	@Override
-	public void create () {
-		AssetManager manager = new AssetManager();
-		FileHandleResolver resolver = new InternalFileHandleResolver();
-		manager.setLoader(Airport.class, new AirportLoader(resolver));
-		manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
-		manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
+    @Override
+    public void create () {
+        AssetManager manager = new AssetManager();
+        FileHandleResolver resolver = new InternalFileHandleResolver();
+        manager.setLoader(Airport.class, new AirportLoader(resolver));
+        manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
+        manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
 
-		manager.load("airports/test.json", Airport.class);
-		FreeTypeFontLoaderParameter labelFontParams = new FreeTypeFontLoaderParameter();
-		labelFontParams.fontFileName = "fonts/ShareTechMono-Regular.ttf";
-		labelFontParams.fontParameters.size = Math.round(20.0f * Gdx.graphics.getDensity());
-		manager.load("fonts/ShareTechMono-Regular.ttf", BitmapFont.class, labelFontParams);
+        manager.load("airports/test.json", Airport.class);
+        FreeTypeFontLoaderParameter labelFontParams = new FreeTypeFontLoaderParameter();
+        labelFontParams.fontFileName = "fonts/ShareTechMono-Regular.ttf";
+        labelFontParams.fontParameters.size = Math.round(20.0f * Gdx.graphics.getDensity());
+        manager.load("fonts/ShareTechMono-Regular.ttf", BitmapFont.class, labelFontParams);
 
-		manager.load("sprites/airplane.png", Texture.class);
+        manager.load("sprites/airplane.png", Texture.class);
 
-		manager.finishLoading();
-		airport = manager.get("airports/test.json");
-		labelFont = manager.get("fonts/ShareTechMono-Regular.ttf");
-		Airplane.texture = manager.get("sprites/airplane.png");
-		shapes = new ShapeRenderer();
-		batch = new SpriteBatch();
-		airplanes = new ArrayList();
-		airplanes.add(new Airplane("TEST", new Vector2(10, 10), new Vector2(5, 2), 100));
+        manager.finishLoading();
+        airport = manager.get("airports/test.json");
+        labelFont = manager.get("fonts/ShareTechMono-Regular.ttf");
+        Airplane.texture = manager.get("sprites/airplane.png");
+        shapes = new ShapeRenderer();
+        batch = new SpriteBatch();
+        airplanes = new ArrayList();
+        airplanes.add(new Airplane("TEST", new Vector2(10, 10), new Vector2(5, 2), 100));
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.input.setInputProcessor(new GestureDetector(this));
-	}
+    }
 
-	@Override
-	public void render () {
-		Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[2].b, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    @Override
+    public void render () {
+        Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[2].b, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.setProjectionMatrix(camera.combined);
         shapes.setProjectionMatrix(camera.combined);
 
-		shapes.begin(ShapeRenderer.ShapeType.Filled);
-		for(Waypoint waypoint: airport.waypoints) {
-			waypoint.draw(shapes);
-		}
-		shapes.end();
-		batch.begin();
-		for(Airplane airplane: airplanes) {
-			airplane.draw(batch);
-		}
-		batch.end();
-		batch.begin();
-		for(Waypoint waypoint: airport.waypoints) {
-			waypoint.drawLabel(labelFont, batch);
-		}
-		batch.end();
-	}
+        shapes.begin(ShapeRenderer.ShapeType.Filled);
+        for(Waypoint waypoint: airport.waypoints) {
+            waypoint.draw(shapes);
+        }
+        shapes.end();
+        batch.begin();
+        for(Airplane airplane: airplanes) {
+            airplane.draw(batch);
+        }
+        batch.end();
+        batch.begin();
+        for(Waypoint waypoint: airport.waypoints) {
+            waypoint.drawLabel(labelFont, batch);
+        }
+        batch.end();
+    }
 
-//	private float setScale(){ //TODO Liam
+//  private float setScale(){ //TODO Liam
 //
-//	}
+//  }
 
-	@Override
-	public void dispose () {
-		shapes.dispose();
-		batch.dispose();
-		labelFont.dispose();
-	}
+    @Override
+    public void dispose () {
+        shapes.dispose();
+        batch.dispose();
+        labelFont.dispose();
+    }
 
-	@Override
-	public boolean touchDown(float x, float y, int pointer, int button) {
-		return false;
-	}
+    @Override
+    public boolean touchDown(float x, float y, int pointer, int button) {
+        return false;
+    }
 
-	@Override
-	public boolean tap(float x, float y, int count, int button) {
-		return false;
-	}
+    @Override
+    public boolean tap(float x, float y, int count, int button) {
+        return false;
+    }
 
-	@Override
-	public boolean longPress(float x, float y) {
-		return false;
-	}
+    @Override
+    public boolean longPress(float x, float y) {
+        return false;
+    }
 
-	@Override
-	public boolean fling(float velocityX, float velocityY, int button) {
-		return false;
-	}
+    @Override
+    public boolean fling(float velocityX, float velocityY, int button) {
+        return false;
+    }
 
-	@Override
-	public boolean pan(float x, float y, float deltaX, float deltaY) {
-		camera.translate(-deltaX * currentZoom, deltaY * currentZoom);
+    @Override
+    public boolean pan(float x, float y, float deltaX, float deltaY) {
+        camera.translate(-deltaX * currentZoom, deltaY * currentZoom);
         camera.update();
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean panStop(float x, float y, int pointer, int button) {
+    @Override
+    public boolean panStop(float x, float y, int pointer, int button) {
         currentZoom = camera.zoom;
-		return false;
-	}
+        return false;
+    }
 
-	@Override
-	public boolean zoom(float initialDistance, float distance) {
-		float tempZoom = camera.zoom;
+    @Override
+    public boolean zoom(float initialDistance, float distance) {
+        float tempZoom = camera.zoom;
         camera.zoom = Math.max(Math.min((initialDistance / distance) * currentZoom, maxZoomOut), maxZoomIn);
-		Waypoint.scaleWaypoint(camera.zoom / tempZoom);
+        Waypoint.scaleWaypoint(camera.zoom / tempZoom);
 //        labelFont.getData().setScale(camera.zoom / tempZoom);
         camera.update();
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
-		return false;
-	}
+    @Override
+    public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+        return false;
+    }
 
-	@Override
-	public void pinchStop() {
+    @Override
+    public void pinchStop() {
 
-	}
+    }
 }
