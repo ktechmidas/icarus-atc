@@ -35,8 +35,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     private OrthographicCamera camera;
     private float currentZoom;
-    private float maxZoomIn = 0.1f; // Maximum possible zoomed in distance
-    private float maxZoomOut = 2.0f; // Maximum possible zoomed out distance
+    private float maxZoomIn; // Maximum possible zoomed in distance
+    private float maxZoomOut; // Maximum possible zoomed out distance
     private float fontSize = 40;
 
     // Pan boundaries
@@ -83,6 +83,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         // The maximum zoom level is the smallest dimension compared to the viewer
         maxZoomOut = Math.min(airport.width / Gdx.graphics.getWidth(),
                 airport.height / Gdx.graphics.getHeight());
+        maxZoomIn = maxZoomOut / 100;
 
         // Start the app in maximum zoomed out state
         camera.zoom = maxZoomOut;
