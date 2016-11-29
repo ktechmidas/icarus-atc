@@ -45,6 +45,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     private float toBoundaryTop;
     private float toBoundaryBottom;
 
+    private float dt;
+
 	@Override
 	public void create () {
         //initialize the AssetManager
@@ -74,7 +76,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
         //add a dummy airplane
         airplanes = new ArrayList();
-        airplanes.add(new Airplane("TEST", new Vector2(10, 10), new Vector2(5, 2), 100));
+        airplanes.add(new Airplane("TEST", new Vector2(10, 10), new Vector2(10, 4), 100));
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.input.setInputProcessor(new GestureDetector(this));
@@ -89,7 +91,17 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         camera.zoom = maxZoomOut;
         camera.position.set(airport.width/2, airport.height/2, 0);
 		camera.update();
+
+        dt = Gdx.graphics.getDeltaTime();
 	}
+
+    public void update(float delta){
+        for (int i = 0; i < airplanes.size(); i++){
+            airplanes.get(i).position = airplanes.get(i).position.add(airplanes.get(i).velocity.scl(delta));
+            Gdx.app.log("ProjectIcarus", "" + airplanes.get(i).position);
+        }
+
+    }
 
     private void setToBoundary(){
         // Calculates the distance from the edge of the camera to the specified boundary
@@ -103,6 +115,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
 	@Override
 	public void render () {
+//        update(dt);
 		Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[2].b, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -119,6 +132,9 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         //draw airplanes
         batch.begin();
         for(Airplane airplane: airplanes) {
+//            airplane.position = airplane.position.add(airplane.velocity.scl(dt));
+            airplane.update();
+            Gdx.app.log("ProjectIcarus", "" + airplane.position + ", " + airplane.velocity + ", " + dt);
             airplane.draw(batch);
         }
         batch.end();

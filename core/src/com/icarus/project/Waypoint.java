@@ -50,6 +50,5 @@ class Waypoint {
     ///Updates the zoom scaling for all waypoints
     public static void scaleWaypoint(float factor){
         waypointSize *= factor;
-        Gdx.app.log("Waypoint", "" + waypointSize);
     }
 }

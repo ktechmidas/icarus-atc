@@ -1,4 +1,5 @@
 package com.icarus.project;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -29,5 +30,10 @@ class Airplane {
     //Draw the airplane image. This assumes that the camera has already been set up.
     public void draw(SpriteBatch batch) {
         sprite.draw(batch);
+    }
+
+    public void update() {
+        position.add(velocity.cpy().scl(Gdx.graphics.getDeltaTime()));
+        sprite.setPosition(position.x, position.y);
     }
 }
