@@ -32,22 +32,24 @@ class Airplane {
         sprite.draw(batch);
     }
 
-    public void update() {
+    //Move the airplane image at evey render
+    public void step() {
         position.add(velocity.cpy().scl(Gdx.graphics.getDeltaTime()));
         sprite.setPosition(position.x, position.y);
-        double rot = -Math.atan(velocity.x / velocity.y) * (180 / Math.PI);
 
+        //Point airplane in direction of travel
+        double rotation = -Math.atan(velocity.x / velocity.y) * (180 / Math.PI);
         if (velocity.y < 0 && velocity.x < 0){
-            sprite.setRotation(90 - (float) rot);
-            Gdx.app.log("Airplane", "" + (90-rot));
+            sprite.setRotation(90 - (float) rotation);
+            Gdx.app.log("Airplane", "" + (90-rotation));
         }
         else if (velocity.y < 0){
-            sprite.setRotation(-90 - (float) rot);
-            Gdx.app.log("Airplane", "" + (-90 - rot));
+            sprite.setRotation(-90 - (float) rotation);
+            Gdx.app.log("Airplane", "" + (-90 - rotation));
         }
         else {
-            sprite.setRotation((float) rot);
-            Gdx.app.log("Airplane", "" + rot);
+            sprite.setRotation((float) rotation);
+            Gdx.app.log("Airplane", "" + rotation);
         }
 
     }

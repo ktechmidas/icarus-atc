@@ -17,7 +17,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.math.Vector2;
+
 import java.util.ArrayList;
 
 public class ProjectIcarus extends ApplicationAdapter implements GestureDetector.GestureListener {
@@ -119,7 +119,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         //draw airplanes
         batch.begin();
         for(Airplane airplane: airplanes) {
-            airplane.update();
+            airplane.step(); //Move airplanes
             airplane.draw(batch);
         }
         batch.end();
