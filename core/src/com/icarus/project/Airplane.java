@@ -35,5 +35,14 @@ class Airplane {
     public void update() {
         position.add(velocity.cpy().scl(Gdx.graphics.getDeltaTime()));
         sprite.setPosition(position.x, position.y);
+        double rot = -Math.atan(velocity.x / velocity.y) * (180 / Math.PI);
+        Gdx.app.log("Airplane", "" + (90 + rot));
+        if (velocity.y < 0){
+            sprite.setRotation(-90 - (float) rot);
+        }
+        else {
+            sprite.setRotation((float) rot);
+        }
+
     }
 }
