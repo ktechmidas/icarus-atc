@@ -116,18 +116,18 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         }
         shapes.end();
 
+        //draw waypoint labels
+        batch.begin();
+        for(Waypoint waypoint: airport.waypoints) {
+            waypoint.drawLabel(labelFont, batch);
+        }
+        batch.end();
+
         //draw airplanes
         batch.begin();
         for(Airplane airplane: airplanes) {
             airplane.step(); //Move airplanes
             airplane.draw(batch);
-        }
-        batch.end();
-
-        //draw waypoint labels
-        batch.begin();
-        for(Waypoint waypoint: airport.waypoints) {
-            waypoint.drawLabel(labelFont, batch);
         }
         batch.end();
     }
