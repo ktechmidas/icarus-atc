@@ -18,9 +18,13 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+
 import java.util.ArrayList;
 
 public class ProjectIcarus extends ApplicationAdapter implements GestureDetector.GestureListener {
+    private Vector2 oldInitialFirstPointer=null, oldInitialSecondPointer=null;
+    private float oldScale;
     private ShapeRenderer shapes;
     private Airport airport;
     private ArrayList<Airplane> airplanes;
@@ -120,8 +124,11 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-        camera.translate(-deltaX * currentZoom, deltaY * currentZoom);
         camera.update();
+        camera.position.add(
+                camera.unproject(new Vector3(0, 0, 0))
+                        .add(camera.unproject(new Vector3(deltaX, deltaY, 0)).scl(-1f))
+        );
         return true;
     }
 
@@ -133,21 +140,44 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
-        float tempZoom = camera.zoom;
+        /*float tempZoom = camera.zoom;
         camera.zoom = Math.max(Math.min((initialDistance / distance) * currentZoom, maxZoomOut), maxZoomIn);
         Waypoint.scaleWaypoint(camera.zoom / tempZoom);
 //        labelFont.getData().setScale(camera.zoom / tempZoom);
-        camera.update();
-        return true;
+        camera.update();*/
+        return false;
     }
 
     @Override
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
-        return false;
+        {
+            if (!(initialPointer1.equals(oldInitialFirstPointer) && initialPointer2.equals(oldInitialSecondPointer))) {
+                oldInitialFirstPointer = initialPointer1.cpy();
+                oldInitialSecondPointer = initialPointer2.cpy();
+                oldScale = camera.zoom;
+            }
+            Vector3 center = new Vector3(
+                    (pointer1.x + initialPointer2.x) / 2,
+                    (pointer2.y + initialPointer1.y) / 2,
+                    0
+            );
+            zoomCamera(center, oldScale * initialPointer1.dst(initialPointer2) / pointer1.dst(pointer2));
+            return true;
+        }
     }
 
     @Override
     public void pinchStop() {
 
+    }
+
+    private void zoomCamera(Vector3 origin, float scale){
+        camera.update();
+        Vector3 oldUnprojection = camera.unproject(origin.cpy()).cpy();
+        camera.zoom = scale; //Larger value of zoom = small images, border view
+        camera.zoom = Math.min(2.0f, Math.max(camera.zoom, 0.5f));
+        camera.update();
+        Vector3 newUnprojection = camera.unproject(origin.cpy()).cpy();
+        camera.position.add(oldUnprojection.cpy().add(newUnprojection.cpy().scl(-1f)));
     }
 }
