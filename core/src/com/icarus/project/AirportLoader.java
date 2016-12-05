@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonPrimitive;
 
+//Used to load Airports from JSON stored by the level editor
 class AirportLoader
     extends SynchronousAssetLoader<Airport, AirportLoader.AirportParameters>
 {
@@ -35,15 +36,19 @@ class AirportLoader
             FileHandle file,
             AirportParameters parameter)
     { 
+        //parse the json and return the root object
         JsonObject json = gson.fromJson(file.readString(), JsonObject.class);
+        //get the dimensions
         JsonPrimitive width = json.getAsJsonPrimitive("width");
         JsonPrimitive height = json.getAsJsonPrimitive("height");
+        //get all waypoints
         JsonArray array = json.getAsJsonArray("waypoints");
         Waypoint[] waypoints = new Waypoint[array.size()];
         for(int i = 0; i < array.size(); i++) {
             JsonObject obj = array.get(i).getAsJsonObject();
             waypoints[i] = new Waypoint(obj);
         }
+        //construct an Airport
         return new Airport(waypoints, width.getAsFloat(), height.getAsFloat());
     }
 }
