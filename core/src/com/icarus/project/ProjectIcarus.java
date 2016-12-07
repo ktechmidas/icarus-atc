@@ -165,28 +165,27 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-	   /* setToBoundary(); // Calculate distances to boundaries
+	    setToBoundary(); // Calculate distances to boundaries
         float translateX;
         float translateY;
 
         if (-deltaX * currentZoom > 0){ // If user pans to the right
-            translateX = utils.absMin(-deltaX * currentZoom, toBoundaryRight);
+            translateX = utils.absMin(deltaX, toBoundaryRight);
         }
         else { // If user pans to the left
-            translateX = utils.absMin(-deltaX * currentZoom, toBoundaryLeft);
+            translateX = utils.absMin(deltaX, toBoundaryLeft);
         }
         if (deltaY * currentZoom > 0){ // If user pans up
-            translateY = utils.absMin(deltaY * currentZoom, toBoundaryTop);
+            translateY = utils.absMin(deltaY, toBoundaryTop);
         }
         else { // If user pans down
-            translateY = utils.absMin(deltaY * currentZoom, toBoundaryBottom);
+            translateY = utils.absMin(deltaY, toBoundaryBottom);
         }
 
-        camera.translate(translateX, translateY);*/
         camera.update();
         camera.position.add(
                 camera.unproject(new Vector3(0, 0, 0))
-                        .add(camera.unproject(new Vector3(deltaX, deltaY, 0)).scl(-1f))
+                        .add(camera.unproject(new Vector3(translateX, translateY, 0)).scl(-1f))
         );
         return true;
     }
