@@ -169,24 +169,24 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         float translateX;
         float translateY;
 
-        if (-deltaX * currentZoom > 0){ // If user pans to the right
-            translateX = utils.absMin(deltaX, toBoundaryRight);
-        }
-        else { // If user pans to the left
+        if (deltaX > 0){ // If user pans to the left
             translateX = utils.absMin(deltaX, toBoundaryLeft);
         }
-        if (deltaY * currentZoom > 0){ // If user pans up
+        else { // If user pans to the right
+            translateX = utils.absMin(deltaX, toBoundaryRight);
+        }
+        if (deltaY > 0){ // If user pans up
             translateY = utils.absMin(deltaY, toBoundaryTop);
         }
         else { // If user pans down
             translateY = utils.absMin(deltaY, toBoundaryBottom);
         }
 
-        camera.update();
         camera.position.add(
                 camera.unproject(new Vector3(0, 0, 0))
                         .add(camera.unproject(new Vector3(translateX, translateY, 0)).scl(-1f))
         );
+        camera.update();
         return true;
     }
 
@@ -222,9 +222,11 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 	}
 
     @Override
-    public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+    public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1,
+                         Vector2 pointer2) {
         {
-            if (!(initialPointer1.equals(oldInitialFirstPointer) && initialPointer2.equals(oldInitialSecondPointer))) {
+            if (!(initialPointer1.equals(oldInitialFirstPointer)
+                    && initialPointer2.equals(oldInitialSecondPointer))) {
                 oldInitialFirstPointer = initialPointer1.cpy();
                 oldInitialSecondPointer = initialPointer2.cpy();
                 oldScale = camera.zoom;
@@ -234,7 +236,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
                     (pointer2.y + initialPointer1.y) / 2,
                     0
             );
-            zoomCamera(center, oldScale * initialPointer1.dst(initialPointer2) / pointer1.dst(pointer2));
+            zoomCamera(center,
+                    oldScale * initialPointer1.dst(initialPointer2) / pointer1.dst(pointer2));
             return true;
         }
     }
@@ -245,12 +248,34 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     }
 
     private void zoomCamera(Vector3 origin, float scale){
-        camera.update();
         Vector3 oldUnprojection = camera.unproject(origin.cpy()).cpy();
         camera.zoom = scale; //Larger value of zoom = small images, border view
         camera.zoom = Math.min(maxZoomOut, Math.max(camera.zoom, maxZoomIn));
-        camera.update();
         Vector3 newUnprojection = camera.unproject(origin.cpy()).cpy();
         camera.position.add(oldUnprojection.cpy().add(newUnprojection.cpy().scl(-1f)));
+
+        setToBoundary();
+
+        // Shift the view when zooming to keep view within map
+        if (toBoundaryRight < 0 || toBoundaryTop < 0){
+            camera.position.add(
+                    camera.unproject(new Vector3(0, 0, 0))
+                            .add(camera.unproject(new Vector3(Math.min(0, toBoundaryRight),
+                                                              Math.min(0, toBoundaryTop),
+                                                              0)).scl(-1f))
+            );
+        }
+        if (toBoundaryLeft > 0 || toBoundaryBottom > 0){
+            camera.position.add(
+                    camera.unproject(new Vector3(0, 0, 0))
+                            .add(camera.unproject(new Vector3(Math.max(0, toBoundaryLeft),
+                                                              Math.max(0, toBoundaryBottom),
+                                                              0)).scl(-1f))
+            );
+//            camera.translate(Math.max(0, toBoundaryLeft),
+//                    Math.max(0, toBoundaryBottom));
+        }
+
+        camera.update();
     }
 }
