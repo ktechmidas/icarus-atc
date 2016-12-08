@@ -38,7 +38,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     private Utils utils;
 
     private OrthographicCamera camera;
-    private float currentZoom;
+//    private float currentZoom;
     private float maxZoomIn; // Maximum possible zoomed in distance
     private float maxZoomOut; // Maximum possible zoomed out distance
     private float fontSize = 40;
@@ -182,6 +182,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
             translateY = utils.absMin(deltaY, toBoundaryBottom);
         }
 
+        //Shift camera by delta or by distance to boundary, whichever is closer
         camera.position.add(
                 camera.unproject(new Vector3(0, 0, 0))
                         .add(camera.unproject(new Vector3(translateX, translateY, 0)).scl(-1f))
@@ -193,7 +194,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     @Override
     public boolean panStop(float x, float y, int pointer, int button) {
-        currentZoom = camera.zoom;
+//        currentZoom = camera.zoom;
         return false;
     }
 
@@ -249,6 +250,9 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     }
 
     private void zoomCamera(Vector3 origin, float scale){
+
+        float tempZoom = camera.zoom;
+
         Vector3 oldUnprojection = camera.unproject(origin.cpy()).cpy();
         camera.zoom = scale; //Larger value of zoom = small images, border view
         camera.zoom = Math.min(maxZoomOut, Math.max(camera.zoom, maxZoomIn));
@@ -276,6 +280,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 //            camera.translate(Math.max(0, toBoundaryLeft),
 //                    Math.max(0, toBoundaryBottom));
         }
+
+        Waypoint.scaleWaypoint(camera.zoom / tempZoom); // Scale waypoint to retain apparent size
 
         camera.update();
     }
