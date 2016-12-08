@@ -259,9 +259,9 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         Vector3 newUnprojection = camera.unproject(origin.cpy()).cpy();
         camera.position.add(oldUnprojection.cpy().add(newUnprojection.cpy().scl(-1f)));
 
-        setToBoundary();
+        setToBoundary(); //Calculate distances to boundaries
 
-        // Shift the view when zooming to keep view within map
+        //Shift the view when zooming to keep view within map
         if (toBoundaryRight < 0 || toBoundaryTop < 0){
             camera.position.add(
                     camera.unproject(new Vector3(0, 0, 0))
@@ -277,11 +277,9 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
                                                               Math.max(0, toBoundaryBottom),
                                                               0)).scl(-1f))
             );
-//            camera.translate(Math.max(0, toBoundaryLeft),
-//                    Math.max(0, toBoundaryBottom));
         }
 
-        Waypoint.scaleWaypoint(camera.zoom / tempZoom); // Scale waypoint to retain apparent size
+        Waypoint.scaleWaypoint(camera.zoom / tempZoom); //Scale waypoint to retain apparent size
 
         camera.update();
     }
