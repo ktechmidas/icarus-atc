@@ -186,6 +186,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
                 camera.unproject(new Vector3(0, 0, 0))
                         .add(camera.unproject(new Vector3(translateX, translateY, 0)).scl(-1f))
         );
+
         camera.update();
         return true;
     }
@@ -260,7 +261,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         if (toBoundaryRight < 0 || toBoundaryTop < 0){
             camera.position.add(
                     camera.unproject(new Vector3(0, 0, 0))
-                            .add(camera.unproject(new Vector3(Math.min(0, toBoundaryRight),
+                            .add(camera.unproject(new Vector3(Math.max(0, -toBoundaryRight),
                                                               Math.min(0, toBoundaryTop),
                                                               0)).scl(-1f))
             );
@@ -268,7 +269,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         if (toBoundaryLeft > 0 || toBoundaryBottom > 0){
             camera.position.add(
                     camera.unproject(new Vector3(0, 0, 0))
-                            .add(camera.unproject(new Vector3(Math.max(0, toBoundaryLeft),
+                            .add(camera.unproject(new Vector3(Math.min(0, -toBoundaryLeft),
                                                               Math.max(0, toBoundaryBottom),
                                                               0)).scl(-1f))
             );
