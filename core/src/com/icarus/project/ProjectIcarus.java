@@ -4,7 +4,6 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -18,13 +17,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 import java.util.ArrayList;
 
@@ -42,13 +35,6 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     //Used for drawing airplanes
     private SpriteBatch batch;
     private Utils utils;
-
-    private Stage stage;
-    private TextButton turnButton;
-    private TextButton.TextButtonStyle turnButtonStyle;
-    private BitmapFont buttonFont;
-    private Skin skin;
-    private TextureAtlas buttonAtlas;
 
     private OrthographicCamera camera;
 //    private float currentZoom;
@@ -106,27 +92,6 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         camera.zoom = maxZoomOut;
         camera.position.set(airport.width/2, airport.height/2, 0);
 		camera.update();
-
-        //Test button (DON't REMOVE)
-//        stage = new Stage();
-//        Gdx.input.setInputProcessor(stage);
-//        buttonFont = new BitmapFont();
-//        skin = new Skin();
-//        buttonAtlas = new TextureAtlas(Gdx.files.internal("buttons/buttons.pack"));
-//        skin.addRegions(buttonAtlas);
-//        turnButtonStyle = new TextButton.TextButtonStyle();
-//        turnButtonStyle.font = buttonFont;
-//        turnButtonStyle.up = skin.getDrawable("up-button");
-//        turnButtonStyle.down = skin.getDrawable("down-button");
-//        turnButtonStyle.checked = skin.getDrawable("checked-button");
-//        turnButton = new TextButton("Button1", turnButtonStyle);
-//        stage.addActor(turnButton);
-//        turnButton.addListener(new ChangeListener() {
-//            @Override
-//            public void changed (ChangeEvent event, Actor actor) {
-//                System.out.println("Button Pressed");
-//            }
-//        });
 	}
 
     private void setToBoundary(){
@@ -142,7 +107,6 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 	@Override
 	public void render () {
         super.render();
-//        stage.draw();
 		Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[2].b, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
