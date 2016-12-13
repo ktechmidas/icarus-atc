@@ -41,15 +41,15 @@ class Airplane {
         double rotation = -Math.atan(velocity.x / velocity.y) * (180 / Math.PI);
         if (velocity.y < 0 && velocity.x < 0){
             sprite.setRotation(90 - (float) rotation);
-            Gdx.app.log("Airplane", "" + (90-rotation));
+//            Gdx.app.log("Airplane", "" + (90-rotation));
         }
         else if (velocity.y < 0){
             sprite.setRotation(-90 - (float) rotation);
-            Gdx.app.log("Airplane", "" + (-90 - rotation));
+//            Gdx.app.log("Airplane", "" + (-90 - rotation));
         }
         else {
             sprite.setRotation((float) rotation);
-            Gdx.app.log("Airplane", "" + rotation);
+//            Gdx.app.log("Airplane", "" + rotation);
         }
 
     }

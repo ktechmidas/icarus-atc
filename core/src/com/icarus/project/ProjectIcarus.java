@@ -17,10 +17,14 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 
 import java.util.ArrayList;
 
 public class ProjectIcarus extends ApplicationAdapter implements GestureDetector.GestureListener {
+    private Vector2 oldInitialFirstPointer=null, oldInitialSecondPointer=null;
+    private float oldScale;
     //Used for drawing waypoints
     private ShapeRenderer shapes;
     //The currently loaded Airport
@@ -34,7 +38,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     private Utils utils;
 
     private OrthographicCamera camera;
-    private float currentZoom;
+//    private float currentZoom;
     private float maxZoomIn; // Maximum possible zoomed in distance
     private float maxZoomOut; // Maximum possible zoomed out distance
     private float fontSize = 40;
@@ -159,39 +163,46 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         return false;
     }
 
-	@Override
-	public boolean pan(float x, float y, float deltaX, float deltaY) {
-        setToBoundary(); // Calculate distances to boundaries
+    @Override
+    public boolean pan(float x, float y, float deltaX, float deltaY) {
+	    setToBoundary(); // Calculate distances to boundaries
         float translateX;
         float translateY;
 
-        if (-deltaX * currentZoom > 0){ // If user pans to the right
-            translateX = utils.absMin(-deltaX * currentZoom, toBoundaryRight);
+        if (deltaX > 0){ // If user pans to the left
+            translateX = utils.absMin(deltaX, toBoundaryLeft);
         }
-        else { // If user pans to the left
-            translateX = utils.absMin(-deltaX * currentZoom, toBoundaryLeft);
+        else { // If user pans to the right
+            translateX = utils.absMin(deltaX, toBoundaryRight);
         }
-        if (deltaY * currentZoom > 0){ // If user pans up
-            translateY = utils.absMin(deltaY * currentZoom, toBoundaryTop);
+        if (deltaY > 0){ // If user pans up
+            translateY = utils.absMin(deltaY, toBoundaryTop);
         }
         else { // If user pans down
-            translateY = utils.absMin(deltaY * currentZoom, toBoundaryBottom);
+            translateY = utils.absMin(deltaY, toBoundaryBottom);
         }
 
-        camera.translate(translateX, translateY);
+        //Shift camera by delta or by distance to boundary, whichever is closer
+        camera.position.add(
+                camera.unproject(new Vector3(0, 0, 0))
+                        .add(camera.unproject(new Vector3(translateX, translateY, 0)).scl(-1f))
+        );
+
         camera.update();
-		return true;
-	}
+        return true;
+    }
 
     @Override
     public boolean panStop(float x, float y, int pointer, int button) {
-        currentZoom = camera.zoom;
+//        currentZoom = camera.zoom;
         return false;
     }
 
 	@Override
 	public boolean zoom(float initialDistance, float distance) {
-		float tempZoom = camera.zoom;
+
+        //waypoints dont change size, boundaries for zoom set, not pan
+		/*float tempZoom = camera.zoom;
         camera.zoom = Math.max(Math.min((initialDistance / distance) * currentZoom, maxZoomOut),
 				maxZoomIn);
 		Waypoint.scaleWaypoint(camera.zoom / tempZoom); // Scale waypoint to retain apparent size
@@ -208,18 +219,68 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
                     Math.max(0, toBoundaryBottom));
         }
 
-        camera.update();
-		return true;
-	}
-
-	@Override
-	public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1,
-                         Vector2 pointer2) {
+        camera.update();*/
 		return false;
 	}
 
     @Override
+    public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1,
+                         Vector2 pointer2) {
+        {
+            if (!(initialPointer1.equals(oldInitialFirstPointer)
+                    && initialPointer2.equals(oldInitialSecondPointer))) {
+                oldInitialFirstPointer = initialPointer1.cpy();
+                oldInitialSecondPointer = initialPointer2.cpy();
+                oldScale = camera.zoom;
+            }
+            Vector3 center = new Vector3(
+                    (pointer1.x + initialPointer2.x) / 2,
+                    (pointer2.y + initialPointer1.y) / 2,
+                    0
+            );
+            zoomCamera(center,
+                    oldScale * initialPointer1.dst(initialPointer2) / pointer1.dst(pointer2));
+            return true;
+        }
+    }
+
+    @Override
     public void pinchStop() {
 
+    }
+
+    private void zoomCamera(Vector3 origin, float scale){
+
+        float tempZoom = camera.zoom;
+
+        Vector3 oldUnprojection = camera.unproject(origin.cpy()).cpy();
+        camera.zoom = scale; //Larger value of zoom = small images, border view
+        camera.zoom = Math.min(maxZoomOut, Math.max(camera.zoom, maxZoomIn));
+        Vector3 newUnprojection = camera.unproject(origin.cpy()).cpy();
+        camera.position.add(oldUnprojection.cpy().add(newUnprojection.cpy().scl(-1f)));
+
+        setToBoundary(); //Calculate distances to boundaries
+
+        //Shift the view when zooming to keep view within map
+        if (toBoundaryRight < 0 || toBoundaryTop < 0){
+            camera.position.add(
+                    camera.unproject(new Vector3(0, 0, 0))
+                            .add(camera.unproject(new Vector3(Math.max(0, -toBoundaryRight),
+                                                              Math.min(0, toBoundaryTop),
+                                                              0)).scl(-1f))
+            );
+        }
+        if (toBoundaryLeft > 0 || toBoundaryBottom > 0){
+            camera.position.add(
+                    camera.unproject(new Vector3(0, 0, 0))
+                            .add(camera.unproject(new Vector3(Math.min(0, -toBoundaryLeft),
+                                                              Math.max(0, toBoundaryBottom),
+                                                              0)).scl(-1f))
+            );
+        }
+
+        Waypoint.scaleWaypoint(camera.zoom / tempZoom); //Scale waypoint to retain apparent size
+
+        camera.update();
     }
 }
