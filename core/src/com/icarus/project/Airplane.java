@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.utils.Timer;
 
 class Airplane {
     //The global airplane image
@@ -18,6 +19,8 @@ class Airplane {
     public float altitude;
     //The sprite used by this airplane for display. It references the global texture.
     private Sprite sprite;
+
+    public float turnRate = 3;
 
     public Airplane(String name, Vector2 position, Vector2 velocity, float altitude) {
         this.name = name;
@@ -51,6 +54,22 @@ class Airplane {
             sprite.setRotation((float) rotation);
 //            Gdx.app.log("Airplane", "" + rotation);
         }
+    }
+
+    public void turn(double angle){
+//        double speed = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+//        double turnSum = 0;
+//        while (turnSum < angle){
+//            Timer.schedule(new Timer.Task() {
+//                @Override
+//                public void run() {
+//                    velocity.rotate(turnRate);
+//                    step();
+//                }
+//            }
+//            , 0
+//            , 1);
+//        }
 
     }
 }
