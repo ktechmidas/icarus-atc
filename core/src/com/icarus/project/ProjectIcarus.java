@@ -37,6 +37,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     private SpriteBatch batch;
     private Utils utils;
 
+    private MainUi ui;
+
     private OrthographicCamera camera;
 //    private float currentZoom;
     private float maxZoomIn; // Maximum possible zoomed in distance
@@ -52,11 +54,11 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     @Override
     public void create () {
         //initialize the AssetManager
-	AssetManager manager = new AssetManager();
-	FileHandleResolver resolver = new InternalFileHandleResolver();
-	manager.setLoader(Airport.class, new AirportLoader(resolver));
-	manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
-	manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
+        AssetManager manager = new AssetManager();
+        FileHandleResolver resolver = new InternalFileHandleResolver();
+        manager.setLoader(Airport.class, new AirportLoader(resolver));
+        manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
+        manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
 
         //load the airport
         manager.load("airports/test.json", Airport.class);
@@ -68,12 +70,12 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         //load the airplane sprite
         manager.load("sprites/airplane.png", Texture.class);
 
-	manager.load("buttons/altitude_button.png", Texture.class);
-	manager.load("buttons/heading_button.png", Texture.class);
-	manager.load("buttons/takeoff_button.png", Texture.class);
-	manager.load("buttons/circle_button.png", Texture.class);
-	manager.load("buttons/landing_button.png", Texture.class);
-	manager.load("buttons/more_button.png", Texture.class);
+        manager.load("buttons/altitude_button.png", Texture.class);
+        manager.load("buttons/heading_button.png", Texture.class);
+        manager.load("buttons/takeoff_button.png", Texture.class);
+        manager.load("buttons/circle_button.png", Texture.class);
+        manager.load("buttons/landing_button.png", Texture.class);
+        manager.load("buttons/more_button.png", Texture.class);
 
         manager.finishLoading();
         airport = manager.get("airports/test.json");
@@ -99,7 +101,9 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         // Start the app in maximum zoomed out state
         camera.zoom = maxZoomOut;
         camera.position.set(airport.width/2, airport.height/2, 0);
-	camera.update();
+        camera.update();
+
+        ui = new MainUi(manager, labelFont);
     }
 
     private void setToBoundary(){
@@ -115,8 +119,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     @Override
     public void render () {
         super.render();
-	Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[2].b, 1);
-	Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[2].b, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         //batch.setProjectionMatrix(camera.projection);
         //shapes.setProjectionMatrix(camera.projection);
@@ -142,6 +146,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
             airplane.draw(batch, camera);
         }
         batch.end();
+
+        ui.draw();
     }
 
     @Override
