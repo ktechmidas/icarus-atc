@@ -179,7 +179,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-	setToBoundary(); // Calculate distances to boundaries
+        setToBoundary(); // Calculate distances to boundaries
         float translateX;
         float translateY;
 
@@ -241,21 +241,21 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1,
                          Vector2 pointer2)
     {
-	if (!(initialPointer1.equals(oldInitialFirstPointer)
-		&& initialPointer2.equals(oldInitialSecondPointer)))
-	{
-	    oldInitialFirstPointer = initialPointer1.cpy();
-	    oldInitialSecondPointer = initialPointer2.cpy();
-	    oldScale = camera.zoom;
-	}
-	Vector3 center = new Vector3(
-		(pointer1.x + initialPointer2.x) / 2,
-		(pointer2.y + initialPointer1.y) / 2,
-		0
-	);
-	zoomCamera(center,
-		oldScale * initialPointer1.dst(initialPointer2) / pointer1.dst(pointer2));
-	return true;
+        if (!(initialPointer1.equals(oldInitialFirstPointer)
+            && initialPointer2.equals(oldInitialSecondPointer)))
+        {
+            oldInitialFirstPointer = initialPointer1.cpy();
+            oldInitialSecondPointer = initialPointer2.cpy();
+            oldScale = camera.zoom;
+        }
+        Vector3 center = new Vector3(
+            (pointer1.x + initialPointer2.x) / 2,
+            (pointer2.y + initialPointer1.y) / 2,
+            0
+        );
+        zoomCamera(center,
+            oldScale * initialPointer1.dst(initialPointer2) / pointer1.dst(pointer2));
+        return true;
     }
 
     @Override
@@ -270,7 +270,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         Vector3 oldUnprojection = camera.unproject(origin.cpy()).cpy();
         camera.zoom = scale; //Larger value of zoom = small images, border view
         camera.zoom = Math.min(maxZoomOut, Math.max(camera.zoom, maxZoomIn));
-	camera.update();
+        camera.update();
         Vector3 newUnprojection = camera.unproject(origin.cpy()).cpy();
         camera.position.add(oldUnprojection.cpy().add(newUnprojection.cpy().scl(-1f)));
 
