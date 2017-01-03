@@ -39,7 +39,6 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     //Used for drawing airplanes
     private SpriteBatch batch;
     private Utils utils;
-    private MainUi ui;
 
     private MainUi ui;
 

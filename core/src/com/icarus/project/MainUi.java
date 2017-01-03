@@ -20,9 +20,9 @@ public class MainUi {
         this.font = font;
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         shapes = new ShapeRenderer();
-        ImageButton headingButton = new ImageButton(headingDrawable);
         Drawable headingDrawable = new TextureRegionDrawable(
                 new TextureRegion((Texture) assets.get("buttons/heading_button.png")));
+        ImageButton headingButton = new ImageButton(headingDrawable);
     }
 
     public void draw() {
@@ -30,7 +30,7 @@ public class MainUi {
         //draw a rectangle for the status bar
         shapes.begin(ShapeRenderer.ShapeType.Filled);
         shapes.setColor(Colors.colors[0]);
-        shapes.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        shapes.rect(0, 0, Gdx.graphics.getWidth(),  50);
         shapes.end();
     }
 }
