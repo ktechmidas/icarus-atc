@@ -5,6 +5,11 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class MainUi {
     private BitmapFont font;
@@ -15,6 +20,9 @@ public class MainUi {
         this.font = font;
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         shapes = new ShapeRenderer();
+        ImageButton headingButton = new ImageButton(headingDrawable);
+        Drawable headingDrawable = new TextureRegionDrawable(
+                new TextureRegion((Texture) assets.get("buttons/heading_button.png")));
     }
 
     public void draw() {
