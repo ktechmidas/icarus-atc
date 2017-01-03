@@ -1,9 +1,11 @@
 package com.icarus.project;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.utils.Align;
 import com.google.gson.JsonObject;
 
@@ -29,26 +31,23 @@ class Waypoint {
 
     //Draws the triangle in a given ShapeRender. This assumes that the zoom camera has already been
     //set up.
-    public void draw(ShapeRenderer shapes) {
+    public void draw(ShapeRenderer shapes, Camera camera) {
+        Vector3 pos = camera.project(new Vector3(position.x, position.y, 0f));
         shapes.setColor(Colors.colors[3]);
         shapes.triangle(
-                -0.7f * waypointSize + position.x,
-                -0.4041f * waypointSize + position.y,
-                0.7f * waypointSize + position.x,
-                -0.4041f * waypointSize + position.y,
-                0.0f * waypointSize + position.x,
-                0.8083f * waypointSize + position.y);
+                -0.7f * waypointSize + pos.x,
+                -0.4041f * waypointSize + pos.y,
+                0.7f * waypointSize + pos.x,
+                -0.4041f * waypointSize + pos.y,
+                0.0f * waypointSize + pos.x,
+                0.8083f * waypointSize + pos.y);
     }
 
     //Draws the label for the waypoint. This assumes that the zoom camera has already been set up.
     //This is separate from draw because the labels should go on top of all of the triangles.
-    public void drawLabel(BitmapFont font, SpriteBatch batch) {
+    public void drawLabel(BitmapFont font, SpriteBatch batch, Camera camera) {
+        Vector3 pos = camera.project(new Vector3(position.x, position.y, 0f));
         font.setColor(Colors.colors[3]);
-        font.draw(batch, name, position.x - 100, position.y - 15, 200, Align.center, false);
-    }
-
-    ///Updates the zoom scaling for all waypoints
-    public static void scaleWaypoint(float factor){
-        waypointSize *= factor;
+        font.draw(batch, name, pos.x - 100, pos.y - 15, 200, Align.center, false);
     }
 }

@@ -1,9 +1,11 @@
 package com.icarus.project;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.utils.Timer;
 
 class Airplane {
@@ -31,14 +33,15 @@ class Airplane {
     }
 
     //Draw the airplane image. This assumes that the camera has already been set up.
-    public void draw(SpriteBatch batch) {
+    public void draw(SpriteBatch batch, Camera camera) {
+        Vector3 pos = camera.project(new Vector3(position.x, position.y, 0));
+        sprite.setPosition(pos.x, pos.y);
         sprite.draw(batch);
     }
 
     //Move the airplane image at evey render
     public void step() {
         position.add(velocity.cpy().scl(Gdx.graphics.getDeltaTime()));
-        sprite.setPosition(position.x, position.y);
 
         //Point airplane in direction of travel
         double rotation = -Math.atan(velocity.x / velocity.y) * (180 / Math.PI);
