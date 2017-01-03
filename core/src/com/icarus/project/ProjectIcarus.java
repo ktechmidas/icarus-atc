@@ -49,14 +49,14 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     private float toBoundaryTop;
     private float toBoundaryBottom;
 
-	@Override
-	public void create () {
+    @Override
+    public void create () {
         //initialize the AssetManager
-		AssetManager manager = new AssetManager();
-		FileHandleResolver resolver = new InternalFileHandleResolver();
-		manager.setLoader(Airport.class, new AirportLoader(resolver));
-		manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
-		manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
+	AssetManager manager = new AssetManager();
+	FileHandleResolver resolver = new InternalFileHandleResolver();
+	manager.setLoader(Airport.class, new AirportLoader(resolver));
+	manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
+	manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
 
         //load the airport
         manager.load("airports/test.json", Airport.class);
@@ -78,7 +78,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
         //add a dummy airplane
         airplanes = new ArrayList();
-        airplanes.add(new Airplane("TEST", new Vector2(300, 300), new Vector2(-5, -5), 100));
+        airplanes.add(new Airplane("TEST", new Vector2(200, 200), new Vector2(-5, -5), 100));
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.input.setInputProcessor(new GestureDetector(this));
@@ -92,8 +92,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         // Start the app in maximum zoomed out state
         camera.zoom = maxZoomOut;
         camera.position.set(airport.width/2, airport.height/2, 0);
-		camera.update();
-	}
+	camera.update();
+    }
 
     private void setToBoundary(){
         // Calculates the distance from the edge of the camera to the specified boundary
@@ -105,26 +105,26 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         toBoundaryBottom = (-camera.position.y + Gdx.graphics.getHeight()/2 * camera.zoom);
     }
 
-	@Override
-	public void render () {
+    @Override
+    public void render () {
         super.render();
-		Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[2].b, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+	Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[2].b, 1);
+	Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        batch.setProjectionMatrix(camera.combined);
-        shapes.setProjectionMatrix(camera.combined);
+        //batch.setProjectionMatrix(camera.projection);
+        //shapes.setProjectionMatrix(camera.projection);
 
         //draw waypoint triangles
         shapes.begin(ShapeRenderer.ShapeType.Filled);
         for(Waypoint waypoint: airport.waypoints) {
-            waypoint.draw(shapes);
+            waypoint.draw(shapes, camera);
         }
         shapes.end();
 
         //draw waypoint labels
         batch.begin();
         for(Waypoint waypoint: airport.waypoints) {
-            waypoint.drawLabel(labelFont, batch);
+            waypoint.drawLabel(labelFont, batch, camera);
         }
         batch.end();
 
@@ -132,17 +132,17 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         batch.begin();
         for(Airplane airplane: airplanes) {
             airplane.step(); //Move airplanes
-            airplane.draw(batch);
+            airplane.draw(batch, camera);
         }
         batch.end();
     }
 
-	@Override
-	public void dispose () {
-		shapes.dispose();
-		batch.dispose();
-		labelFont.dispose();
-	}
+    @Override
+    public void dispose () {
+	shapes.dispose();
+	batch.dispose();
+	labelFont.dispose();
+    }
 
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
@@ -166,7 +166,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-	    setToBoundary(); // Calculate distances to boundaries
+	setToBoundary(); // Calculate distances to boundaries
         float translateX;
         float translateY;
 
@@ -199,8 +199,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         return false;
     }
 
-	@Override
-	public boolean zoom(float initialDistance, float distance) {
+    @Override
+    public boolean zoom(float initialDistance, float distance) {
 
         //waypoints dont change size, boundaries for zoom set, not pan
 		/*float tempZoom = camera.zoom;
@@ -221,28 +221,28 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         }
 
         camera.update();*/
-		return false;
-	}
+	    return false;
+    }
 
     @Override
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1,
-                         Vector2 pointer2) {
-        {
-            if (!(initialPointer1.equals(oldInitialFirstPointer)
-                    && initialPointer2.equals(oldInitialSecondPointer))) {
-                oldInitialFirstPointer = initialPointer1.cpy();
-                oldInitialSecondPointer = initialPointer2.cpy();
-                oldScale = camera.zoom;
-            }
-            Vector3 center = new Vector3(
-                    (pointer1.x + initialPointer2.x) / 2,
-                    (pointer2.y + initialPointer1.y) / 2,
-                    0
-            );
-            zoomCamera(center,
-                    oldScale * initialPointer1.dst(initialPointer2) / pointer1.dst(pointer2));
-            return true;
-        }
+                         Vector2 pointer2)
+    {
+	if (!(initialPointer1.equals(oldInitialFirstPointer)
+		&& initialPointer2.equals(oldInitialSecondPointer)))
+	{
+	    oldInitialFirstPointer = initialPointer1.cpy();
+	    oldInitialSecondPointer = initialPointer2.cpy();
+	    oldScale = camera.zoom;
+	}
+	Vector3 center = new Vector3(
+		(pointer1.x + initialPointer2.x) / 2,
+		(pointer2.y + initialPointer1.y) / 2,
+		0
+	);
+	zoomCamera(center,
+		oldScale * initialPointer1.dst(initialPointer2) / pointer1.dst(pointer2));
+	return true;
     }
 
     @Override
@@ -250,7 +250,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     }
 
-    private void zoomCamera(Vector3 origin, float scale){
+    private void zoomCamera(Vector3 origin, float scale) {
 
         float tempZoom = camera.zoom;
 
@@ -279,8 +279,6 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
                                                               0)).scl(-1f))
             );
         }
-
-        Waypoint.scaleWaypoint(camera.zoom / tempZoom); //Scale waypoint to retain apparent size
 
         camera.update();
     }
