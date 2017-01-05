@@ -259,6 +259,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         Vector3 oldUnprojection = camera.unproject(origin.cpy()).cpy();
         camera.zoom = scale; //Larger value of zoom = small images, border view
         camera.zoom = Math.min(maxZoomOut, Math.max(camera.zoom, maxZoomIn));
+	camera.update();
         Vector3 newUnprojection = camera.unproject(origin.cpy()).cpy();
         camera.position.add(oldUnprojection.cpy().add(newUnprojection.cpy().scl(-1f)));
 
