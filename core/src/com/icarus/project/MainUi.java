@@ -1,6 +1,7 @@
 package com.icarus.project;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -15,14 +16,17 @@ public class MainUi {
     private BitmapFont font;
     private ShapeRenderer shapes;
     private OrthographicCamera camera;
+    private SpriteBatch batch;
+    private ImageButton headingButton;
 
     public MainUi(AssetManager assets, BitmapFont font) {
         this.font = font;
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         shapes = new ShapeRenderer();
+        batch = new SpriteBatch();
         Drawable headingDrawable = new TextureRegionDrawable(
                 new TextureRegion((Texture) assets.get("buttons/heading_button.png")));
-        ImageButton headingButton = new ImageButton(headingDrawable);
+        headingButton = new ImageButton(headingDrawable);
     }
 
     public void draw() {
@@ -32,5 +36,8 @@ public class MainUi {
         shapes.setColor(Colors.colors[0]);
         shapes.rect(0, 0, Gdx.graphics.getWidth(),  50);
         shapes.end();
+        batch.begin();
+        headingButton.draw(batch, 1);
+        batch.end();
     }
 }
