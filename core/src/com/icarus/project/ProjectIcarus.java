@@ -19,6 +19,8 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -107,6 +109,19 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         camera.update();
 
         ui = new MainUi(manager, labelFont);
+
+        ui.headingButton.setPosition(10, 10);
+        ui.headingButton.addListener(new InputListener(){
+            @Override
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                Gdx.app.log("ProjectIcarus", "Unpressed Image Button");
+            }
+            @Override
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                Gdx.app.log("ProjectIcarus", "Pressed Image Button");
+                return true;
+            }
+        });
     }
 
     private void setToBoundary(){

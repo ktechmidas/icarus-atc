@@ -17,7 +17,7 @@ public class MainUi {
     private ShapeRenderer shapes;
     private OrthographicCamera camera;
     private SpriteBatch batch;
-    private ImageButton headingButton;
+    public ImageButton headingButton;
 
     public MainUi(AssetManager assets, BitmapFont font) {
         this.font = font;
