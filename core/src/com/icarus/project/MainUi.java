@@ -21,7 +21,6 @@ public class MainUi {
     private String status;
     private GlyphLayout layout;
     private SpriteBatch batch;
-    public ImageButton headingButton;
     public Stage stage;
 
     public MainUi(AssetManager assets, BitmapFont font) {
@@ -30,10 +29,9 @@ public class MainUi {
         batch = new SpriteBatch();
         Drawable headingDrawable = new TextureRegionDrawable(
                 new TextureRegion((Texture) assets.get("buttons/heading_button.png")));
-        ImageButton headingButton = new ImageButton(headingDrawable);
         status = "Hello, World!";
         layout = new GlyphLayout();
-        headingButton = new ImageButton(headingDrawable);
+        ImageButton headingButton = new ImageButton(headingDrawable);
         headingButton.setPosition(10, 10);
         stage = new Stage();
         
