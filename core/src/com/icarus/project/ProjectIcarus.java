@@ -2,6 +2,7 @@ package com.icarus.project;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -19,7 +20,6 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
@@ -93,7 +93,6 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         airplanes.add(new Airplane("TEST", new Vector2(200, 200), new Vector2(-5, -5), 100));
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        Gdx.input.setInputProcessor(new GestureDetector(this));
 
         utils = new Utils();
         // The maximum zoom level is the smallest dimension compared to the viewer
@@ -107,6 +106,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         camera.update();
 
         ui = new MainUi(manager, labelFont);
+        Gdx.input.setInputProcessor(new InputMultiplexer(ui.stage, new GestureDetector(this)));
     }
 
     private void setToBoundary(){
