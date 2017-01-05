@@ -12,6 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 
 public class MainUi {
     private BitmapFont font;
@@ -19,7 +21,7 @@ public class MainUi {
     private String status;
     private GlyphLayout layout;
     private SpriteBatch batch;
-    private ImageButton headingButton;
+    public ImageButton headingButton;
     public Stage stage;
 
     public MainUi(AssetManager assets, BitmapFont font) {
@@ -32,7 +34,21 @@ public class MainUi {
         status = "Hello, World!";
         layout = new GlyphLayout();
         headingButton = new ImageButton(headingDrawable);
+        headingButton.setPosition(10, 10);
         stage = new Stage();
+        
+        headingButton.addListener(new InputListener(){
+            @Override
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                setStatus("Unpressed");
+            }
+            @Override
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                setStatus("Pressed");
+                return true;
+            }
+        });
+
         stage.addActor(headingButton);
     }
 

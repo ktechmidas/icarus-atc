@@ -106,6 +106,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         camera.update();
 
         ui = new MainUi(manager, labelFont);
+
         Gdx.input.setInputProcessor(new InputMultiplexer(ui.stage, new GestureDetector(this)));
     }
 
