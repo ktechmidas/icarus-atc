@@ -52,11 +52,11 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     @Override
     public void create () {
         //initialize the AssetManager
-	AssetManager manager = new AssetManager();
-	FileHandleResolver resolver = new InternalFileHandleResolver();
-	manager.setLoader(Airport.class, new AirportLoader(resolver));
-	manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
-	manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
+        AssetManager manager = new AssetManager();
+        FileHandleResolver resolver = new InternalFileHandleResolver();
+        manager.setLoader(Airport.class, new AirportLoader(resolver));
+        manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
+        manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
 
         //load the airport
         manager.load("airports/test.json", Airport.class);
@@ -92,7 +92,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         // Start the app in maximum zoomed out state
         camera.zoom = maxZoomOut;
         camera.position.set(airport.width/2, airport.height/2, 0);
-	camera.update();
+        camera.update();
     }
 
     private void setToBoundary(){
@@ -108,8 +108,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     @Override
     public void render () {
         super.render();
-	Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[2].b, 1);
-	Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[2].b, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         //batch.setProjectionMatrix(camera.projection);
         //shapes.setProjectionMatrix(camera.projection);
@@ -139,9 +139,9 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     @Override
     public void dispose () {
-	shapes.dispose();
-	batch.dispose();
-	labelFont.dispose();
+        shapes.dispose();
+        batch.dispose();
+        labelFont.dispose();
     }
 
     @Override
@@ -166,7 +166,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-	setToBoundary(); // Calculate distances to boundaries
+        setToBoundary(); // Calculate distances to boundaries
         float translateX;
         float translateY;
 
@@ -176,12 +176,14 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         else { // If user pans to the right
             translateX = utils.absMin(deltaX, toBoundaryRight);
         }
+//        Gdx.app.log("ProjectIcarus", "" + translateX);
         if (deltaY > 0){ // If user pans up
             translateY = utils.absMin(deltaY, toBoundaryTop);
         }
         else { // If user pans down
             translateY = utils.absMin(deltaY, toBoundaryBottom);
         }
+//        Gdx.app.log("ProjectIcarus", "" + translateY);
 
         //Shift camera by delta or by distance to boundary, whichever is closer
         camera.position.add(
@@ -228,21 +230,21 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1,
                          Vector2 pointer2)
     {
-	if (!(initialPointer1.equals(oldInitialFirstPointer)
-		&& initialPointer2.equals(oldInitialSecondPointer)))
-	{
-	    oldInitialFirstPointer = initialPointer1.cpy();
-	    oldInitialSecondPointer = initialPointer2.cpy();
-	    oldScale = camera.zoom;
-	}
-	Vector3 center = new Vector3(
-		(pointer1.x + initialPointer2.x) / 2,
-		(pointer2.y + initialPointer1.y) / 2,
-		0
-	);
-	zoomCamera(center,
-		oldScale * initialPointer1.dst(initialPointer2) / pointer1.dst(pointer2));
-	return true;
+        if (!(initialPointer1.equals(oldInitialFirstPointer)
+            && initialPointer2.equals(oldInitialSecondPointer)))
+        {
+            oldInitialFirstPointer = initialPointer1.cpy();
+            oldInitialSecondPointer = initialPointer2.cpy();
+            oldScale = camera.zoom;
+        }
+        Vector3 center = new Vector3(
+            (pointer1.x + initialPointer2.x) / 2,
+            (pointer2.y + initialPointer1.y) / 2,
+            0
+        );
+        zoomCamera(center,
+            oldScale * initialPointer1.dst(initialPointer2) / pointer1.dst(pointer2));
+        return true;
     }
 
     @Override
