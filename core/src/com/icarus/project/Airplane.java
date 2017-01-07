@@ -41,22 +41,10 @@ class Airplane {
 
     //Move the airplane image at evey render
     public void step() {
+        //Move airplane
         position.add(velocity.cpy().scl(Gdx.graphics.getDeltaTime()));
-
         //Point airplane in direction of travel
-        double rotation = -Math.atan(velocity.x / velocity.y) * (180 / Math.PI);
-        if (velocity.y < 0 && velocity.x < 0){
-            sprite.setRotation(90 - (float) rotation);
-//            Gdx.app.log("Airplane", "" + (90-rotation));
-        }
-        else if (velocity.y < 0){
-            sprite.setRotation(-90 - (float) rotation);
-//            Gdx.app.log("Airplane", "" + (-90 - rotation));
-        }
-        else {
-            sprite.setRotation((float) rotation);
-//            Gdx.app.log("Airplane", "" + rotation);
-        }
+        sprite.setRotation(velocity.angle());
     }
 
     public void turn(double angle){
