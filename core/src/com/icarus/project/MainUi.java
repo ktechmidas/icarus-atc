@@ -38,6 +38,7 @@ public class MainUi {
         headingButton.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+
                 setStatus("Unpressed");
             }
             @Override

@@ -90,7 +90,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
         //add a dummy airplane
         airplanes = new ArrayList();
-        airplanes.add(new Airplane("TEST", new Vector2(200, 200), new Vector2(-5, -5), 100));
+        airplanes.add(new Airplane("TEST", new Vector2(200, 200), new Vector2(-5, -5), 100, new Vector2(200, 200)));
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 

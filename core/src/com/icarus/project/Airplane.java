@@ -22,14 +22,17 @@ class Airplane {
     //The sprite used by this airplane for display. It references the global texture.
     private Sprite sprite;
 
+    public Vector2 targetHeading;
+
     public float turnRate = 3;
 
-    public Airplane(String name, Vector2 position, Vector2 velocity, float altitude) {
+    public Airplane(String name, Vector2 position, Vector2 velocity, float altitude, Vector2 targetHeading) {
         this.name = name;
         this.position = position;
         this.velocity = velocity;
         this.altitude = altitude;
         sprite = new Sprite(texture);
+        this.targetHeading = targetHeading;
     }
 
     //Draw the airplane image. This assumes that the camera has already been set up.
@@ -43,20 +46,25 @@ class Airplane {
     public void step() {
         position.add(velocity.cpy().scl(Gdx.graphics.getDeltaTime()));
 
+        if(targetHeading.angle() != velocity.angle()){
+            velocity.rotate(3 * Gdx.graphics.getDeltaTime());
+        }
+
         //Point airplane in direction of travel
-        double rotation = -Math.atan(velocity.x / velocity.y) * (180 / Math.PI);
-        if (velocity.y < 0 && velocity.x < 0){
-            sprite.setRotation(90 - (float) rotation);
-//            Gdx.app.log("Airplane", "" + (90-rotation));
-        }
-        else if (velocity.y < 0){
-            sprite.setRotation(-90 - (float) rotation);
-//            Gdx.app.log("Airplane", "" + (-90 - rotation));
-        }
-        else {
-            sprite.setRotation((float) rotation);
-//            Gdx.app.log("Airplane", "" + rotation);
-        }
+        sprite.setRotation(velocity.angle());
+//        double rotation = -Math.atan(velocity.x / velocity.y) * (180 / Math.PI);
+//        if (velocity.y < 0 && velocity.x < 0){
+//            sprite.setRotation(90 - (float) rotation);
+////            Gdx.app.log("Airplane", "" + (90-rotation));
+//        }
+//        else if (velocity.y < 0){
+//            sprite.setRotation(-90 - (float) rotation);
+////            Gdx.app.log("Airplane", "" + (-90 - rotation));
+//        }
+//        else {
+//            sprite.setRotation((float) rotation);
+////            Gdx.app.log("Airplane", "" + rotation);
+//        }
     }
 
     public void turn(double angle){
