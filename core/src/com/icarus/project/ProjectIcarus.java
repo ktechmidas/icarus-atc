@@ -52,11 +52,11 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     @Override
     public void create () {
         //initialize the AssetManager
-	AssetManager manager = new AssetManager();
-	FileHandleResolver resolver = new InternalFileHandleResolver();
-	manager.setLoader(Airport.class, new AirportLoader(resolver));
-	manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
-	manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
+        AssetManager manager = new AssetManager();
+        FileHandleResolver resolver = new InternalFileHandleResolver();
+        manager.setLoader(Airport.class, new AirportLoader(resolver));
+        manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
+        manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
 
         //load the airport
         manager.load("airports/test.json", Airport.class);
@@ -99,7 +99,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         // Start the app in maximum zoomed out state
         camera.zoom = maxZoomOut;
         camera.position.set(airport.width/2, airport.height/2, 0);
-	camera.update();
+        camera.update();
     }
 
     private void setToBoundary(){
@@ -115,11 +115,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     @Override
     public void render () {
         super.render();
-	Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[2].b, 1);
-	Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        //batch.setProjectionMatrix(camera.projection);
-        //shapes.setProjectionMatrix(camera.projection);
+        Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[2].b, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         //draw waypoint triangles
         shapes.begin(ShapeRenderer.ShapeType.Filled);
@@ -146,9 +143,9 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     @Override
     public void dispose () {
-	shapes.dispose();
-	batch.dispose();
-	labelFont.dispose();
+        shapes.dispose();
+        batch.dispose();
+        labelFont.dispose();
     }
 
     @Override
@@ -198,26 +195,6 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
-
-        //waypoints dont change size, boundaries for zoom set, not pan
-		/*float tempZoom = camera.zoom;
-        camera.zoom = Math.max(Math.min((initialDistance / distance) * currentZoom, maxZoomOut),
-				maxZoomIn);
-		Waypoint.scaleWaypoint(camera.zoom / tempZoom); // Scale waypoint to retain apparent size
-
-        setToBoundary(); // Calculate distances to boundaries
-
-        // Shift the view when zooming to keep view within map
-        if (toBoundaryRight < 0 || toBoundaryTop < 0){
-            camera.translate(Math.min(0, toBoundaryRight),
-                    Math.min(0, toBoundaryTop));
-        }
-        if (toBoundaryLeft > 0 || toBoundaryBottom > 0){
-            camera.translate(Math.max(0, toBoundaryLeft),
-                    Math.max(0, toBoundaryBottom));
-        }
-
-        camera.update();*/
 	    return false;
     }
 
@@ -248,8 +225,6 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     }
 
     private void zoomCamera(Vector3 origin, float scale) {
-
-        float tempZoom = camera.zoom;
 
         Vector3 oldUnprojection = camera.unproject(origin.cpy()).cpy();
         camera.zoom = scale; //Larger value of zoom = small images, border view
