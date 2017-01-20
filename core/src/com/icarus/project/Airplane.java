@@ -20,9 +20,11 @@ class Airplane {
     //The altitude of this airplane in meters
     public float altitude;
     //The sprite used by this airplane for display. It references the global texture.
-    private Sprite sprite;
+    public Sprite sprite;
 
     public Vector2 targetHeading;
+
+    public boolean isSelected;
 
     public float turnRate = 3;
 
