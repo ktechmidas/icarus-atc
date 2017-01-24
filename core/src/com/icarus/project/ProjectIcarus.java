@@ -154,6 +154,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
         ui.draw();
 
+        setToBoundary();
+
         if(selectedAirplane != null){
             camera.position.x = selectedAirplane.position.x + selectedAirplane.sprite.getWidth()/2;
             camera.position.y = selectedAirplane.position.y + selectedAirplane.sprite.getHeight()/2;
