@@ -97,7 +97,6 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         airplanes.add(new Airplane("TEST", new Vector2(200, 200), new Vector2(-5, -5), 100, new Vector2(200, 200)));
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
         utils = new Utils();
         // The maximum zoom level is the smallest dimension compared to the viewer
         maxZoomOut = Math.min(airport.width / Gdx.graphics.getWidth(),
@@ -130,9 +129,6 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[2].b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        //batch.setProjectionMatrix(camera.projection);
-        //shapes.setProjectionMatrix(camera.projection);
-
         //draw waypoint triangles
         shapes.begin(ShapeRenderer.ShapeType.Filled);
         for(Waypoint waypoint: airport.waypoints) {
@@ -160,9 +156,9 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     @Override
     public void dispose () {
-	shapes.dispose();
-	batch.dispose();
-	labelFont.dispose();
+        shapes.dispose();
+        batch.dispose();
+        labelFont.dispose();
     }
 
     @Override
@@ -224,8 +220,16 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         //Shift camera by delta or by distance to boundary, whichever is closer
         camera.position.add(
                 camera.unproject(new Vector3(0, 0, 0))
-                        .add(camera.unproject(new Vector3(translateX, translateY, 0)).scl(-1f))
+                        .add(camera.unproject(new Vector3(deltaX, deltaY, 0)).scl(-1f))
         );
+
+        Vector2 camMin = new Vector2(camera.viewportWidth, camera.viewportHeight);
+        camMin.scl(camera.zoom / 2);
+        Vector2 camMax = new Vector2(airport.width, airport.height);
+        camMax.sub(camMin);
+
+        camera.position.x = Math.min(camMax.x, Math.max(camera.position.x, camMin.x));
+        camera.position.y = Math.min(camMax.y, Math.max(camera.position.y, camMin.y));
 
         camera.update();
         return true;
@@ -239,26 +243,6 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
-
-        //waypoints dont change size, boundaries for zoom set, not pan
-		/*float tempZoom = camera.zoom;
-        camera.zoom = Math.max(Math.min((initialDistance / distance) * currentZoom, maxZoomOut),
-				maxZoomIn);
-		Waypoint.scaleWaypoint(camera.zoom / tempZoom); // Scale waypoint to retain apparent size
-
-        setToBoundary(); // Calculate distances to boundaries
-
-        // Shift the view when zooming to keep view within map
-        if (toBoundaryRight < 0 || toBoundaryTop < 0){
-            camera.translate(Math.min(0, toBoundaryRight),
-                    Math.min(0, toBoundaryTop));
-        }
-        if (toBoundaryLeft > 0 || toBoundaryBottom > 0){
-            camera.translate(Math.max(0, toBoundaryLeft),
-                    Math.max(0, toBoundaryBottom));
-        }
-
-        camera.update();*/
 	    return false;
     }
 
@@ -289,8 +273,6 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     }
 
     private void zoomCamera(Vector3 origin, float scale) {
-
-        float tempZoom = camera.zoom;
 
         Vector3 oldUnprojection = camera.unproject(origin.cpy()).cpy();
         camera.zoom = scale; //Larger value of zoom = small images, border view
