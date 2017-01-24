@@ -54,7 +54,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     private float toBoundaryTop;
     private float toBoundaryBottom;
 
-    private Airplane selectedAirplane = null;
+    public Airplane selectedAirplane = null;
 
     public static final String TAG = "ProjectIcarus";
 
@@ -94,7 +94,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
         //add a dummy airplane
         airplanes = new ArrayList();
-        airplanes.add(new Airplane("TEST", new Vector2(200, 200), new Vector2(-5, -5), 100, new Vector2(200, 200)));
+        airplanes.add(new Airplane("TEST", new Vector2(200, 100), new Vector2(8, 8), 100, new Vector2(200, 200)));
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         utils = new Utils();
@@ -171,21 +171,29 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
             selectedAirplane.isSelected = false;
         }
         selectedAirplane = airplane;
-        selectedAirplane.isSelected = true;
+        if(selectedAirplane != null){
+            selectedAirplane.isSelected = true;
+        }
     }
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        Vector3 position = camera.unproject(new Vector3(x, y, 0));
+        setSelectedAirplane(null);
+//        Vector3 position = camera.unproject(new Vector3(x, y, 0));
+        Vector3 position = new Vector3(x, Gdx.graphics.getHeight() - y, 0);
         Gdx.app.log(TAG, "" + position);
         for(Airplane airplane: airplanes) {
             if(airplane.sprite.getBoundingRectangle().contains(position.x, position.y)){
                 setSelectedAirplane(airplane);
-                Gdx.app.log("ProjectIcarus", "selected airplane");
+                ui.setStatus("selected airplane");
                 return true;
             }
         }
-        return false;
+        if(selectedAirplane == null){
+            ui.setStatus("deselected airplane");
+        }
+//        ui.setStatus("" + position.x + ", " + position.y);
+        return true;
     }
 
     @Override

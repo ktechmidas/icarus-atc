@@ -50,7 +50,7 @@ class Airplane {
         position.add(velocity.cpy().scl(Gdx.graphics.getDeltaTime()));
 
         if(targetHeading.angle() != velocity.angle()){
-            velocity.rotate(3 * Gdx.graphics.getDeltaTime());
+            velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
         }
 
         //Point airplane in direction of travel

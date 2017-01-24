@@ -23,6 +23,10 @@ public class MainUi {
     private SpriteBatch batch;
     public Stage stage;
 
+    private ImageButton headingButton;
+
+    private ProjectIcarus projectIcarus;
+
     public MainUi(AssetManager assets, BitmapFont font) {
         this.font = font;
         shapes = new ShapeRenderer();
@@ -31,10 +35,12 @@ public class MainUi {
                 new TextureRegion((Texture) assets.get("buttons/heading_button.png")));
         status = "Hello, World!";
         layout = new GlyphLayout();
-        ImageButton headingButton = new ImageButton(headingDrawable);
+        headingButton = new ImageButton(headingDrawable);
         headingButton.setPosition(10, 10);
         stage = new Stage();
-        
+
+        projectIcarus = new ProjectIcarus();
+
         headingButton.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
@@ -64,6 +70,8 @@ public class MainUi {
         shapes.setColor(1, 1, 1, 1);
         font.draw(batch, status, Gdx.graphics.getWidth() / 2 - layout.width / 2, 40);
         batch.end();
+
+        headingButton.setDisabled(projectIcarus.selectedAirplane == null);
     }
 
     public void setStatus(String status) {
