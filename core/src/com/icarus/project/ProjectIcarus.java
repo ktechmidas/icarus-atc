@@ -94,7 +94,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
         //add a dummy airplane
         airplanes = new ArrayList();
-        airplanes.add(new Airplane("TEST", new Vector2(200, 100), new Vector2(8, 8), 100, new Vector2(200, 200)));
+        airplanes.add(new Airplane("Thing1", new Vector2(0, 0), new Vector2(8, 8), 100, new Vector2(200, 200)));
+        airplanes.add(new Airplane("Thing2", new Vector2(300, 100), new Vector2(-10, 5), 100, new Vector2(200, 200)));
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         utils = new Utils();
@@ -152,6 +153,12 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         batch.end();
 
         ui.draw();
+
+        if(selectedAirplane != null){
+            camera.position.x = selectedAirplane.position.x + selectedAirplane.sprite.getWidth()/2;
+            camera.position.y = selectedAirplane.position.y + selectedAirplane.sprite.getHeight()/2;
+            camera.update();
+        }
     }
 
     @Override
@@ -209,21 +216,6 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
         setToBoundary(); // Calculate distances to boundaries
-        float translateX;
-        float translateY;
-
-        if (deltaX > 0){ // If user pans to the left
-            translateX = utils.absMin(deltaX, toBoundaryLeft);
-        }
-        else { // If user pans to the right
-            translateX = utils.absMin(deltaX, toBoundaryRight);
-        }
-        if (deltaY > 0){ // If user pans up
-            translateY = utils.absMin(deltaY, toBoundaryTop);
-        }
-        else { // If user pans down
-            translateY = utils.absMin(deltaY, toBoundaryBottom);
-        }
 
         //Shift camera by delta or by distance to boundary, whichever is closer
         camera.position.add(

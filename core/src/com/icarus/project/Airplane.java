@@ -13,9 +13,9 @@ class Airplane {
     public static Texture texture;
     //The name of this airplane
     public String name;
-    //The position of this airplane in meters
+    //The position of this airplane
     public Vector2 position;
-    //The velocity of this airplane in meters/second
+    //The velocity of this airplane
     public Vector2 velocity;
     //The altitude of this airplane in meters
     public float altitude;
