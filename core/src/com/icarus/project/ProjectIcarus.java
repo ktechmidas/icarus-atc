@@ -95,7 +95,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         //add a dummy airplane
         airplanes = new ArrayList();
         airplanes.add(new Airplane("Thing1", new Vector2(0, 0), new Vector2(8, 8), 100, new Vector2(200, 200)));
-        airplanes.add(new Airplane("Thing2", new Vector2(300, 100), new Vector2(-10, 5), 100, new Vector2(200, 200)));
+        airplanes.add(new Airplane("Thing2", new Vector2(500, 300), new Vector2(-10, 5), 100, new Vector2(200, 200)));
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         utils = new Utils();
@@ -116,12 +116,12 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     private void setToBoundary(){
         // Calculates the distance from the edge of the camera to the specified boundary
-        toBoundaryRight = (airport.width - camera.position.x
-                - Gdx.graphics.getWidth()/2 * camera.zoom);
-        toBoundaryLeft = (-camera.position.x + Gdx.graphics.getWidth()/2 * camera.zoom);
-        toBoundaryTop = (airport.height - camera.position.y
-                - Gdx.graphics.getHeight()/2 * camera.zoom);
-        toBoundaryBottom = (-camera.position.y + Gdx.graphics.getHeight()/2 * camera.zoom);
+//        toBoundaryRight = (airport.width - camera.position.x
+//                - Gdx.graphics.getWidth()/2 * camera.zoom);
+//        toBoundaryLeft = (-camera.position.x + Gdx.graphics.getWidth()/2 * camera.zoom);
+//        toBoundaryTop = (airport.height - camera.position.y
+//                - Gdx.graphics.getHeight()/2 * camera.zoom);
+//        toBoundaryBottom = (-camera.position.y + Gdx.graphics.getHeight()/2 * camera.zoom);
     }
 
     @Override
@@ -157,8 +157,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         setToBoundary();
 
         if(selectedAirplane != null){
-            camera.position.x = selectedAirplane.position.x + selectedAirplane.sprite.getWidth()/2;
-            camera.position.y = selectedAirplane.position.y + selectedAirplane.sprite.getHeight()/2;
+            camera.position.x = selectedAirplane.position.x;
+            camera.position.y = selectedAirplane.position.y;
             camera.update();
         }
     }
@@ -190,7 +190,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         setSelectedAirplane(null);
 //        Vector3 position = camera.unproject(new Vector3(x, y, 0));
         Vector3 position = new Vector3(x, Gdx.graphics.getHeight() - y, 0);
-        Gdx.app.log(TAG, "" + position);
+//        Gdx.app.log(TAG, "" + position);
         for(Airplane airplane: airplanes) {
             if(airplane.sprite.getBoundingRectangle().contains(position.x, position.y)){
                 setSelectedAirplane(airplane);
