@@ -44,7 +44,6 @@ public class MainUi {
         headingButton.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-
                 setStatus("Unpressed");
             }
             @Override
@@ -56,7 +55,7 @@ public class MainUi {
 
         stage.addActor(headingButton);
 
-//        headingButton.setVisible(false);
+        showAirplaneButtons(false);
     }
 
     public void draw() {
@@ -72,13 +71,13 @@ public class MainUi {
         shapes.setColor(1, 1, 1, 1);
         font.draw(batch, status, Gdx.graphics.getWidth() / 2 - layout.width / 2, 40);
         batch.end();
-
-        headingButton.setVisible(projectIcarus.getSelectedAirplane() != null);
-        Gdx.app.log("MainUI", "" + projectIcarus.getSelectedAirplane());
-//        headingButton.setVisible(false);
     }
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public void showAirplaneButtons(boolean isVisible){
+        headingButton.setVisible(isVisible);
     }
 }
