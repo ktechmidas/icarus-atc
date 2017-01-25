@@ -94,7 +94,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
         //add a dummy airplane
         airplanes = new ArrayList();
-        airplanes.add(new Airplane("Thing1", new Vector2(0, 0), new Vector2(8, 8), 100, new Vector2(200, 200)));
+        airplanes.add(new Airplane("Thing1", new Vector2(0, 200), new Vector2(25, 0), 100, new Vector2(15, 0)));
         airplanes.add(new Airplane("Thing2", new Vector2(500, 300), new Vector2(-10, 5), 100, new Vector2(200, 200)));
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -158,9 +158,28 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
         setToBoundary();
 
+        // follow selected airplane
         if(selectedAirplane != null){
-            camera.position.x = selectedAirplane.position.x;
-            camera.position.y = selectedAirplane.position.y;
+//            camera.position.x = selectedAirplane.position.x;
+//            camera.position.y = selectedAirplane.position.y;
+            camera.position.set(new Vector3(selectedAirplane.position, 0));
+            if(toBoundaryLeft <= 0){
+                camera.position.x = Gdx.graphics.getWidth() / 2 * camera.zoom;
+            }
+            else if(toBoundaryRight <= 0){
+                camera.position.x = airport.width - Gdx.graphics.getWidth() / 2 * camera.zoom;
+            }
+            if(toBoundaryBottom <= 0){
+                camera.position.y = Gdx.graphics.getHeight() / 2 * camera.zoom;
+            }
+            else if(toBoundaryTop <= 0){
+                camera.position.y = airport.height - Gdx.graphics.getHeight() / 2 * camera.zoom;
+            }
+//            camera.position.x = Math.max(selectedAirplane.position.x,
+//                                         Math.min(Gdx.graphics.getWidth() / 2 * camera.zoom,
+//                                                  airport.width - Gdx.graphics.getWidth() / 2 * camera.zoom
+//                                         )
+//            );
             camera.update();
         }
     }
