@@ -55,6 +55,8 @@ public class MainUi {
         });
 
         stage.addActor(headingButton);
+
+//        headingButton.setVisible(false);
     }
 
     public void draw() {
@@ -71,7 +73,9 @@ public class MainUi {
         font.draw(batch, status, Gdx.graphics.getWidth() / 2 - layout.width / 2, 40);
         batch.end();
 
-        headingButton.setVisible(projectIcarus.selectedAirplane == null);
+        headingButton.setVisible(projectIcarus.getSelectedAirplane() != null);
+        Gdx.app.log("MainUI", "" + projectIcarus.getSelectedAirplane());
+//        headingButton.setVisible(false);
     }
 
     public void setStatus(String status) {

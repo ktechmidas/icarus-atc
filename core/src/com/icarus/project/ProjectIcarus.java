@@ -54,7 +54,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     private float toBoundaryTop;
     private float toBoundaryBottom;
 
-    public Airplane selectedAirplane = null;
+    public Airplane selectedAirplane;
 
     public static final String TAG = "ProjectIcarus";
 
@@ -111,17 +111,19 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
         ui = new MainUi(manager, labelFont);
 
+        selectedAirplane = null;
+
         Gdx.input.setInputProcessor(new InputMultiplexer(ui.stage, new GestureDetector(this)));
     }
 
     private void setToBoundary(){
         // Calculates the distance from the edge of the camera to the specified boundary
-//        toBoundaryRight = (airport.width - camera.position.x
-//                - Gdx.graphics.getWidth()/2 * camera.zoom);
-//        toBoundaryLeft = (-camera.position.x + Gdx.graphics.getWidth()/2 * camera.zoom);
-//        toBoundaryTop = (airport.height - camera.position.y
-//                - Gdx.graphics.getHeight()/2 * camera.zoom);
-//        toBoundaryBottom = (-camera.position.y + Gdx.graphics.getHeight()/2 * camera.zoom);
+        toBoundaryRight = (airport.width - camera.position.x
+                - Gdx.graphics.getWidth()/2 * camera.zoom);
+        toBoundaryLeft = (-camera.position.x + Gdx.graphics.getWidth()/2 * camera.zoom);
+        toBoundaryTop = (airport.height - camera.position.y
+                - Gdx.graphics.getHeight()/2 * camera.zoom);
+        toBoundaryBottom = (-camera.position.y + Gdx.graphics.getHeight()/2 * camera.zoom);
     }
 
     @Override
@@ -153,6 +155,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         batch.end();
 
         ui.draw();
+//        Gdx.app.log(TAG, selectedAirplane + "");
 
         setToBoundary();
 
@@ -185,12 +188,14 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         }
     }
 
+    public Airplane getSelectedAirplane(){
+        return selectedAirplane;
+    }
+
     @Override
     public boolean tap(float x, float y, int count, int button) {
         setSelectedAirplane(null);
-//        Vector3 position = camera.unproject(new Vector3(x, y, 0));
         Vector3 position = new Vector3(x, Gdx.graphics.getHeight() - y, 0);
-//        Gdx.app.log(TAG, "" + position);
         for(Airplane airplane: airplanes) {
             if(airplane.sprite.getBoundingRectangle().contains(position.x, position.y)){
                 setSelectedAirplane(airplane);
@@ -201,7 +206,6 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         if(selectedAirplane == null){
             ui.setStatus("deselected airplane");
         }
-//        ui.setStatus("" + position.x + ", " + position.y);
         return true;
     }
 
