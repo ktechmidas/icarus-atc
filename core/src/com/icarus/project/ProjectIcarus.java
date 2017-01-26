@@ -58,8 +58,11 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     public static final String TAG = "ProjectIcarus";
 
+    public static ProjectIcarus self;
+
     @Override
     public void create () {
+        self = this;
         //initialize the AssetManager
         AssetManager manager = new AssetManager();
         FileHandleResolver resolver = new InternalFileHandleResolver();
@@ -318,5 +321,9 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         }
 
         camera.update();
+    }
+
+    public static ProjectIcarus getInstance() {
+        return self;
     }
 }
