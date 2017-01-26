@@ -54,6 +54,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     private float toBoundaryTop;
     private float toBoundaryBottom;
 
+    private boolean followingPlane;
+
     public static Airplane selectedAirplane;
 
     public static final String TAG = "ProjectIcarus";
@@ -160,7 +162,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         ui.draw();
 
         // follow selected airplane
-        if(selectedAirplane != null) {
+        if(selectedAirplane != null && followingPlane) {
             setCameraPosition(new Vector3(selectedAirplane.position, 0));
         }
     }
@@ -199,7 +201,11 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         ProjectIcarus.selectedAirplane = selectedAirplane;
         // select new selectedAirplane if not null
         if(selectedAirplane != null){
+            followingPlane = true;
             selectedAirplane.setSelected(true);
+        }
+        else {
+            followingPlane = false;
         }
     }
 
@@ -236,6 +242,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
+        followingPlane = false;
         setCameraPosition(camera.position.add(
                 camera.unproject(new Vector3(0, 0, 0))
                         .add(camera.unproject(new Vector3(deltaX, deltaY, 0)).scl(-1f))
@@ -280,13 +287,18 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     }
 
     private void zoomCamera(Vector3 origin, float scale) {
-
-        Vector3 oldUnprojection = camera.unproject(origin.cpy()).cpy();
-        camera.zoom = scale; //Larger value of zoom = small images, border view
-        camera.zoom = Math.min(maxZoomOut, Math.max(camera.zoom, maxZoomIn));
-        camera.update();
-        Vector3 newUnprojection = camera.unproject(origin.cpy()).cpy();
-        camera.position.add(oldUnprojection.cpy().add(newUnprojection.cpy().scl(-1f)));
+        if(followingPlane) {
+            camera.zoom = scale;
+            camera.zoom = Math.min(maxZoomOut, Math.max(camera.zoom, maxZoomIn));
+        }
+        else {
+            Vector3 oldUnprojection = camera.unproject(origin.cpy()).cpy();
+            camera.zoom = scale; //Larger value of zoom = small images, border view
+            camera.zoom = Math.min(maxZoomOut, Math.max(camera.zoom, maxZoomIn));
+            camera.update();
+            Vector3 newUnprojection = camera.unproject(origin.cpy()).cpy();
+            camera.position.add(oldUnprojection.cpy().add(newUnprojection.cpy().scl(-1f)));
+        }
 
         setToBoundary(); //Calculate distances to boundaries
 
