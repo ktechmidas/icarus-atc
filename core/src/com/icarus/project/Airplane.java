@@ -57,20 +57,11 @@ class Airplane {
         sprite.setRotation(velocity.angle());
     }
 
-    public void turn(double angle){
-//        double speed = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
-//        double turnSum = 0;
-//        while (turnSum < angle){
-//            Timer.schedule(new Timer.Task() {
-//                @Override
-//                public void run() {
-//                    velocity.rotate(turnRate);
-//                    step();
-//                }
-//            }
-//            , 0
-//            , 1);
-//        }
+    public void setTargetHeading(Vector2 targetHeading){
+        this.targetHeading = targetHeading;
+    }
 
+    public void setSelected(boolean isSelected){
+        this.isSelected = isSelected;
     }
 }

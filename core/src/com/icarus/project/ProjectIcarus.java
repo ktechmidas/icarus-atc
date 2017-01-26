@@ -54,7 +54,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     private float toBoundaryTop;
     private float toBoundaryBottom;
 
-    public Airplane selectedAirplane;
+    public static Airplane selectedAirplane;
 
     public static final String TAG = "ProjectIcarus";
 
@@ -156,6 +156,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
         ui.draw();
 
+//        Gdx.app.log(TAG, this.selectedAirplane + "");
+
         setToBoundary();
 
         // follow selected airplane
@@ -163,18 +165,21 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 //            camera.position.x = selectedAirplane.position.x;
 //            camera.position.y = selectedAirplane.position.y;
             camera.position.set(new Vector3(selectedAirplane.position, 0));
-            if(toBoundaryLeft <= 0){
-                camera.position.x = Gdx.graphics.getWidth() / 2 * camera.zoom;
-            }
-            else if(toBoundaryRight <= 0){
-                camera.position.x = airport.width - Gdx.graphics.getWidth() / 2 * camera.zoom;
-            }
-            if(toBoundaryBottom <= 0){
-                camera.position.y = Gdx.graphics.getHeight() / 2 * camera.zoom;
-            }
-            else if(toBoundaryTop <= 0){
-                camera.position.y = airport.height - Gdx.graphics.getHeight() / 2 * camera.zoom;
-            }
+//            float camWidth = Gdx.graphics.getWidth();
+//            camera.position.x = Math.max(Math.min(toBoundaryLeft, toBoundaryRight), selectedAirplane.position.x);
+//            Gdx.app.log(TAG, (Math.max(Math.min(toBoundaryLeft, toBoundaryRight), selectedAirplane.position.x)) + "");
+//            if(toBoundaryLeft <= 0){
+//                camera.position.x = Gdx.graphics.getWidth() / 2 * camera.zoom;
+//            }
+//            else if(toBoundaryRight <= 0){
+//                camera.position.x = airport.width - Gdx.graphics.getWidth() / 2 * camera.zoom;
+//            }
+//            if(toBoundaryBottom <= 0){
+//                camera.position.y = Gdx.graphics.getHeight() / 2 * camera.zoom;
+//            }
+//            else if(toBoundaryTop <= 0){
+//                camera.position.y = airport.height - Gdx.graphics.getHeight() / 2 * camera.zoom;
+//            }
 //            camera.position.x = Math.max(selectedAirplane.position.x,
 //                                         Math.min(Gdx.graphics.getWidth() / 2 * camera.zoom,
 //                                                  airport.width - Gdx.graphics.getWidth() / 2 * camera.zoom
@@ -196,26 +201,30 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         return false;
     }
 
-    public void setSelectedAirplane(Airplane airplane){
-        if(selectedAirplane != null){
-            selectedAirplane.isSelected = false;
+    public void setSelectedAirplane(Airplane selectedAirplane){
+        // deselect old selectedAirplane if not null
+        if(ProjectIcarus.selectedAirplane != null){
+            ProjectIcarus.selectedAirplane.setSelected(false);
         }
-        selectedAirplane = airplane;
+        ProjectIcarus.selectedAirplane = selectedAirplane;
+        // select new selectedAirplane if not null
         if(selectedAirplane != null){
-            selectedAirplane.isSelected = true;
+            selectedAirplane.setSelected(true);
         }
+    }
+
+    public Airplane getSelectedAirplane(){
+        return ProjectIcarus.selectedAirplane;
     }
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
         setSelectedAirplane(null);
-        ui.showAirplaneButtons(false);
         Vector3 position = new Vector3(x, Gdx.graphics.getHeight() - y, 0);
         for(Airplane airplane: airplanes) {
             if(airplane.sprite.getBoundingRectangle().contains(position.x, position.y)){
                 setSelectedAirplane(airplane);
                 ui.setStatus("selected airplane");
-                ui.showAirplaneButtons(true);
                 return true;
             }
         }
