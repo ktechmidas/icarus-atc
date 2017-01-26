@@ -56,7 +56,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     private boolean followingPlane;
 
-    public static Airplane selectedAirplane;
+    private Airplane selectedAirplane;
 
     public static final String TAG = "ProjectIcarus";
 
@@ -195,10 +195,10 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     public void setSelectedAirplane(Airplane selectedAirplane){
         // deselect old selectedAirplane if not null
-        if(ProjectIcarus.selectedAirplane != null){
-            ProjectIcarus.selectedAirplane.setSelected(false);
+        if(this.selectedAirplane != null){
+            this.selectedAirplane.setSelected(false);
         }
-        ProjectIcarus.selectedAirplane = selectedAirplane;
+        this.selectedAirplane = selectedAirplane;
         // select new selectedAirplane if not null
         if(selectedAirplane != null){
             followingPlane = true;
@@ -210,7 +210,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     }
 
     public Airplane getSelectedAirplane(){
-        return ProjectIcarus.selectedAirplane;
+        return this.selectedAirplane;
     }
 
     @Override

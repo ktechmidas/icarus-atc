@@ -26,8 +26,6 @@ public class MainUi {
     private ImageButton headingButton;
     private ImageButton altitudeButton;
 
-    private ProjectIcarus projectIcarus;
-
     public static final String TAG = "MainUi";
 
     public int buttonSize = (int) (100 * Gdx.graphics.getDensity());
@@ -41,7 +39,6 @@ public class MainUi {
         batch = new SpriteBatch();
         stage = new Stage();
         layout = new GlyphLayout();
-        projectIcarus = new ProjectIcarus();
 
         status = "Hello, World!";
 
@@ -53,7 +50,7 @@ public class MainUi {
         headingButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                projectIcarus.getSelectedAirplane().turn(10);
+                ProjectIcarus.getInstance().getSelectedAirplane().turn(10);
                 setStatus("begin turning 10 degrees");
                 return true;
             }
@@ -104,7 +101,7 @@ public class MainUi {
         batch.end();
 
         //show airplane-specific buttons if an airplane is selected
-        showAirplaneButtons(projectIcarus.getSelectedAirplane() != null);
+        showAirplaneButtons(ProjectIcarus.getInstance().getSelectedAirplane() != null);
     }
 
     public void setStatus(String status) {
