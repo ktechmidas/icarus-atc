@@ -34,6 +34,7 @@ class Airplane {
         this.velocity = velocity;
         this.altitude = altitude;
         sprite = new Sprite(texture);
+        sprite.setScale(0.25f);
         this.targetHeading = targetHeading;
     }
 
