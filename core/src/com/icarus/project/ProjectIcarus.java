@@ -156,35 +156,21 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
         ui.draw();
 
-//        Gdx.app.log(TAG, this.selectedAirplane + "");
-
         setToBoundary();
 
         // follow selected airplane
         if(selectedAirplane != null){
-//            camera.position.x = selectedAirplane.position.x;
-//            camera.position.y = selectedAirplane.position.y;
+
             camera.position.set(new Vector3(selectedAirplane.position, 0));
-//            float camWidth = Gdx.graphics.getWidth();
-//            camera.position.x = Math.max(Math.min(toBoundaryLeft, toBoundaryRight), selectedAirplane.position.x);
-//            Gdx.app.log(TAG, (Math.max(Math.min(toBoundaryLeft, toBoundaryRight), selectedAirplane.position.x)) + "");
-//            if(toBoundaryLeft <= 0){
-//                camera.position.x = Gdx.graphics.getWidth() / 2 * camera.zoom;
-//            }
-//            else if(toBoundaryRight <= 0){
-//                camera.position.x = airport.width - Gdx.graphics.getWidth() / 2 * camera.zoom;
-//            }
-//            if(toBoundaryBottom <= 0){
-//                camera.position.y = Gdx.graphics.getHeight() / 2 * camera.zoom;
-//            }
-//            else if(toBoundaryTop <= 0){
-//                camera.position.y = airport.height - Gdx.graphics.getHeight() / 2 * camera.zoom;
-//            }
-//            camera.position.x = Math.max(selectedAirplane.position.x,
-//                                         Math.min(Gdx.graphics.getWidth() / 2 * camera.zoom,
-//                                                  airport.width - Gdx.graphics.getWidth() / 2 * camera.zoom
-//                                         )
-//            );
+
+            Vector2 camMin = new Vector2(camera.viewportWidth, camera.viewportHeight);
+            camMin.scl(camera.zoom / 2);
+            Vector2 camMax = new Vector2(airport.width, airport.height);
+            camMax.sub(camMin);
+
+            camera.position.x = Math.min(camMax.x, Math.max(camera.position.x, camMin.x));
+            camera.position.y = Math.min(camMax.y, Math.max(camera.position.y, camMin.y));
+
             camera.update();
         }
     }
