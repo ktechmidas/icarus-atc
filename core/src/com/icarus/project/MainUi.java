@@ -30,6 +30,8 @@ public class MainUi {
 
     public static final String TAG = "MainUi";
 
+    public int buttonSize = (int) (100 * Gdx.graphics.getDensity());
+
     public MainUi(AssetManager assets, BitmapFont font) {
         this.font = font;
         shapes = new ShapeRenderer();
@@ -39,7 +41,7 @@ public class MainUi {
         status = "Hello, World!";
         layout = new GlyphLayout();
         headingButton = new ImageButton(headingDrawable);
-        headingButton.setPosition(10, 10);
+        headingButton.setPosition(10, 60);
         stage = new Stage();
 
         projectIcarus = new ProjectIcarus();
@@ -61,6 +63,8 @@ public class MainUi {
         });
 
         stage.addActor(headingButton);
+
+        headingButton.setSize(buttonSize, buttonSize);
     }
 
     public void draw() {
