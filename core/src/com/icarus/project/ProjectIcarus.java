@@ -230,6 +230,10 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         return true;
     }
 
+    public enum uiState {
+
+    }
+
     @Override
     public boolean longPress(float x, float y) {
         return false;

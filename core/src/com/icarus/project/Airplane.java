@@ -74,6 +74,10 @@ class Airplane {
         sprite.setRotation(velocity.angle());
     }
 
+    public void setTargetWaypoint(Waypoint waypoint) {
+
+    }
+
     public void setTargetHeading(Vector2 targetHeading){
         this.targetHeading = targetHeading;
     }
