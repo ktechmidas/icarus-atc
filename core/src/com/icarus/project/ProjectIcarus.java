@@ -40,7 +40,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     private SpriteBatch batch;
     private Utils utils;
 
-    private MainUi ui;
+    public MainUi ui;
 
     private OrthographicCamera camera;
 //    private float currentZoom;
@@ -97,8 +97,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
         //add a dummy airplane
         airplanes = new ArrayList<Airplane>();
-        airplanes.add(new Airplane("airplane1", new Vector2(0, 200), new Vector2(10, 0), 100, new Vector2(15, 0)));
-        airplanes.add(new Airplane("airplane2", new Vector2(500, 300), new Vector2(-10, 5), 100, new Vector2(200, 200)));
+        airplanes.add(new Airplane("airplane1", new Vector2(0, 200), new Vector2(10, 0), 100));
+        airplanes.add(new Airplane("airplane2", new Vector2(500, 300), new Vector2(-10, 5), 100));
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         utils = new Utils();

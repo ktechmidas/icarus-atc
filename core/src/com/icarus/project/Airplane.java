@@ -28,14 +28,14 @@ class Airplane {
 
     public float turnRate = 3;
 
-    public Airplane(String name, Vector2 position, Vector2 velocity, float altitude, Vector2 targetHeading) {
+    public Airplane(String name, Vector2 position, Vector2 velocity, float altitude) {
         this.name = name;
         this.position = position;
         this.velocity = velocity;
         this.altitude = altitude;
         sprite = new Sprite(texture);
         sprite.setScale(0.25f);
-        this.targetHeading = targetHeading;
+        this.targetHeading = null;
     }
 
     //Draw the airplane image. This assumes that the camera has already been set up.
@@ -51,12 +51,18 @@ class Airplane {
         position.add(velocity.cpy().scl(Gdx.graphics.getDeltaTime()));
 
         //If the airplane is off of its target by more than 3 degrees
-        if(Math.abs(targetHeading.angle() - velocity.angle()) > 0.1) {
-            if(Math.abs(targetHeading.angle() - velocity.angle()) < 180) {
-                velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
+        if(targetHeading != null) {
+            if(Math.abs(targetHeading.angle() - velocity.angle()) > 0.1) {
+                if(Math.abs(targetHeading.angle() - velocity.angle()) < 180) {
+                    velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
+                }
+                else {
+                    velocity.rotate(-turnRate * Gdx.graphics.getDeltaTime());
+                }
             }
             else {
-                velocity.rotate(-turnRate * Gdx.graphics.getDeltaTime());
+                ProjectIcarus.getInstance().ui.setStatus(name + ": turn complete");
+                targetHeading = null;
             }
         }
 
