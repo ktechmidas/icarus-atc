@@ -34,7 +34,7 @@ class Airplane {
         this.velocity = velocity;
         this.altitude = altitude;
         sprite = new Sprite(texture);
-        sprite.setScale(0.25f);
+        sprite.setScale(0.25f * Gdx.graphics.getDensity());
         this.targetHeading = targetHeading;
     }
 
@@ -60,9 +60,9 @@ class Airplane {
             }
         }
 
-        if(isSelected) {
-            Gdx.app.log("Airplane", "" + velocity.angle());
-        }
+//        if(isSelected) {
+//            Gdx.app.log("Airplane", "" + velocity.angle());
+//        }
 
         //Point airplane in direction of travel
         sprite.setRotation(velocity.angle());
