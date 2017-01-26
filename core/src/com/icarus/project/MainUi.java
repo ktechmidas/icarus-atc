@@ -53,12 +53,13 @@ public class MainUi {
         headingButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                setStatus("headingButton down");
+                projectIcarus.getSelectedAirplane().turn(10);
+                setStatus("begin turning 10 degrees");
                 return true;
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                setStatus("headingButton up");
+//                setStatus("headingButton up");
             }
         });
         stage.addActor(headingButton);
