@@ -50,8 +50,18 @@ class Airplane {
         //Move airplane
         position.add(velocity.cpy().scl(Gdx.graphics.getDeltaTime()));
 
-        if(targetHeading.angle() != velocity.angle()){
-            velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
+        //If the airplane is off of its target by more than 3 degrees
+        if(Math.abs(targetHeading.angle() - velocity.angle()) > 0.1) {
+            if(Math.abs(targetHeading.angle() - velocity.angle()) < 180) {
+                velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
+            }
+            else {
+                velocity.rotate(-turnRate * Gdx.graphics.getDeltaTime());
+            }
+        }
+
+        if(isSelected) {
+            Gdx.app.log("Airplane", "" + velocity.angle());
         }
 
         //Point airplane in direction of travel
@@ -62,7 +72,11 @@ class Airplane {
         this.targetHeading = targetHeading;
     }
 
-    public void setSelected(boolean isSelected){
+    public void turn(int degrees) {
+        this.targetHeading = this.velocity.cpy().rotate(degrees);
+    }
+
+    public void setSelected(boolean isSelected) {
         this.isSelected = isSelected;
     }
 }

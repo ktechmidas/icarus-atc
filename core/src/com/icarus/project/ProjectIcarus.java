@@ -96,9 +96,9 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         batch = new SpriteBatch();
 
         //add a dummy airplane
-        airplanes = new ArrayList();
-        airplanes.add(new Airplane("Thing1", new Vector2(0, 200), new Vector2(25, 0), 100, new Vector2(15, 0)));
-        airplanes.add(new Airplane("Thing2", new Vector2(500, 300), new Vector2(-10, 5), 100, new Vector2(200, 200)));
+        airplanes = new ArrayList<Airplane>();
+        airplanes.add(new Airplane("airplane1", new Vector2(0, 200), new Vector2(10, 0), 100, new Vector2(15, 0)));
+        airplanes.add(new Airplane("airplane2", new Vector2(500, 300), new Vector2(-10, 5), 100, new Vector2(200, 200)));
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         utils = new Utils();
@@ -119,7 +119,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         Gdx.input.setInputProcessor(new InputMultiplexer(ui.stage, new GestureDetector(this)));
     }
 
-    private void setToBoundary(){
+    private void setToBoundary() {
         // Calculates the distance from the edge of the camera to the specified boundary
         toBoundaryRight = (airport.width - camera.position.x
                 - Gdx.graphics.getWidth()/2 * camera.zoom);
@@ -159,27 +159,28 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
         ui.draw();
 
-        setToBoundary();
-
         // follow selected airplane
-        if(selectedAirplane != null){
-
-            camera.position.set(new Vector3(selectedAirplane.position, 0));
-
-            Vector2 camMin = new Vector2(camera.viewportWidth, camera.viewportHeight);
-            camMin.scl(camera.zoom / 2);
-            Vector2 camMax = new Vector2(airport.width, airport.height);
-            camMax.sub(camMin);
-
-            camera.position.x = Math.min(camMax.x, Math.max(camera.position.x, camMin.x));
-            camera.position.y = Math.min(camMax.y, Math.max(camera.position.y, camMin.y));
-
-            camera.update();
+        if(selectedAirplane != null) {
+            setCameraPosition(new Vector3(selectedAirplane.position, 0));
         }
     }
 
+    public void setCameraPosition(Vector3 position) {
+        camera.position.set(position);
+
+        Vector2 camMin = new Vector2(camera.viewportWidth, camera.viewportHeight);
+        camMin.scl(camera.zoom / 2);
+        Vector2 camMax = new Vector2(airport.width, airport.height);
+        camMax.sub(camMin);
+
+        camera.position.x = Math.min(camMax.x, Math.max(camera.position.x, camMin.x));
+        camera.position.y = Math.min(camMax.y, Math.max(camera.position.y, camMin.y));
+
+        camera.update();
+    }
+
     @Override
-    public void dispose () {
+    public void dispose() {
         shapes.dispose();
         batch.dispose();
         labelFont.dispose();
@@ -213,7 +214,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         for(Airplane airplane: airplanes) {
             if(airplane.sprite.getBoundingRectangle().contains(position.x, position.y)){
                 setSelectedAirplane(airplane);
-                ui.setStatus("selected airplane");
+                ui.setStatus("selected " + getSelectedAirplane().name);
                 return true;
             }
         }
@@ -235,23 +236,10 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-        setToBoundary(); // Calculate distances to boundaries
-
-        //Shift camera by delta or by distance to boundary, whichever is closer
-        camera.position.add(
+        setCameraPosition(camera.position.add(
                 camera.unproject(new Vector3(0, 0, 0))
                         .add(camera.unproject(new Vector3(deltaX, deltaY, 0)).scl(-1f))
-        );
-
-        Vector2 camMin = new Vector2(camera.viewportWidth, camera.viewportHeight);
-        camMin.scl(camera.zoom / 2);
-        Vector2 camMax = new Vector2(airport.width, airport.height);
-        camMax.sub(camMin);
-
-        camera.position.x = Math.min(camMax.x, Math.max(camera.position.x, camMin.x));
-        camera.position.y = Math.min(camMax.y, Math.max(camera.position.y, camMin.y));
-
-        camera.update();
+        ));
         return true;
     }
 
