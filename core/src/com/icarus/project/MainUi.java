@@ -8,6 +8,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -27,6 +28,8 @@ public class MainUi {
 
     private ProjectIcarus projectIcarus;
 
+    public static final String TAG = "MainUi";
+
     public MainUi(AssetManager assets, BitmapFont font) {
         this.font = font;
         shapes = new ShapeRenderer();
@@ -44,8 +47,11 @@ public class MainUi {
         headingButton.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-
-                setStatus("Unpressed");
+                setStatus("Unpressed " + ProjectIcarus.selectedAirplane);
+                Airplane selectedAirplane = projectIcarus.getSelectedAirplane();
+                if(selectedAirplane != null){
+                    selectedAirplane.setTargetHeading(selectedAirplane.targetHeading.scl(-1));
+                }
             }
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -71,10 +77,15 @@ public class MainUi {
         font.draw(batch, status, Gdx.graphics.getWidth() / 2 - layout.width / 2, 40);
         batch.end();
 
-        headingButton.setDisabled(projectIcarus.selectedAirplane == null);
+        //show airplane-specific buttons if an airplane is selected
+        showAirplaneButtons(projectIcarus.getSelectedAirplane() != null);
     }
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public void showAirplaneButtons(boolean isVisible){
+        headingButton.setVisible(isVisible);
     }
 }
