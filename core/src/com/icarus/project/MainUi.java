@@ -8,7 +8,6 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -25,42 +24,64 @@ public class MainUi {
     public Stage stage;
 
     private ImageButton headingButton;
-
-    private ProjectIcarus projectIcarus;
+    private ImageButton altitudeButton;
 
     public static final String TAG = "MainUi";
 
+    public int buttonSize = (int) (100 * Gdx.graphics.getDensity());
+    public int buttonGap = (int) (5 * Gdx.graphics.getDensity());
+    public int statusBarHeight = (int) (25 * Gdx.graphics.getDensity());
+
     public MainUi(AssetManager assets, BitmapFont font) {
         this.font = font;
+
         shapes = new ShapeRenderer();
         batch = new SpriteBatch();
-        Drawable headingDrawable = new TextureRegionDrawable(
-                new TextureRegion((Texture) assets.get("buttons/heading_button.png")));
-        status = "Hello, World!";
-        layout = new GlyphLayout();
-        headingButton = new ImageButton(headingDrawable);
-        headingButton.setPosition(10, 10);
         stage = new Stage();
+        layout = new GlyphLayout();
 
-        projectIcarus = new ProjectIcarus();
+        status = "Hello, World!";
 
+        Drawable headingDrawable = new TextureRegionDrawable(
+                new TextureRegion((Texture) assets.get("buttons/heading_button.png"))
+        );
+        headingButton = new ImageButton(headingDrawable);
+        headingButton.setPosition(0, statusBarHeight + buttonGap);
         headingButton.addListener(new InputListener(){
             @Override
-            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                setStatus("Unpressed " + ProjectIcarus.selectedAirplane);
-                Airplane selectedAirplane = projectIcarus.getSelectedAirplane();
-                if(selectedAirplane != null){
-                    selectedAirplane.setTargetHeading(selectedAirplane.targetHeading.scl(-1));
-                }
-            }
-            @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                setStatus("Pressed");
+                ProjectIcarus.getInstance().getSelectedAirplane().turn(10);
+                setStatus("begin turning 10 degrees");
                 return true;
             }
+            @Override
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+//                setStatus("headingButton up");
+            }
         });
-
         stage.addActor(headingButton);
+        headingButton.setSize(buttonSize, buttonSize);
+
+        Drawable altitudeDrawable = new TextureRegionDrawable(
+                new TextureRegion((Texture) assets.get("buttons/altitude_button.png"))
+        );
+        altitudeButton = new ImageButton(altitudeDrawable);
+        altitudeButton.setPosition(buttonSize, statusBarHeight + buttonGap);
+        altitudeButton.addListener(new InputListener(){
+            @Override
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                setStatus("altitudeButton down");
+                return true;
+            }
+            @Override
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                setStatus("altitudeButton up");
+            }
+        });
+        stage.addActor(altitudeButton);
+        altitudeButton.setSize(buttonSize, buttonSize);
+
+        showAirplaneButtons(false);
     }
 
     public void draw() {
@@ -68,17 +89,19 @@ public class MainUi {
         //draw a rectangle for the status bar
         shapes.begin(ShapeRenderer.ShapeType.Filled);
         shapes.setColor(0, 0, 0, 1);
-        shapes.rect(0, 0, Gdx.graphics.getWidth(),  50);
+        shapes.rect(0, 0, Gdx.graphics.getWidth(), statusBarHeight);
         shapes.end();
 
         batch.begin();
         layout.setText(font, status);
         shapes.setColor(1, 1, 1, 1);
-        font.draw(batch, status, Gdx.graphics.getWidth() / 2 - layout.width / 2, 40);
+        font.draw(batch, status, Gdx.graphics.getWidth() / 2 - layout.width / 2,
+                20 * Gdx.graphics.getDensity()
+        );
         batch.end();
 
         //show airplane-specific buttons if an airplane is selected
-        showAirplaneButtons(projectIcarus.getSelectedAirplane() != null);
+        showAirplaneButtons(ProjectIcarus.getInstance().getSelectedAirplane() != null);
     }
 
     public void setStatus(String status) {
@@ -87,5 +110,6 @@ public class MainUi {
 
     public void showAirplaneButtons(boolean isVisible){
         headingButton.setVisible(isVisible);
+        altitudeButton.setVisible(isVisible);
     }
 }

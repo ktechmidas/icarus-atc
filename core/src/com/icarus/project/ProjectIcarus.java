@@ -40,7 +40,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     private SpriteBatch batch;
     private Utils utils;
 
-    private MainUi ui;
+    public MainUi ui;
 
     private OrthographicCamera camera;
 //    private float currentZoom;
@@ -54,12 +54,17 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     private float toBoundaryTop;
     private float toBoundaryBottom;
 
-    public static Airplane selectedAirplane;
+    private boolean followingPlane;
+
+    private Airplane selectedAirplane;
 
     public static final String TAG = "ProjectIcarus";
 
+    public static ProjectIcarus self;
+
     @Override
     public void create () {
+        self = this;
         //initialize the AssetManager
         AssetManager manager = new AssetManager();
         FileHandleResolver resolver = new InternalFileHandleResolver();
@@ -93,9 +98,9 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         batch = new SpriteBatch();
 
         //add a dummy airplane
-        airplanes = new ArrayList();
-        airplanes.add(new Airplane("Thing1", new Vector2(0, 200), new Vector2(25, 0), 100, new Vector2(15, 0)));
-        airplanes.add(new Airplane("Thing2", new Vector2(500, 300), new Vector2(-10, 5), 100, new Vector2(200, 200)));
+        airplanes = new ArrayList<Airplane>();
+        airplanes.add(new Airplane("airplane1", new Vector2(0, 200), new Vector2(10, 0), 100));
+        airplanes.add(new Airplane("airplane2", new Vector2(500, 300), new Vector2(-10, 5), 100));
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         utils = new Utils();
@@ -116,7 +121,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         Gdx.input.setInputProcessor(new InputMultiplexer(ui.stage, new GestureDetector(this)));
     }
 
-    private void setToBoundary(){
+    private void setToBoundary() {
         // Calculates the distance from the edge of the camera to the specified boundary
         toBoundaryRight = (airport.width - camera.position.x
                 - Gdx.graphics.getWidth()/2 * camera.zoom);
@@ -156,27 +161,28 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
         ui.draw();
 
-        setToBoundary();
-
         // follow selected airplane
-        if(selectedAirplane != null){
-
-            camera.position.set(new Vector3(selectedAirplane.position, 0));
-
-            Vector2 camMin = new Vector2(camera.viewportWidth, camera.viewportHeight);
-            camMin.scl(camera.zoom / 2);
-            Vector2 camMax = new Vector2(airport.width, airport.height);
-            camMax.sub(camMin);
-
-            camera.position.x = Math.min(camMax.x, Math.max(camera.position.x, camMin.x));
-            camera.position.y = Math.min(camMax.y, Math.max(camera.position.y, camMin.y));
-
-            camera.update();
+        if(selectedAirplane != null && followingPlane) {
+            setCameraPosition(new Vector3(selectedAirplane.position, 0));
         }
     }
 
+    public void setCameraPosition(Vector3 position) {
+        camera.position.set(position);
+
+        Vector2 camMin = new Vector2(camera.viewportWidth, camera.viewportHeight);
+        camMin.scl(camera.zoom / 2);
+        Vector2 camMax = new Vector2(airport.width, airport.height);
+        camMax.sub(camMin);
+
+        camera.position.x = Math.min(camMax.x, Math.max(camera.position.x, camMin.x));
+        camera.position.y = Math.min(camMax.y, Math.max(camera.position.y, camMin.y));
+
+        camera.update();
+    }
+
     @Override
-    public void dispose () {
+    public void dispose() {
         shapes.dispose();
         batch.dispose();
         labelFont.dispose();
@@ -189,18 +195,22 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     public void setSelectedAirplane(Airplane selectedAirplane){
         // deselect old selectedAirplane if not null
-        if(ProjectIcarus.selectedAirplane != null){
-            ProjectIcarus.selectedAirplane.setSelected(false);
+        if(this.selectedAirplane != null){
+            this.selectedAirplane.setSelected(false);
         }
-        ProjectIcarus.selectedAirplane = selectedAirplane;
+        this.selectedAirplane = selectedAirplane;
         // select new selectedAirplane if not null
         if(selectedAirplane != null){
+            followingPlane = true;
             selectedAirplane.setSelected(true);
+        }
+        else {
+            followingPlane = false;
         }
     }
 
     public Airplane getSelectedAirplane(){
-        return ProjectIcarus.selectedAirplane;
+        return this.selectedAirplane;
     }
 
     @Override
@@ -210,7 +220,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         for(Airplane airplane: airplanes) {
             if(airplane.sprite.getBoundingRectangle().contains(position.x, position.y)){
                 setSelectedAirplane(airplane);
-                ui.setStatus("selected airplane");
+                ui.setStatus("selected " + getSelectedAirplane().name);
                 return true;
             }
         }
@@ -232,23 +242,11 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-        setToBoundary(); // Calculate distances to boundaries
-
-        //Shift camera by delta or by distance to boundary, whichever is closer
-        camera.position.add(
+        followingPlane = false;
+        setCameraPosition(camera.position.add(
                 camera.unproject(new Vector3(0, 0, 0))
                         .add(camera.unproject(new Vector3(deltaX, deltaY, 0)).scl(-1f))
-        );
-
-        Vector2 camMin = new Vector2(camera.viewportWidth, camera.viewportHeight);
-        camMin.scl(camera.zoom / 2);
-        Vector2 camMax = new Vector2(airport.width, airport.height);
-        camMax.sub(camMin);
-
-        camera.position.x = Math.min(camMax.x, Math.max(camera.position.x, camMin.x));
-        camera.position.y = Math.min(camMax.y, Math.max(camera.position.y, camMin.y));
-
-        camera.update();
+        ));
         return true;
     }
 
@@ -289,13 +287,18 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     }
 
     private void zoomCamera(Vector3 origin, float scale) {
-
-        Vector3 oldUnprojection = camera.unproject(origin.cpy()).cpy();
-        camera.zoom = scale; //Larger value of zoom = small images, border view
-        camera.zoom = Math.min(maxZoomOut, Math.max(camera.zoom, maxZoomIn));
-        camera.update();
-        Vector3 newUnprojection = camera.unproject(origin.cpy()).cpy();
-        camera.position.add(oldUnprojection.cpy().add(newUnprojection.cpy().scl(-1f)));
+        if(followingPlane) {
+            camera.zoom = scale;
+            camera.zoom = Math.min(maxZoomOut, Math.max(camera.zoom, maxZoomIn));
+        }
+        else {
+            Vector3 oldUnprojection = camera.unproject(origin.cpy()).cpy();
+            camera.zoom = scale; //Larger value of zoom = small images, border view
+            camera.zoom = Math.min(maxZoomOut, Math.max(camera.zoom, maxZoomIn));
+            camera.update();
+            Vector3 newUnprojection = camera.unproject(origin.cpy()).cpy();
+            camera.position.add(oldUnprojection.cpy().add(newUnprojection.cpy().scl(-1f)));
+        }
 
         setToBoundary(); //Calculate distances to boundaries
 
@@ -318,5 +321,9 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         }
 
         camera.update();
+    }
+
+    public static ProjectIcarus getInstance() {
+        return self;
     }
 }
