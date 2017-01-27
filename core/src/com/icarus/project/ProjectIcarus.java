@@ -62,6 +62,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     public static ProjectIcarus self;
 
+    public UiState uiState;
+
     @Override
     public void create () {
         self = this;
@@ -117,6 +119,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         ui = new MainUi(manager, labelFont);
 
         selectedAirplane = null;
+        uiState = UiState.SELECT_AIRPLANE;
 
         Gdx.input.setInputProcessor(new InputMultiplexer(ui.stage, new GestureDetector(this)));
     }
@@ -215,23 +218,37 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        setSelectedAirplane(null);
         Vector3 position = new Vector3(x, Gdx.graphics.getHeight() - y, 0);
-        for(Airplane airplane: airplanes) {
-            if(airplane.sprite.getBoundingRectangle().contains(position.x, position.y)){
-                setSelectedAirplane(airplane);
-                ui.setStatus("selected " + getSelectedAirplane().name);
-                return true;
-            }
+        switch (uiState) {
+            case SELECT_AIRPLANE:
+                setSelectedAirplane(null);
+                for(Airplane airplane: airplanes) {
+                    if(airplane.sprite.getBoundingRectangle().contains(position.x, position.y)) {
+                        setSelectedAirplane(airplane);
+                        ui.setStatus("selected " + getSelectedAirplane().name);
+                        return true;
+                    }
+                }
+                uiState = UiState.SELECT_AIRPLANE;
+                break;
+            case SELECT_WAYPOINT:
+                getSelectedAirplane().targetHeading = null;
+//                for(Waypoint waypoint: airport.waypoints) {
+//                    if waypoint.
+//                }
+                ui.setStatus("Selected waypoint");
+                uiState = UiState.SELECT_AIRPLANE;
+                break;
         }
+
         if(selectedAirplane == null){
             ui.setStatus("deselected airplane");
         }
         return true;
     }
 
-    public enum uiState {
-
+    public enum UiState {
+        SELECT_WAYPOINT, SELECT_AIRPLANE;
     }
 
     @Override

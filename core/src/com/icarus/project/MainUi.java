@@ -50,13 +50,13 @@ public class MainUi {
         headingButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-//                ProjectIcarus.getInstance().getSelectedAirplane().turn(10);
-                setStatus("select a target waypoint");
                 return true;
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-//                setStatus("headingButton up");
+//                ProjectIcarus.getInstance().getSelectedAirplane().turn(10);
+                setStatus("Select a target waypoint");
+                ProjectIcarus.getInstance().uiState = ProjectIcarus.UiState.SELECT_WAYPOINT;
             }
         });
         stage.addActor(headingButton);
