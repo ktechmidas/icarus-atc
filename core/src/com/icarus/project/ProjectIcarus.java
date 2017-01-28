@@ -237,6 +237,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
                     Vector3 pos = camera.project(new Vector3(waypoint.position, 0));
                     Circle circle = new Circle(pos.x, pos.y, Waypoint.waypointSize);
                     if(circle.contains(position.x, position.y)) {
+                        selectedAirplane.setTargetWaypoint(waypoint);
                         ui.setStatus("Selected waypoint " + waypoint.name);
                         uiState = UiState.SELECT_AIRPLANE;
                         return true;

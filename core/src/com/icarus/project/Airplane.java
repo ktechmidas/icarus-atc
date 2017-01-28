@@ -60,18 +60,21 @@ class Airplane {
             case TARGET_HEADING:
                 this.targetWaypoint = null;
                 //If the airplane is off of its target by more than 0.1 degrees
-                if(Math.abs(targetHeading.angle() - velocity.angle()) > 0.1) {
-                    if(Math.abs(targetHeading.angle() - velocity.angle()) < 180) {
-                        velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
-                    }
-                    else {
-                        velocity.rotate(-turnRate * Gdx.graphics.getDeltaTime());
-                    }
-                }
-                else {
-                    ProjectIcarus.getInstance().ui.setStatus(name + ": turn complete");
-                    targetHeading = null;
-                }
+//                if(Math.abs(targetHeading.angle() - velocity.angle()) > 0.1) {
+//                    if(Math.abs(targetHeading.angle() - velocity.angle()) < 180) {
+//                        turn(turnRate);
+////                        velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
+//                    }
+//                    else {
+//                        turn(-turnRate);
+////                        velocity.rotate(-turnRate * Gdx.graphics.getDeltaTime());
+//                    }
+//                }
+//                else {
+//                    ProjectIcarus.getInstance().ui.setStatus(name + ": turn complete");
+//                    targetHeading = null;
+//                }
+                turnToHeading(targetHeading);
                 break;
             case TARGET_WAYPOINT:
                 this.targetHeading = null;
@@ -100,8 +103,21 @@ class Airplane {
         this.targetHeading = targetHeading;
     }
 
-    public void turn(int degrees) {
-        this.targetHeading = this.velocity.cpy().rotate(degrees);
+    public void turnToHeading(Vector2 targetHeading) {
+        if(Math.abs(targetHeading.angle() - velocity.angle()) > 0.1) {
+            if(Math.abs(targetHeading.angle() - velocity.angle()) < 180) {
+                turn(turnRate);
+//                velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
+            }
+            else {
+                turn(-turnRate);
+//                velocity.rotate(-turnRate * Gdx.graphics.getDeltaTime());
+            }
+        }
+    }
+
+    public void turn(float turnRate){
+        velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
     }
 
     public void setSelected(boolean isSelected) {

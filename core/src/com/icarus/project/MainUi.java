@@ -8,6 +8,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -25,6 +26,7 @@ public class MainUi {
 
     private ImageButton headingButton;
     private ImageButton altitudeButton;
+    private ImageButton circleButton;
 
     public static final String TAG = "MainUi";
 
@@ -54,7 +56,6 @@ public class MainUi {
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-//                ProjectIcarus.getInstance().getSelectedAirplane().turn(10);
                 setStatus("Select a target waypoint");
                 ProjectIcarus.getInstance().followingPlane = false;
                 ProjectIcarus.getInstance().uiState = ProjectIcarus.UiState.SELECT_WAYPOINT;
@@ -81,6 +82,26 @@ public class MainUi {
         });
         stage.addActor(altitudeButton);
         altitudeButton.setSize(buttonSize, buttonSize);
+
+        Drawable circleDrawable = new TextureRegionDrawable(
+                new TextureRegion((Texture) assets.get("buttons/circle_button.png"))
+        );
+        circleButton = new ImageButton(circleDrawable);
+        circleButton.setPosition(2 * buttonSize, statusBarHeight + buttonGap);
+        circleButton.addListener(new InputListener(){
+            @Override
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                setStatus("circleButton down");
+                return true;
+            }
+            @Override
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                ProjectIcarus.getInstance().getSelectedAirplane().setTargetHeading(new Vector2(0, 10));
+                setStatus("circleButton up");
+            }
+        });
+        stage.addActor(circleButton);
+        circleButton.setSize(buttonSize, buttonSize);
 
         showAirplaneButtons(false);
     }
@@ -112,5 +133,6 @@ public class MainUi {
     public void showAirplaneButtons(boolean isVisible){
         headingButton.setVisible(isVisible);
         altitudeButton.setVisible(isVisible);
+        circleButton.setVisible(isVisible);
     }
 }
