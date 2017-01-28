@@ -225,7 +225,6 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
                 setSelectedAirplane(null);
                 for(Airplane airplane: airplanes) {
                     if(airplane.sprite.getBoundingRectangle().contains(position.x, position.y)) {
-                        Gdx.app.log(TAG, position + "; " + airplane.sprite.getBoundingRectangle());
                         setSelectedAirplane(airplane);
                         ui.setStatus("selected " + getSelectedAirplane().name);
                         return true;

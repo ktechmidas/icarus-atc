@@ -28,7 +28,7 @@ class Airplane {
 
     public boolean isSelected;
 
-    public float turnRate = 3;
+    public float turnRate = 6;
 
     public TargetState targetState;
 
@@ -78,6 +78,9 @@ class Airplane {
                 break;
             case TARGET_WAYPOINT:
                 this.targetHeading = null;
+                Vector2 waypointHeading = targetWaypoint.position.cpy().sub(this.position);
+                Gdx.app.log("Airplane", "" + waypointHeading);
+                turnToHeading(waypointHeading);
                 break;
             case TARGET_RUNWAY:
                 break;
@@ -107,11 +110,9 @@ class Airplane {
         if(Math.abs(targetHeading.angle() - velocity.angle()) > 0.1) {
             if(Math.abs(targetHeading.angle() - velocity.angle()) < 180) {
                 turn(turnRate);
-//                velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
             }
             else {
                 turn(-turnRate);
-//                velocity.rotate(-turnRate * Gdx.graphics.getDeltaTime());
             }
         }
     }

@@ -72,7 +72,6 @@ public class MainUi {
         altitudeButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                setStatus("altitudeButton down");
                 return true;
             }
             @Override
