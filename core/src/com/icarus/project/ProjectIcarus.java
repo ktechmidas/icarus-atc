@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
@@ -54,7 +55,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     private float toBoundaryTop;
     private float toBoundaryBottom;
 
-    private boolean followingPlane;
+    public boolean followingPlane;
 
     private Airplane selectedAirplane;
 
@@ -224,20 +225,23 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
                 setSelectedAirplane(null);
                 for(Airplane airplane: airplanes) {
                     if(airplane.sprite.getBoundingRectangle().contains(position.x, position.y)) {
+                        Gdx.app.log(TAG, position + "; " + airplane.sprite.getBoundingRectangle());
                         setSelectedAirplane(airplane);
                         ui.setStatus("selected " + getSelectedAirplane().name);
                         return true;
                     }
                 }
-                uiState = UiState.SELECT_AIRPLANE;
                 break;
             case SELECT_WAYPOINT:
-                getSelectedAirplane().targetHeading = null;
-//                for(Waypoint waypoint: airport.waypoints) {
-//                    if waypoint.
-//                }
-                ui.setStatus("Selected waypoint");
-                uiState = UiState.SELECT_AIRPLANE;
+                for(Waypoint waypoint: airport.waypoints) {
+                    Vector3 pos = camera.project(new Vector3(waypoint.position, 0));
+                    Circle circle = new Circle(pos.x, pos.y, Waypoint.waypointSize);
+                    if(circle.contains(position.x, position.y)) {
+                        ui.setStatus("Selected waypoint " + waypoint.name);
+                        uiState = UiState.SELECT_AIRPLANE;
+                        return true;
+                    }
+                }
                 break;
         }
 
@@ -248,7 +252,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     }
 
     public enum UiState {
-        SELECT_WAYPOINT, SELECT_AIRPLANE;
+        SELECT_WAYPOINT, SELECT_AIRPLANE
     }
 
     @Override

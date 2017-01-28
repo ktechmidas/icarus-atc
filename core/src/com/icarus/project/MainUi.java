@@ -56,6 +56,7 @@ public class MainUi {
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
 //                ProjectIcarus.getInstance().getSelectedAirplane().turn(10);
                 setStatus("Select a target waypoint");
+                ProjectIcarus.getInstance().followingPlane = false;
                 ProjectIcarus.getInstance().uiState = ProjectIcarus.UiState.SELECT_WAYPOINT;
             }
         });

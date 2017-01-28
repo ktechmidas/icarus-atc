@@ -15,7 +15,7 @@ class Waypoint {
     //The position in world coordinates
     public Vector2 position;
     //The display radius of the triangles at current zoom in pixels
-    private static float waypointSize = 10.0f * Gdx.graphics.getDensity();
+    public static float waypointSize = 10.0f * Gdx.graphics.getDensity();
 
     //Constructs a waypoint directly
     public Waypoint(String name, Vector2 position) {
