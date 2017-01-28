@@ -243,6 +243,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
                     }
                 }
                 break;
+            default:
+                break;
         }
 
         if(selectedAirplane == null){

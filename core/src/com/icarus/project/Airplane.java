@@ -24,9 +24,13 @@ class Airplane {
 
     public Vector2 targetHeading;
 
+    public Waypoint targetWaypoint;
+
     public boolean isSelected;
 
     public float turnRate = 3;
+
+    public TargetState targetState;
 
     public Airplane(String name, Vector2 position, Vector2 velocity, float altitude) {
         this.name = name;
@@ -36,6 +40,8 @@ class Airplane {
         sprite = new Sprite(texture);
         sprite.setScale(0.25f * Gdx.graphics.getDensity());
         this.targetHeading = null;
+        this.targetWaypoint = null;
+        this.targetState = TargetState.NO_TARGET;
     }
 
     //Draw the airplane image. This assumes that the camera has already been set up.
@@ -50,35 +56,47 @@ class Airplane {
         //Move airplane
         position.add(velocity.cpy().scl(Gdx.graphics.getDeltaTime()));
 
-        //If the airplane is off of its target by more than 3 degrees
-        if(targetHeading != null) {
-            if(Math.abs(targetHeading.angle() - velocity.angle()) > 0.1) {
-                if(Math.abs(targetHeading.angle() - velocity.angle()) < 180) {
-                    velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
+        switch(targetState) {
+            case TARGET_HEADING:
+                this.targetWaypoint = null;
+                //If the airplane is off of its target by more than 0.1 degrees
+                if(Math.abs(targetHeading.angle() - velocity.angle()) > 0.1) {
+                    if(Math.abs(targetHeading.angle() - velocity.angle()) < 180) {
+                        velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
+                    }
+                    else {
+                        velocity.rotate(-turnRate * Gdx.graphics.getDeltaTime());
+                    }
                 }
                 else {
-                    velocity.rotate(-turnRate * Gdx.graphics.getDeltaTime());
+                    ProjectIcarus.getInstance().ui.setStatus(name + ": turn complete");
+                    targetHeading = null;
                 }
-            }
-            else {
-                ProjectIcarus.getInstance().ui.setStatus(name + ": turn complete");
-                targetHeading = null;
-            }
+                break;
+            case TARGET_WAYPOINT:
+                this.targetHeading = null;
+                break;
+            case TARGET_RUNWAY:
+                break;
+            default:
+                break;
         }
-
-//        if(isSelected) {
-//            Gdx.app.log("Airplane", "" + velocity.angle());
-//        }
 
         //Point airplane in direction of travel
         sprite.setRotation(velocity.angle());
     }
 
-    public void setTargetWaypoint(Waypoint waypoint) {
+    public enum TargetState {
+        TARGET_HEADING, TARGET_WAYPOINT, TARGET_RUNWAY, NO_TARGET
+    }
 
+    public void setTargetWaypoint(Waypoint waypoint) {
+        targetState = TargetState.TARGET_WAYPOINT;
+        this.targetWaypoint = waypoint;
     }
 
     public void setTargetHeading(Vector2 targetHeading){
+        targetState = TargetState.TARGET_HEADING;
         this.targetHeading = targetHeading;
     }
 
