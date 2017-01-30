@@ -102,8 +102,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
         //add a dummy airplane
         airplanes = new ArrayList<Airplane>();
-        airplanes.add(new Airplane("airplane1", new Vector2(0, 200), new Vector2(10, 0), 100));
-        airplanes.add(new Airplane("airplane2", new Vector2(500, 300), new Vector2(-10, 5), 100));
+        airplanes.add(new Airplane("airplane1", new Vector2(0, 200), new Vector2(4, 0), 100));
+        airplanes.add(new Airplane("airplane2", new Vector2(500, 300), new Vector2(-4, 2), 100));
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         utils = new Utils();
@@ -239,6 +239,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
                         selectedAirplane.setTargetWaypoint(waypoint);
                         ui.setStatus("Selected waypoint " + waypoint.name);
                         uiState = UiState.SELECT_AIRPLANE;
+                        followingPlane = true;
                         return true;
                     }
                 }

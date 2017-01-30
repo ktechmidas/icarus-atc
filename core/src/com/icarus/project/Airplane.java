@@ -28,7 +28,7 @@ class Airplane {
 
     public boolean isSelected;
 
-    public float turnRate = 6;
+    public float turnRate = 3;
 
     public Airplane(String name, Vector2 position, Vector2 velocity, float altitude) {
         this.name = name;
@@ -36,7 +36,7 @@ class Airplane {
         this.velocity = velocity;
         this.altitude = altitude;
         sprite = new Sprite(texture);
-        sprite.setScale(0.25f * Gdx.graphics.getDensity());
+        sprite.setScale(0.2f * Gdx.graphics.getDensity());
         this.targetHeading = null;
         this.targetWaypoint = null;
     }
@@ -54,22 +54,30 @@ class Airplane {
         position.add(velocity.cpy().scl(Gdx.graphics.getDeltaTime()));
 
         if(targetHeading != null) {
-            if(Math.abs(targetHeading.angle() - velocity.angle()) > 0.1) {
-                turnToHeading(targetHeading);
-            }
-            else {
+            turnToHeading(targetHeading);
+            if(Math.abs(targetHeading.angle() - velocity.angle()) < 0.1) {
                 ProjectIcarus.getInstance().ui.setStatus(name + ": turn complete");
-                targetHeading = null;
+                removeTarget();
             }
         }
         else if(targetWaypoint != null) {
+//            Vector2 waypointHeading = targetWaypoint.position.cpy().sub(this.position);
             Vector2 waypointHeading = targetWaypoint.position.cpy().sub(this.position);
-            Gdx.app.log("Airplane", "" + waypointHeading);
+
             turnToHeading(waypointHeading);
+            if(Math.abs(waypointHeading.angle() - velocity.angle()) < 0.1) {
+                ProjectIcarus.getInstance().ui.setStatus(name + ": turn complete");
+                setTargetHeading(waypointHeading);
+            }
         }
 
         //Point airplane in direction of travel
         sprite.setRotation(velocity.angle());
+    }
+
+    public void removeTarget() {
+        this.targetWaypoint = null;
+        this.targetHeading = null;
     }
 
     public void setTargetWaypoint(Waypoint waypoint) {
@@ -83,7 +91,8 @@ class Airplane {
     }
 
     public void turnToHeading(Vector2 targetHeading) {
-        if(Math.abs(targetHeading.angle() - velocity.angle()) < 180) {
+        float angle = targetHeading.angle(velocity);
+        if(angle < 0) {
             velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
         }
         else {
