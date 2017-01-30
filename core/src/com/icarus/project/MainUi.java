@@ -42,7 +42,7 @@ public class MainUi {
         stage = new Stage();
         layout = new GlyphLayout();
 
-        status = "Hello, World!";
+        status = "Welcome to Icarus Air Traffic Control";
 
         Drawable headingDrawable = new TextureRegionDrawable(
                 new TextureRegion((Texture) assets.get("buttons/heading_button.png"))
@@ -90,13 +90,11 @@ public class MainUi {
         circleButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                setStatus("circleButton down");
                 return true;
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 ProjectIcarus.getInstance().getSelectedAirplane().setTargetHeading(new Vector2(0, 10));
-                setStatus("circleButton up");
             }
         });
         stage.addActor(circleButton);
