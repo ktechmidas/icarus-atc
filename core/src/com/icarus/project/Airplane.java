@@ -59,7 +59,7 @@ class Airplane {
         switch(targetState) {
             case TARGET_HEADING:
                 this.targetWaypoint = null;
-                //If the airplane is off of its target by more than 0.1 degrees
+//                If the airplane is off of its target by more than 0.1 degrees
 //                if(Math.abs(targetHeading.angle() - velocity.angle()) > 0.1) {
 //                    if(Math.abs(targetHeading.angle() - velocity.angle()) < 180) {
 //                        turn(turnRate);
@@ -79,7 +79,7 @@ class Airplane {
             case TARGET_WAYPOINT:
                 this.targetHeading = null;
                 Vector2 waypointHeading = targetWaypoint.position.cpy().sub(this.position);
-                Gdx.app.log("Airplane", "" + waypointHeading);
+                Gdx.app.log("Airplane", "" + waypointHeading.angle());
                 turnToHeading(waypointHeading);
                 break;
             case TARGET_RUNWAY:
