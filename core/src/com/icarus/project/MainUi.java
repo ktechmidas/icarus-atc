@@ -42,7 +42,7 @@ public class MainUi {
         stage = new Stage();
         layout = new GlyphLayout();
 
-        status = "Hello, World!";
+        status = "Welcome to Icarus Air Traffic Control";
 
         Drawable headingDrawable = new TextureRegionDrawable(
                 new TextureRegion((Texture) assets.get("buttons/heading_button.png"))
