@@ -55,18 +55,10 @@ class Airplane {
 
         if(targetHeading != null) {
             turnToHeading(targetHeading);
-//            if(Math.abs(targetHeading.angle(velocity)) < 0.01) {
-//                ProjectIcarus.getInstance().ui.setStatus(name + ": turn complete");
-//                removeTarget();
-//            }
         }
         else if(targetWaypoint != null) {
-//            Vector2 waypointHeading = targetWaypoint.position.cpy().sub(this.position);
+            Gdx.app.log("Airplane", "" + targetWaypoint.position);
             turnToHeading(targetWaypoint.position.cpy().sub(this.position));
-//            if(Math.abs(waypointHeading.angle(velocity)) < 0.01) {
-//                ProjectIcarus.getInstance().ui.setStatus(name + ": turn complete");
-//                setTargetHeading(waypointHeading);
-//            }
         }
 
         //Point airplane in direction of travel
