@@ -1,5 +1,6 @@
 package com.icarus.project;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -22,9 +23,8 @@ class Airplane {
     //The sprite used by this airplane for display. It references the global texture.
     public Sprite sprite;
 
-    public Vector2 targetHeading;
-
-    public Waypoint targetWaypoint;
+    private Vector2 targetHeading;
+    private Waypoint targetWaypoint;
 
     public boolean isSelected;
 
@@ -35,16 +35,18 @@ class Airplane {
         this.position = position;
         this.velocity = velocity;
         this.altitude = altitude;
-        sprite = new Sprite(texture);
-        sprite.setScale(0.2f * Gdx.graphics.getDensity());
         this.targetHeading = null;
         this.targetWaypoint = null;
+
+        sprite = new Sprite(texture);
+        sprite.setOriginCenter();
+        sprite.setScale(0.2f * Gdx.graphics.getDensity());
     }
 
     //Draw the airplane image. This assumes that the camera has already been set up.
     public void draw(SpriteBatch batch, Camera camera) {
         Vector3 pos = camera.project(new Vector3(position.x, position.y, 0));
-        sprite.setPosition(pos.x, pos.y);
+        sprite.setPosition(pos.x - sprite.getWidth() / 2, pos.y - sprite.getHeight() / 2);
         sprite.draw(batch);
     }
 
@@ -57,7 +59,6 @@ class Airplane {
             turnToHeading(targetHeading);
         }
         else if(targetWaypoint != null) {
-            Gdx.app.log("Airplane", "" + targetWaypoint.position);
             turnToHeading(targetWaypoint.position.cpy().sub(this.position));
         }
 

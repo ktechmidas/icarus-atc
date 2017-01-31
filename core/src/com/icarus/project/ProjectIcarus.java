@@ -30,7 +30,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     private Vector2 oldInitialFirstPointer=null, oldInitialSecondPointer=null;
     private float oldScale;
     //Used for drawing waypoints
-    private ShapeRenderer shapes;
+    public ShapeRenderer shapes;
     //The currently loaded Airport
     private Airport airport;
     //The airplanes in the current game
