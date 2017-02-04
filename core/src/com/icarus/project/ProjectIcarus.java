@@ -44,7 +44,6 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     public MainUi ui;
 
     private OrthographicCamera camera;
-//    private float currentZoom;
     private float maxZoomIn; // Maximum possible zoomed in distance
     private float maxZoomOut; // Maximum possible zoomed out distance
     private float fontSize = 40;
@@ -65,6 +64,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     public UiState uiState;
 
+    public FreeTypeFontLoaderParameter labelFontParams;
+
     @Override
     public void create () {
         self = this;
@@ -78,7 +79,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         //load the airport
         manager.load("airports/test.json", Airport.class);
         //load the label font
-        FreeTypeFontLoaderParameter labelFontParams = new FreeTypeFontLoaderParameter();
+        labelFontParams = new FreeTypeFontLoaderParameter();
         labelFontParams.fontFileName = "fonts/ShareTechMono-Regular.ttf";
         labelFontParams.fontParameters.size = Math.round(20.0f * Gdx.graphics.getDensity());
         manager.load("fonts/ShareTechMono-Regular.ttf", BitmapFont.class, labelFontParams);
