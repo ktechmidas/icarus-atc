@@ -162,7 +162,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         batch.begin();
         for(Airplane airplane: airplanes) {
             airplane.step(); //Move airplanes
-            airplane.draw(batch, camera);
+            airplane.draw(labelFont, batch, camera);
         }
         batch.end();
 

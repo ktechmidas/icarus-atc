@@ -1,5 +1,6 @@
 package com.icarus.project;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -7,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Timer;
 
 class Airplane {
@@ -44,10 +46,12 @@ class Airplane {
     }
 
     //Draw the airplane image. This assumes that the camera has already been set up.
-    public void draw(SpriteBatch batch, Camera camera) {
+    public void draw(BitmapFont font, SpriteBatch batch, Camera camera) {
         Vector3 pos = camera.project(new Vector3(position.x, position.y, 0));
         sprite.setPosition(pos.x - sprite.getWidth() / 2, pos.y - sprite.getHeight() / 2);
         sprite.draw(batch);
+        font.setColor(Colors.colors[3]);
+        font.draw(batch, "" + altitude, pos.x - 100, pos.y - 15, 200, Align.center, false);
     }
 
     //Move the airplane image at evey render
