@@ -113,7 +113,8 @@ public class MainUi {
 
         batch.begin();
         layout.setText(font, status);
-        shapes.setColor(1, 1, 1, 1);
+//        shapes.setColor(1, 1, 1, 1);
+        font.setColor(Colors.colors[3]);
         font.draw(batch, status, Gdx.graphics.getWidth() / 2 - layout.width / 2,
                 20 * Gdx.graphics.getDensity()
         );

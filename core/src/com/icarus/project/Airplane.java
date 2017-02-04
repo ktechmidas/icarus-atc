@@ -1,5 +1,6 @@
 package com.icarus.project;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -50,8 +51,8 @@ class Airplane {
         Vector3 pos = camera.project(new Vector3(position.x, position.y, 0));
         sprite.setPosition(pos.x - sprite.getWidth() / 2, pos.y - sprite.getHeight() / 2);
         sprite.draw(batch);
-        font.setColor(Colors.colors[3]);
-        font.draw(batch, "" + altitude, pos.x - 100, pos.y - 15, 200, Align.center, false);
+        font.setColor(new Color(1, 1, 1, 1));
+        font.draw(batch, (int) altitude + "m", pos.x - 100, pos.y - 40, 200, Align.center, false);
     }
 
     //Move the airplane image at evey render
