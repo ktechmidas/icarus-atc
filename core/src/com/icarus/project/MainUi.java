@@ -27,6 +27,7 @@ public class MainUi {
     private ImageButton headingButton;
     private ImageButton altitudeButton;
     private ImageButton circleButton;
+    private ImageButton headingSelector;
 
     public static final String TAG = "MainUi";
 
@@ -94,13 +95,35 @@ public class MainUi {
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                ProjectIcarus.getInstance().getSelectedAirplane().setTargetHeading(new Vector2(0, 10));
+//                ProjectIcarus.getInstance().getSelectedAirplane().setTargetHeading(new Vector2(0, 10));
+                showHeadingSelector(true);
+                showAirplaneButtons(false);
             }
         });
         stage.addActor(circleButton);
         circleButton.setSize(buttonSize, buttonSize);
 
+        Drawable headingSelectionDrawable = new TextureRegionDrawable(
+                new TextureRegion((Texture) assets.get("buttons/heading_selection.png"))
+        );
+        headingSelector = new ImageButton(headingSelectionDrawable);
+        headingSelector.setPosition(Gdx.graphics.getWidth()/2 - headingSelector.getWidth()/2, Gdx.graphics.getHeight()/2 - headingSelector.getHeight()/2);
+        headingSelector.addListener(new InputListener(){
+            @Override
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+//                int heading = (int)
+                return true;
+            }
+            @Override
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                showHeadingSelector(false);
+            }
+        });
+        stage.addActor(headingSelector);
+        headingSelector.setSize(Gdx.graphics.getHeight(), Gdx.graphics.getHeight());
+
         showAirplaneButtons(false);
+        showHeadingSelector(false);
     }
 
     public void draw() {
@@ -121,7 +144,7 @@ public class MainUi {
         batch.end();
 
         //show airplane-specific buttons if an airplane is selected
-        showAirplaneButtons(ProjectIcarus.getInstance().getSelectedAirplane() != null);
+        showAirplaneButtons(ProjectIcarus.getInstance().getSelectedAirplane() != null && !headingSelector.isVisible());
     }
 
     public void setStatus(String status) {
@@ -132,5 +155,9 @@ public class MainUi {
         headingButton.setVisible(isVisible);
         altitudeButton.setVisible(isVisible);
         circleButton.setVisible(isVisible);
+    }
+
+    public void showHeadingSelector(boolean isVisible){
+        headingSelector.setVisible(isVisible);
     }
 }

@@ -94,6 +94,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         manager.load("buttons/circle_button.png", Texture.class);
         manager.load("buttons/landing_button.png", Texture.class);
         manager.load("buttons/more_button.png", Texture.class);
+        manager.load("buttons/heading_selection.png", Texture.class);
 
         manager.finishLoading();
         airport = manager.get("airports/test.json");
