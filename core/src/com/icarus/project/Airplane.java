@@ -1,11 +1,15 @@
 package com.icarus.project;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Timer;
 
 class Airplane {
@@ -22,7 +26,8 @@ class Airplane {
     //The sprite used by this airplane for display. It references the global texture.
     public Sprite sprite;
 
-    public Vector2 targetHeading;
+    private Vector2 targetHeading;
+    private Waypoint targetWaypoint;
 
     public boolean isSelected;
 
@@ -33,16 +38,21 @@ class Airplane {
         this.position = position;
         this.velocity = velocity;
         this.altitude = altitude;
-        sprite = new Sprite(texture);
-        sprite.setScale(0.25f * Gdx.graphics.getDensity());
         this.targetHeading = null;
+        this.targetWaypoint = null;
+
+        sprite = new Sprite(texture);
+        sprite.setOriginCenter();
+        sprite.setScale(0.2f * Gdx.graphics.getDensity());
     }
 
     //Draw the airplane image. This assumes that the camera has already been set up.
-    public void draw(SpriteBatch batch, Camera camera) {
+    public void draw(BitmapFont font, SpriteBatch batch, Camera camera) {
         Vector3 pos = camera.project(new Vector3(position.x, position.y, 0));
-        sprite.setPosition(pos.x, pos.y);
+        sprite.setPosition(pos.x - sprite.getWidth() / 2, pos.y - sprite.getHeight() / 2);
         sprite.draw(batch);
+        font.setColor(new Color(1, 1, 1, 1));
+        font.draw(batch, (int) altitude + "m", pos.x - 100, pos.y - 40, 200, Align.center, false);
     }
 
     //Move the airplane image at evey render
@@ -50,36 +60,44 @@ class Airplane {
         //Move airplane
         position.add(velocity.cpy().scl(Gdx.graphics.getDeltaTime()));
 
-        //If the airplane is off of its target by more than 3 degrees
         if(targetHeading != null) {
-            if(Math.abs(targetHeading.angle() - velocity.angle()) > 0.1) {
-                if(Math.abs(targetHeading.angle() - velocity.angle()) < 180) {
-                    velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
-                }
-                else {
-                    velocity.rotate(-turnRate * Gdx.graphics.getDeltaTime());
-                }
-            }
-            else {
-                ProjectIcarus.getInstance().ui.setStatus(name + ": turn complete");
-                targetHeading = null;
-            }
+            turnToHeading(targetHeading);
         }
-
-//        if(isSelected) {
-//            Gdx.app.log("Airplane", "" + velocity.angle());
-//        }
+        else if(targetWaypoint != null) {
+            turnToHeading(targetWaypoint.position.cpy().sub(this.position));
+        }
 
         //Point airplane in direction of travel
         sprite.setRotation(velocity.angle());
     }
 
-    public void setTargetHeading(Vector2 targetHeading){
-        this.targetHeading = targetHeading;
+    public void removeTarget() {
+        this.targetWaypoint = null;
+        this.targetHeading = null;
     }
 
-    public void turn(int degrees) {
-        this.targetHeading = this.velocity.cpy().rotate(degrees);
+    public void setTargetWaypoint(Waypoint waypoint) {
+        this.targetWaypoint = waypoint;
+        this.targetHeading = null;
+    }
+
+    public void setTargetHeading(Vector2 targetHeading){
+        this.targetHeading = targetHeading;
+        this.targetWaypoint = null;
+    }
+
+    public void turnToHeading(Vector2 targetHeading) {
+        float angle = targetHeading.angle(velocity);
+        if(angle < 0) {
+            velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
+        }
+        else {
+            velocity.rotate(-turnRate * Gdx.graphics.getDeltaTime());
+        }
+        if(Math.abs(targetHeading.angle(velocity)) < 0.01) {
+            ProjectIcarus.getInstance().ui.setStatus(name + ": turn complete");
+            removeTarget();
+        }
     }
 
     public void setSelected(boolean isSelected) {

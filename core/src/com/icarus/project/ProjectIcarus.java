@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
@@ -29,7 +30,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     private Vector2 oldInitialFirstPointer=null, oldInitialSecondPointer=null;
     private float oldScale;
     //Used for drawing waypoints
-    private ShapeRenderer shapes;
+    public ShapeRenderer shapes;
     //The currently loaded Airport
     private Airport airport;
     //The airplanes in the current game
@@ -43,10 +44,10 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     public MainUi ui;
 
     private OrthographicCamera camera;
-//    private float currentZoom;
     private float maxZoomIn; // Maximum possible zoomed in distance
     private float maxZoomOut; // Maximum possible zoomed out distance
-    private float fontSize = 40;
+
+    private float fontSize;
 
     // Pan boundaries
     private float toBoundaryRight;
@@ -54,7 +55,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     private float toBoundaryTop;
     private float toBoundaryBottom;
 
-    private boolean followingPlane;
+    public boolean followingPlane;
 
     private Airplane selectedAirplane;
 
@@ -62,9 +63,14 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     public static ProjectIcarus self;
 
+    public UiState uiState;
+
+    public FreeTypeFontLoaderParameter labelFontParams;
+
     @Override
     public void create () {
         self = this;
+        fontSize = 20.0f * Gdx.graphics.getDensity();
         //initialize the AssetManager
         AssetManager manager = new AssetManager();
         FileHandleResolver resolver = new InternalFileHandleResolver();
@@ -75,9 +81,9 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         //load the airport
         manager.load("airports/test.json", Airport.class);
         //load the label font
-        FreeTypeFontLoaderParameter labelFontParams = new FreeTypeFontLoaderParameter();
+        labelFontParams = new FreeTypeFontLoaderParameter();
         labelFontParams.fontFileName = "fonts/ShareTechMono-Regular.ttf";
-        labelFontParams.fontParameters.size = Math.round(20.0f * Gdx.graphics.getDensity());
+        labelFontParams.fontParameters.size = Math.round(fontSize);
         manager.load("fonts/ShareTechMono-Regular.ttf", BitmapFont.class, labelFontParams);
         //load the airplane sprite
         manager.load("sprites/airplane.png", Texture.class);
@@ -97,10 +103,12 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         shapes = new ShapeRenderer();
         batch = new SpriteBatch();
 
-        //add a dummy airplane
+        //add test airplanes
         airplanes = new ArrayList<Airplane>();
-        airplanes.add(new Airplane("airplane1", new Vector2(0, 200), new Vector2(10, 0), 100));
-        airplanes.add(new Airplane("airplane2", new Vector2(500, 300), new Vector2(-10, 5), 100));
+        airplanes.add(new Airplane("airplane1", new Vector2(100, 100), new Vector2(4, 0), 10000));
+        airplanes.add(new Airplane("airplane2", new Vector2(100, 500), new Vector2(4, 0), 10000));
+        airplanes.add(new Airplane("airplane3", new Vector2(500, 100), new Vector2(4, 0), 10000));
+        airplanes.add(new Airplane("airplane4", new Vector2(500, 500), new Vector2(4, 0), 10000));
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         utils = new Utils();
@@ -117,6 +125,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         ui = new MainUi(manager, labelFont);
 
         selectedAirplane = null;
+        uiState = UiState.SELECT_AIRPLANE;
 
         Gdx.input.setInputProcessor(new InputMultiplexer(ui.stage, new GestureDetector(this)));
     }
@@ -155,7 +164,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         batch.begin();
         for(Airplane airplane: airplanes) {
             airplane.step(); //Move airplanes
-            airplane.draw(batch, camera);
+            airplane.draw(labelFont, batch, camera);
         }
         batch.end();
 
@@ -215,19 +224,43 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        setSelectedAirplane(null);
         Vector3 position = new Vector3(x, Gdx.graphics.getHeight() - y, 0);
-        for(Airplane airplane: airplanes) {
-            if(airplane.sprite.getBoundingRectangle().contains(position.x, position.y)){
-                setSelectedAirplane(airplane);
-                ui.setStatus("selected " + getSelectedAirplane().name);
-                return true;
-            }
+        switch (uiState) {
+            case SELECT_AIRPLANE:
+                setSelectedAirplane(null);
+                for(Airplane airplane: airplanes) {
+                    if(airplane.sprite.getBoundingRectangle().contains(position.x, position.y)) {
+                        setSelectedAirplane(airplane);
+                        ui.setStatus("selected " + getSelectedAirplane().name);
+                        return true;
+                    }
+                }
+                break;
+            case SELECT_WAYPOINT:
+                for(Waypoint waypoint: airport.waypoints) {
+                    Vector3 pos = camera.project(new Vector3(waypoint.position, 0));
+                    Circle circle = new Circle(pos.x, pos.y, Waypoint.waypointSize);
+                    if(circle.contains(position.x, position.y)) {
+                        selectedAirplane.setTargetWaypoint(waypoint);
+                        ui.setStatus("Selected waypoint " + waypoint.name);
+                        uiState = UiState.SELECT_AIRPLANE;
+                        followingPlane = true;
+                        return true;
+                    }
+                }
+                break;
+            default:
+                break;
         }
+
         if(selectedAirplane == null){
             ui.setStatus("deselected airplane");
         }
         return true;
+    }
+
+    public enum UiState {
+        SELECT_WAYPOINT, SELECT_AIRPLANE
     }
 
     @Override
