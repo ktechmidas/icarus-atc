@@ -47,7 +47,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     private float maxZoomIn; // Maximum possible zoomed in distance
     private float maxZoomOut; // Maximum possible zoomed out distance
 
-    private float fontSize = 20.0f * Gdx.graphics.getDensity();
+    private float fontSize;
 
     // Pan boundaries
     private float toBoundaryRight;
@@ -70,6 +70,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     @Override
     public void create () {
         self = this;
+        fontSize = 20.0f * Gdx.graphics.getDensity();
         //initialize the AssetManager
         AssetManager manager = new AssetManager();
         FileHandleResolver resolver = new InternalFileHandleResolver();
