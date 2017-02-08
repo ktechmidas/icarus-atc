@@ -46,7 +46,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     private OrthographicCamera camera;
     private float maxZoomIn; // Maximum possible zoomed in distance
     private float maxZoomOut; // Maximum possible zoomed out distance
-    private float fontSize = 40;
+
+    private float fontSize = 20.0f * Gdx.graphics.getDensity();
 
     // Pan boundaries
     private float toBoundaryRight;
@@ -81,7 +82,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         //load the label font
         labelFontParams = new FreeTypeFontLoaderParameter();
         labelFontParams.fontFileName = "fonts/ShareTechMono-Regular.ttf";
-        labelFontParams.fontParameters.size = Math.round(20.0f * Gdx.graphics.getDensity());
+        labelFontParams.fontParameters.size = Math.round(fontSize);
         manager.load("fonts/ShareTechMono-Regular.ttf", BitmapFont.class, labelFontParams);
         //load the airplane sprite
         manager.load("sprites/airplane.png", Texture.class);
