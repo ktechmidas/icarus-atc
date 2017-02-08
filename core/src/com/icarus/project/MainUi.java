@@ -111,7 +111,7 @@ public class MainUi {
         headingSelector.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-//                int heading = (int)
+//                int heading = (int) new Vector2(x, y).angle(new Vector2(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2));
                 return true;
             }
             @Override
