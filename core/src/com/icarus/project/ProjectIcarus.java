@@ -250,6 +250,10 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
                     }
                 }
                 break;
+            case SELECT_HEADING:
+                Vector2 heading = new Vector2(x, y).sub(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
+                ui.setStatus((int) heading.angle() + "");
+                break;
             default:
                 break;
         }
@@ -261,7 +265,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     }
 
     public enum UiState {
-        SELECT_WAYPOINT, SELECT_AIRPLANE
+        SELECT_WAYPOINT, SELECT_AIRPLANE, SELECT_HEADING
     }
 
     @Override

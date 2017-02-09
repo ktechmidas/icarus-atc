@@ -98,6 +98,7 @@ public class MainUi {
 //                ProjectIcarus.getInstance().getSelectedAirplane().setTargetHeading(new Vector2(0, 10));
                 showHeadingSelector(true);
                 showAirplaneButtons(false);
+                ProjectIcarus.getInstance().uiState = ProjectIcarus.UiState.SELECT_HEADING;
             }
         });
         stage.addActor(circleButton);
@@ -108,15 +109,19 @@ public class MainUi {
         );
         headingSelector = new ImageButton(headingSelectionDrawable);
         headingSelector.setPosition(Gdx.graphics.getWidth()/2 - headingSelector.getWidth()/2, Gdx.graphics.getHeight()/2 - headingSelector.getHeight()/2);
+//        Vector2 heading;
         headingSelector.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-//                int heading = (int) new Vector2(x, y).angle(new Vector2(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2));
+//                heading = new Vector2(x, y).sub(new Vector2(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2));
+//                setStatus("" + heading.angle());
                 return true;
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 showHeadingSelector(false);
+                ProjectIcarus.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
+//                ProjectIcarus.getInstance().getSelectedAirplane().setTargetHeading(heading);
             }
         });
         stage.addActor(headingSelector);
