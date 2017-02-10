@@ -1,6 +1,7 @@
 package com.icarus.project;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -34,6 +35,8 @@ public class MainUi {
     public int buttonSize = (int) (100 * Gdx.graphics.getDensity());
     public int buttonGap = (int) (5 * Gdx.graphics.getDensity());
     public int statusBarHeight = (int) (25 * Gdx.graphics.getDensity());
+
+    public Sprite wheelSprite;
 
     public MainUi(AssetManager assets, BitmapFont font) {
         this.font = font;
@@ -96,7 +99,7 @@ public class MainUi {
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
 //                ProjectIcarus.getInstance().getSelectedAirplane().setTargetHeading(new Vector2(0, 10));
-                showHeadingSelector(true);
+//                showHeadingSelector(true);
                 showAirplaneButtons(false);
                 ProjectIcarus.getInstance().uiState = ProjectIcarus.UiState.SELECT_HEADING;
             }
@@ -104,7 +107,7 @@ public class MainUi {
         stage.addActor(circleButton);
         circleButton.setSize(buttonSize, buttonSize);
 
-        Drawable headingSelectionDrawable = new TextureRegionDrawable(
+        /*Drawable headingSelectionDrawable = new TextureRegionDrawable(
                 new TextureRegion((Texture) assets.get("buttons/heading_selection.png"))
         );
         headingSelector = new ImageButton(headingSelectionDrawable);
@@ -125,10 +128,14 @@ public class MainUi {
             }
         });
         stage.addActor(headingSelector);
-        headingSelector.setSize(Gdx.graphics.getHeight(), Gdx.graphics.getHeight());
+        headingSelector.setSize(Gdx.graphics.getHeight(), Gdx.graphics.getHeight());*/
+
+        Texture wheelTexture = assets.get("buttons/heading_selection.png");
+        wheelSprite = new Sprite(wheelTexture);
+        wheelSprite.setOriginCenter();
 
         showAirplaneButtons(false);
-        showHeadingSelector(false);
+//        showHeadingSelector(false);
     }
 
     public void draw() {
@@ -146,10 +153,17 @@ public class MainUi {
         font.draw(batch, status, Gdx.graphics.getWidth() / 2 - layout.width / 2,
                 20 * Gdx.graphics.getDensity()
         );
+        if(ProjectIcarus.getInstance().uiState == ProjectIcarus.UiState.SELECT_HEADING) {
+            wheelSprite.setPosition(Gdx.graphics.getWidth()/2 - wheelSprite.getWidth()/2,
+                                    Gdx.graphics.getHeight()/2 - wheelSprite.getHeight()/2
+            );
+            wheelSprite.draw(batch);
+        }
         batch.end();
 
         //show airplane-specific buttons if an airplane is selected
-        showAirplaneButtons(ProjectIcarus.getInstance().getSelectedAirplane() != null && !headingSelector.isVisible());
+        showAirplaneButtons(ProjectIcarus.getInstance().getSelectedAirplane() != null
+                && ProjectIcarus.getInstance().uiState != ProjectIcarus.UiState.SELECT_HEADING);
     }
 
     public void setStatus(String status) {
@@ -162,7 +176,7 @@ public class MainUi {
         circleButton.setVisible(isVisible);
     }
 
-    public void showHeadingSelector(boolean isVisible){
+    /*public void showHeadingSelector(boolean isVisible){
         headingSelector.setVisible(isVisible);
-    }
+    }*/
 }
