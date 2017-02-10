@@ -94,7 +94,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         manager.load("buttons/circle_button.png", Texture.class);
         manager.load("buttons/landing_button.png", Texture.class);
         manager.load("buttons/more_button.png", Texture.class);
-        manager.load("buttons/heading_selection.png", Texture.class);
+        manager.load("buttons/selection_wheel.png", Texture.class);
 
         manager.finishLoading();
         airport = manager.get("airports/test.json");
@@ -250,6 +250,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
                     }
                 }
                 break;
+            case SELECT_HEADING:
+                uiState = UiState.SELECT_AIRPLANE;
             default:
                 break;
         }
@@ -278,8 +280,8 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     public boolean pan(float x, float y, float deltaX, float deltaY) {
         switch(uiState) {
             case SELECT_HEADING:
-                Vector2 heading = new Vector2(x, y).sub(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
-                ui.setStatus((int) heading.angle() + "");
+//                Vector2 heading = new Vector2(x, y).sub(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
+//                ui.setStatus((int) heading.angle() + "");
                 break;
             default:
                 followingPlane = false;
