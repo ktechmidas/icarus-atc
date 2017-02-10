@@ -109,7 +109,9 @@ public class MainUi {
                 new TextureRegion((Texture) assets.get("buttons/selection_wheel.png"))
         );
         headingSelector = new ImageButton(headingSelectionDrawable);
-        headingSelector.setPosition(Gdx.graphics.getWidth()/2 - headingSelector.getWidth()/2, Gdx.graphics.getHeight()/2 - headingSelector.getHeight()/2);
+        headingSelector.setPosition(Gdx.graphics.getWidth()/2 - headingSelector.getWidth()/2,
+                                    Gdx.graphics.getHeight()/2 - headingSelector.getHeight()/2
+        );
 //        Vector2 heading;
         headingSelector.addListener(new DragListener(){
             @Override
@@ -131,8 +133,7 @@ public class MainUi {
             }
         });
         stage.addActor(headingSelector);
-        headingSelector.setSize(Gdx.graphics.getHeight(), Gdx.graphics.getHeight());
-//
+
         showAirplaneButtons(false);
         showHeadingSelector(false);
     }

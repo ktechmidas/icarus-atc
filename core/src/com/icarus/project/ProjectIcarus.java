@@ -252,6 +252,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
                 break;
             case SELECT_HEADING:
                 uiState = UiState.SELECT_AIRPLANE;
+                ui.showHeadingSelector(false);
             default:
                 break;
         }
@@ -278,19 +279,11 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-        switch(uiState) {
-            case SELECT_HEADING:
-//                Vector2 heading = new Vector2(x, y).sub(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
-//                ui.setStatus((int) heading.angle() + "");
-                break;
-            default:
-                followingPlane = false;
-                setCameraPosition(camera.position.add(
-                        camera.unproject(new Vector3(0, 0, 0))
-                                .add(camera.unproject(new Vector3(deltaX, deltaY, 0)).scl(-1f))
-                ));
-                break;
-        }
+        followingPlane = false;
+        setCameraPosition(camera.position.add(
+                camera.unproject(new Vector3(0, 0, 0))
+                        .add(camera.unproject(new Vector3(deltaX, deltaY, 0)).scl(-1f))
+        ));
         return true;
     }
 
