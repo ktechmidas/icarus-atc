@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -27,6 +28,7 @@ public class MainUi {
     private ImageButton headingButton;
     private ImageButton altitudeButton;
     private ImageButton circleButton;
+    private ImageButton headingWheel;
 
     public static final String TAG = "MainUi";
 
@@ -94,13 +96,44 @@ public class MainUi {
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                ProjectIcarus.getInstance().getSelectedAirplane().setTargetHeading(new Vector2(0, 10));
+                showHeadingSelector(true);
+                showAirplaneButtons(false);
+                ProjectIcarus.getInstance().uiState = ProjectIcarus.UiState.SELECT_HEADING;
             }
         });
         stage.addActor(circleButton);
         circleButton.setSize(buttonSize, buttonSize);
 
+        Drawable headingWheelDrawable = new TextureRegionDrawable(
+                new TextureRegion((Texture) assets.get("buttons/selection_wheel.png"))
+        );
+        headingWheel = new ImageButton(headingWheelDrawable);
+        headingWheel.setPosition(Gdx.graphics.getWidth()/2 - headingWheel.getWidth()/2,
+                                    Gdx.graphics.getHeight()/2 - headingWheel.getHeight()/2
+        );
+        headingWheel.addListener(new DragListener(){
+            @Override
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+            @Override
+            public void touchDragged (InputEvent event, float x, float y, int pointer) {
+                Vector2 heading = new Vector2(x, y).sub(headingWheel.getWidth()/2, headingWheel.getHeight()/2);
+                setStatus((int) heading.rotate(-90).angle() + "");
+            }
+            @Override
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                Vector2 heading = new Vector2(x, y).sub(headingWheel.getWidth()/2, headingWheel.getHeight()/2);
+                showHeadingSelector(false);
+                ProjectIcarus.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
+                setStatus((int) heading.angle() + "");
+                ProjectIcarus.getInstance().getSelectedAirplane().setTargetHeading(heading);
+            }
+        });
+        stage.addActor(headingWheel);
+
         showAirplaneButtons(false);
+        showHeadingSelector(false);
     }
 
     public void draw() {
@@ -113,7 +146,6 @@ public class MainUi {
 
         batch.begin();
         layout.setText(font, status);
-//        shapes.setColor(1, 1, 1, 1);
         font.setColor(Colors.colors[3]);
         font.draw(batch, status, Gdx.graphics.getWidth() / 2 - layout.width / 2,
                 20 * Gdx.graphics.getDensity()
@@ -121,7 +153,8 @@ public class MainUi {
         batch.end();
 
         //show airplane-specific buttons if an airplane is selected
-        showAirplaneButtons(ProjectIcarus.getInstance().getSelectedAirplane() != null);
+        showAirplaneButtons(ProjectIcarus.getInstance().getSelectedAirplane() != null
+                && ProjectIcarus.getInstance().uiState != ProjectIcarus.UiState.SELECT_HEADING);
     }
 
     public void setStatus(String status) {
@@ -132,5 +165,9 @@ public class MainUi {
         headingButton.setVisible(isVisible);
         altitudeButton.setVisible(isVisible);
         circleButton.setVisible(isVisible);
+    }
+
+    public void showHeadingSelector(boolean isVisible){
+        headingWheel.setVisible(isVisible);
     }
 }

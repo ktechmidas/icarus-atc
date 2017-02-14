@@ -94,6 +94,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         manager.load("buttons/circle_button.png", Texture.class);
         manager.load("buttons/landing_button.png", Texture.class);
         manager.load("buttons/more_button.png", Texture.class);
+        manager.load("buttons/selection_wheel.png", Texture.class);
 
         manager.finishLoading();
         airport = manager.get("airports/test.json");
@@ -249,6 +250,9 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
                     }
                 }
                 break;
+            case SELECT_HEADING:
+                uiState = UiState.SELECT_AIRPLANE;
+                ui.showHeadingSelector(false);
             default:
                 break;
         }
@@ -260,7 +264,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     }
 
     public enum UiState {
-        SELECT_WAYPOINT, SELECT_AIRPLANE
+        SELECT_WAYPOINT, SELECT_AIRPLANE, SELECT_HEADING
     }
 
     @Override
