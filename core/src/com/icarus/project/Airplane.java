@@ -35,6 +35,9 @@ class Airplane {
         this.altitude = altitude;
         sprite = new Sprite(texture);
         sprite.setScale(0.25f * Gdx.graphics.getDensity());
+        sprite.setOrigin(
+                sprite.getScaleX() * sprite.getWidth() / 2,
+                sprite.getScaleY() * sprite.getHeight() / 2);
         this.targetHeading = null;
     }
 

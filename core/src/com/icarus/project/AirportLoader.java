@@ -42,13 +42,26 @@ class AirportLoader
         JsonPrimitive width = json.getAsJsonPrimitive("width");
         JsonPrimitive height = json.getAsJsonPrimitive("height");
         //get all waypoints
-        JsonArray array = json.getAsJsonArray("waypoints");
-        Waypoint[] waypoints = new Waypoint[array.size()];
-        for(int i = 0; i < array.size(); i++) {
-            JsonObject obj = array.get(i).getAsJsonObject();
-            waypoints[i] = new Waypoint(obj);
+        Waypoint[] waypoints;
+        {
+            JsonArray array = json.getAsJsonArray("waypoints");
+            waypoints = new Waypoint[array.size()];
+            for(int i = 0; i < array.size(); i++) {
+                JsonObject obj = array.get(i).getAsJsonObject();
+                waypoints[i] = new Waypoint(obj);
+            }
+        }
+        //get all runways
+        Runway[] runways;
+        {
+            JsonArray array = json.getAsJsonArray("runways");
+            runways = new Runway[array.size()];
+            for(int i = 0; i < array.size(); i++) {
+                JsonObject obj = array.get(i).getAsJsonObject();
+                runways[i] = new Runway(obj);
+            }
         }
         //construct an Airport
-        return new Airport(waypoints, width.getAsFloat(), height.getAsFloat());
+        return new Airport(waypoints, runways, width.getAsFloat(), height.getAsFloat());
     }
 }

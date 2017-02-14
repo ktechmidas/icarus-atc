@@ -144,6 +144,13 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         }
         shapes.end();
 
+        //draw runways
+        shapes.begin(ShapeRenderer.ShapeType.Filled);
+        for(Runway runway: airport.runways) {
+            runway.draw(shapes, camera);
+        }
+        shapes.end();
+
         //draw waypoint labels
         batch.begin();
         for(Waypoint waypoint: airport.waypoints) {
