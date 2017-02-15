@@ -29,6 +29,7 @@ public class MainUi {
     private ImageButton altitudeButton;
     private ImageButton circleButton;
     private ImageButton headingWheel;
+    private ImageButton landingButton;
 
     public static final String TAG = "MainUi";
 
@@ -132,6 +133,24 @@ public class MainUi {
         });
         stage.addActor(headingWheel);
 
+        Drawable landingDrawable = new TextureRegionDrawable(
+                new TextureRegion((Texture) assets.get("buttons/landing_button.png"))
+        );
+        landingButton = new ImageButton(landingDrawable);
+        landingButton.setPosition(3 * buttonSize, statusBarHeight + buttonGap);
+        landingButton.addListener(new InputListener(){
+            @Override
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+            @Override
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                setStatus("landingButton");
+            }
+        });
+        stage.addActor(landingButton);
+        landingButton.setSize(buttonSize, buttonSize);
+
         showAirplaneButtons(false);
         showHeadingSelector(false);
     }
@@ -165,6 +184,7 @@ public class MainUi {
         headingButton.setVisible(isVisible);
         altitudeButton.setVisible(isVisible);
         circleButton.setVisible(isVisible);
+        landingButton.setVisible(isVisible);
     }
 
     public void showHeadingSelector(boolean isVisible){
