@@ -146,6 +146,8 @@ public class MainUi {
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 setStatus("landingButton");
+                ProjectIcarus.getInstance().uiState = ProjectIcarus.UiState.SELECT_RUNWAY;
+                ProjectIcarus.getInstance().followingPlane = false;
             }
         });
         stage.addActor(landingButton);

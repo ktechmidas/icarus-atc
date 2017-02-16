@@ -27,6 +27,7 @@ class Airplane {
 
     private Vector2 targetHeading;
     private Waypoint targetWaypoint;
+    private Runway targetRunway;
 
     public boolean isSelected;
 
