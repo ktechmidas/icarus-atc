@@ -80,7 +80,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
 
         //load the airport
-        manager.load("airports/test.json", Airport.class);
+        manager.load("airports/airport.json", Airport.class);
         //load the label font
         labelFontParams = new FreeTypeFontLoaderParameter();
         labelFontParams.fontFileName = "fonts/3270Medium.ttf";
@@ -98,7 +98,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         manager.load("buttons/selection_wheel.png", Texture.class);
 
         manager.finishLoading();
-        airport = manager.get("airports/test.json");
+        airport = manager.get("airports/airport.json");
         labelFont = manager.get("fonts/3270Medium.ttf");
         Airplane.texture = manager.get("sprites/airplane.png");
 
@@ -276,13 +276,13 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
                     Vector3 pos2 = camera.project(new Vector3(runway.points[1], 0));
                     Circle circle2 = new Circle(pos2.x, pos2.y, 20 * Gdx.graphics.getDensity());
                     if (circle1.contains(position.x, position.y)) {
-                        ui.setStatus("selected runway end 1");
+                        ui.setStatus("selected runway end 1 " + runway.names[0]);
                         uiState = UiState.SELECT_AIRPLANE;
                         followingPlane = true;
                         break;
                     }
                     else if (circle2.contains(position.x, position.y)) {
-                        ui.setStatus("selected runway end 2");
+                        ui.setStatus("selected runway end 2 " + runway.names[1]);
                         uiState = UiState.SELECT_AIRPLANE;
                         followingPlane = true;
                         break;
