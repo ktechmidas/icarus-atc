@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Ellipse;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
@@ -79,7 +80,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
 
         //load the airport
-        manager.load("airports/test.json", Airport.class);
+        manager.load("airports/airport.json", Airport.class);
         //load the label font
         labelFontParams = new FreeTypeFontLoaderParameter();
         labelFontParams.fontFileName = "fonts/ShareTechMono-Regular.ttf";
@@ -97,7 +98,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         manager.load("buttons/selection_wheel.png", Texture.class);
 
         manager.finishLoading();
-        airport = manager.get("airports/test.json");
+        airport = manager.get("airports/airport.json");
         labelFont = manager.get("fonts/ShareTechMono-Regular.ttf");
         Airplane.texture = manager.get("sprites/airplane.png");
 
@@ -151,6 +152,13 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
         shapes.begin(ShapeRenderer.ShapeType.Filled);
         for(Waypoint waypoint: airport.waypoints) {
             waypoint.draw(shapes, camera);
+        }
+        shapes.end();
+
+        //draw runways
+        shapes.begin(ShapeRenderer.ShapeType.Filled);
+        for(Runway runway: airport.runways) {
+            runway.draw(shapes, camera);
         }
         shapes.end();
 
@@ -253,6 +261,14 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
             case SELECT_HEADING:
                 uiState = UiState.SELECT_AIRPLANE;
                 ui.showHeadingSelector(false);
+                break;
+            case SELECT_RUNWAY:
+                for(Runway runway: airport.runways) {
+                    Vector2 center = new Vector2(Math.abs(runway.points[0].x-runway.points[1].x),
+                                                 Math.abs(runway.points[0].y-runway.points[1].y)
+                    );
+                }
+                break;
             default:
                 break;
         }
@@ -264,7 +280,7 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
     }
 
     public enum UiState {
-        SELECT_WAYPOINT, SELECT_AIRPLANE, SELECT_HEADING
+        SELECT_WAYPOINT, SELECT_AIRPLANE, SELECT_HEADING, SELECT_RUNWAY
     }
 
     @Override
