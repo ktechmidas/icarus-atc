@@ -68,6 +68,9 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
     public FreeTypeFontLoaderParameter labelFontParams;
 
+    public float initialVelocity = 250; //meters per second
+    public float scale = 50; //meters per pixel
+
     @Override
     public void create () {
         self = this;
@@ -107,10 +110,10 @@ public class ProjectIcarus extends ApplicationAdapter implements GestureDetector
 
         //add test airplanes
         airplanes = new ArrayList<Airplane>();
-        airplanes.add(new Airplane("airplane1", new Vector2(100, 100), new Vector2(4, 0), 10000));
-        airplanes.add(new Airplane("airplane2", new Vector2(100, 500), new Vector2(4, 0), 10000));
-        airplanes.add(new Airplane("airplane3", new Vector2(500, 100), new Vector2(4, 0), 10000));
-        airplanes.add(new Airplane("airplane4", new Vector2(500, 500), new Vector2(4, 0), 10000));
+        airplanes.add(new Airplane("airplane1", new Vector2(100, 100), new Vector2(5, 0), 10000));
+        airplanes.add(new Airplane("airplane2", new Vector2(100, 500), new Vector2(5, 0), 10000));
+        airplanes.add(new Airplane("airplane3", new Vector2(500, 100), new Vector2(5, 0), 10000));
+        airplanes.add(new Airplane("airplane4", new Vector2(500, 500), new Vector2(5, 0), 10000));
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         utils = new Utils();

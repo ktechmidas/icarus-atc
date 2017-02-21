@@ -31,13 +31,15 @@ class Airplane {
 
     public boolean isSelected;
 
-    public float turnRate = 3;
+    public float turnRate = 3; //degree per second
+    public float maxVelocity = 250; //meters per second
 
     public Airplane(String name, Vector2 position, Vector2 velocity, float altitude) {
         this.name = name;
         this.position = position;
         this.velocity = velocity;
         this.altitude = altitude;
+
         sprite = new Sprite(texture);
         sprite.setScale(0.25f * Gdx.graphics.getDensity());
         sprite.setOrigin(
