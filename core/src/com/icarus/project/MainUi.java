@@ -132,29 +132,6 @@ public class MainUi {
                 PIScreen.getInstance().getSelectedAirplane().setTargetHeading(heading);
             }
         });
-
-        Drawable initialButton = new TextureRegionDrawable(
-                new TextureRegion((Texture) assets.get("buttons/circle_button.png"))
-        );
-        circleButton = new ImageButton(circleDrawable);
-        circleButton.setPosition(2 * buttonSize, statusBarHeight + buttonGap);
-        circleButton.addListener(new InputListener(){
-            @Override
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-            @Override
-            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                showHeadingSelector(true);
-                showAirplaneButtons(false);
-                PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_HEADING;
-                game.setScreen(new PIScreen(game));
-                ((Game) Gdx.app.getApplicationListener()).setScreen(new PIScreen(game));
-            }
-        });
-        stage.addActor(circleButton);
-        circleButton.setSize(buttonSize, buttonSize);
-
         stage.addActor(headingWheel);
 
 

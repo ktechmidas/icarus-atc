@@ -61,7 +61,7 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
 
     private Airplane selectedAirplane;
 
-    public static final String TAG = "ProjectIcarus";
+    public static final String TAG = "PIState";
 
     public static PIScreen self;
 
@@ -84,9 +84,9 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         manager.load("airports/test.json", Airport.class);
         //load the label font
         labelFontParams = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
-        labelFontParams.fontFileName = "fonts/ShareTechMono-Regular.ttf";
+        labelFontParams.fontFileName = "fonts/3270Medium.ttf";
         labelFontParams.fontParameters.size = Math.round(fontSize);
-        manager.load("fonts/ShareTechMono-Regular.ttf", BitmapFont.class, labelFontParams);
+        manager.load("fonts/3270Medium.ttf", BitmapFont.class, labelFontParams);
         //load the airplane sprite
         manager.load("sprites/airplane.png", Texture.class);
 
@@ -100,7 +100,7 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
 
         manager.finishLoading();
         airport = manager.get("airports/test.json");
-        labelFont = manager.get("fonts/ShareTechMono-Regular.ttf");
+        labelFont = manager.get("fonts/3270Medium.ttf");
         Airplane.texture = manager.get("sprites/airplane.png");
 
         shapes = new ShapeRenderer();
@@ -175,10 +175,24 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         }
         shapes.end();
 
+        //draw runways
+        shapes.begin(ShapeRenderer.ShapeType.Filled);
+        for(Runway runway: airport.runways) {
+            runway.draw(shapes, camera);
+        }
+        shapes.end();
+
         //draw waypoint labels
         batch.begin();
         for(Waypoint waypoint: airport.waypoints) {
             waypoint.drawLabel(labelFont, batch, camera);
+        }
+        batch.end();
+
+        //draw runway labels
+        batch.begin();
+        for(Runway runway: airport.runways) {
+            runway.drawLabel(labelFont, batch, camera);
         }
         batch.end();
 
@@ -279,8 +293,6 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         }
         return true;
     }
-
-
 
     @Override
     public boolean longPress(float x, float y) {
