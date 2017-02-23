@@ -1,5 +1,6 @@
 package com.icarus.project;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -24,6 +25,7 @@ public class MainUi {
     private GlyphLayout layout;
     private SpriteBatch batch;
     public Stage stage;
+    private Game game;
 
     private ImageButton headingButton;
     private ImageButton altitudeButton;
@@ -59,8 +61,8 @@ public class MainUi {
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 setStatus("Select a target waypoint");
-                ProjectIcarus.getInstance().followingPlane = false;
-                ProjectIcarus.getInstance().uiState = ProjectIcarus.UiState.SELECT_WAYPOINT;
+                PIScreen.getInstance().followingPlane = false;
+                PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_WAYPOINT;
             }
         });
         stage.addActor(headingButton);
@@ -98,7 +100,7 @@ public class MainUi {
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 showHeadingSelector(true);
                 showAirplaneButtons(false);
-                ProjectIcarus.getInstance().uiState = ProjectIcarus.UiState.SELECT_HEADING;
+                PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_HEADING;
             }
         });
         stage.addActor(circleButton);
@@ -125,12 +127,13 @@ public class MainUi {
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 Vector2 heading = new Vector2(x, y).sub(headingWheel.getWidth()/2, headingWheel.getHeight()/2);
                 showHeadingSelector(false);
-                ProjectIcarus.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
+                PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
                 setStatus((int) heading.angle() + "");
-                ProjectIcarus.getInstance().getSelectedAirplane().setTargetHeading(heading);
+                PIScreen.getInstance().getSelectedAirplane().setTargetHeading(heading);
             }
         });
         stage.addActor(headingWheel);
+
 
         showAirplaneButtons(false);
         showHeadingSelector(false);
@@ -153,8 +156,8 @@ public class MainUi {
         batch.end();
 
         //show airplane-specific buttons if an airplane is selected
-        showAirplaneButtons(ProjectIcarus.getInstance().getSelectedAirplane() != null
-                && ProjectIcarus.getInstance().uiState != ProjectIcarus.UiState.SELECT_HEADING);
+        showAirplaneButtons(PIScreen.getInstance().getSelectedAirplane() != null
+                && PIScreen.getInstance().uiState != ProjectIcarus.UiState.SELECT_HEADING);
     }
 
     public void setStatus(String status) {
