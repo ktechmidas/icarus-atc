@@ -20,12 +20,7 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-
 import java.util.ArrayList;
-
-/**
- * Created by gmcfeeters3345 on 2/14/2017.
- */
 
 public class PIScreen extends Game implements GestureDetector.GestureListener, Screen {
     private Game game;
@@ -133,35 +128,6 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         Gdx.input.setInputProcessor(new InputMultiplexer(ui.stage, new GestureDetector(this)));
     }
 
-    private void setToBoundary() {
-        // Calculates the distance from the edge of the camera to the specified boundary
-        toBoundaryRight = (airport.width - camera.position.x
-                - Gdx.graphics.getWidth()/2 * camera.zoom);
-        toBoundaryLeft = (-camera.position.x + Gdx.graphics.getWidth()/2 * camera.zoom);
-        toBoundaryTop = (airport.height - camera.position.y
-                - Gdx.graphics.getHeight()/2 * camera.zoom);
-        toBoundaryBottom = (-camera.position.y + Gdx.graphics.getHeight()/2 * camera.zoom);
-    }
-
-    public void setCameraPosition(Vector3 position) {
-        camera.position.set(position);
-
-        Vector2 camMin = new Vector2(camera.viewportWidth, camera.viewportHeight);
-        camMin.scl(camera.zoom / 2);
-        Vector2 camMax = new Vector2(airport.width, airport.height);
-        camMax.sub(camMin);
-
-        camera.position.x = Math.min(camMax.x, Math.max(camera.position.x, camMin.x));
-        camera.position.y = Math.min(camMax.y, Math.max(camera.position.y, camMin.y));
-
-        camera.update();
-    }
-
-    @Override
-    public void show() {
-
-    }
-
     @Override
     public void render(float delta) {
         super.render();
@@ -213,45 +179,10 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
     }
 
     @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void create() {
-
-    }
-
-    @Override
     public void dispose() {
         shapes.dispose();
         batch.dispose();
         labelFont.dispose();
-    }
-
-    @Override
-    public boolean touchDown(float x, float y, int pointer, int button) {
-        return false;
-    }
-
-    public void setSelectedAirplane(Airplane selectedAirplane){
-        // deselect old selectedAirplane if not null
-        if(this.selectedAirplane != null){
-            this.selectedAirplane.setSelected(false);
-        }
-        this.selectedAirplane = selectedAirplane;
-        // select new selectedAirplane if not null
-        if(selectedAirplane != null){
-            followingPlane = true;
-            selectedAirplane.setSelected(true);
-        }
-        else {
-            followingPlane = false;
-        }
-    }
-
-    public Airplane getSelectedAirplane(){
-        return this.selectedAirplane;
     }
 
     @Override
@@ -295,16 +226,6 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
     }
 
     @Override
-    public boolean longPress(float x, float y) {
-        return false;
-    }
-
-    @Override
-    public boolean fling(float velocityX, float velocityY, int button) {
-        return false;
-    }
-
-    @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
         followingPlane = false;
         setCameraPosition(camera.position.add(
@@ -312,16 +233,6 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
                         .add(camera.unproject(new Vector3(deltaX, deltaY, 0)).scl(-1f))
         ));
         return true;
-    }
-
-    @Override
-    public boolean panStop(float x, float y, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean zoom(float initialDistance, float distance) {
-        return false;
     }
 
     @Override
@@ -343,11 +254,6 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         zoomCamera(center,
                 oldScale * initialPointer1.dst(initialPointer2) / pointer1.dst(pointer2));
         return true;
-    }
-
-    @Override
-    public void pinchStop() {
-
     }
 
     private void zoomCamera(Vector3 origin, float scale) {
@@ -387,7 +293,88 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         camera.update();
     }
 
+    private void setToBoundary() {
+        // Calculates the distance from the edge of the camera to the specified boundary
+        toBoundaryRight = (airport.width - camera.position.x
+                - Gdx.graphics.getWidth()/2 * camera.zoom);
+        toBoundaryLeft = (-camera.position.x + Gdx.graphics.getWidth()/2 * camera.zoom);
+        toBoundaryTop = (airport.height - camera.position.y
+                - Gdx.graphics.getHeight()/2 * camera.zoom);
+        toBoundaryBottom = (-camera.position.y + Gdx.graphics.getHeight()/2 * camera.zoom);
+    }
+
+    private void setCameraPosition(Vector3 position) {
+        camera.position.set(position);
+
+        Vector2 camMin = new Vector2(camera.viewportWidth, camera.viewportHeight);
+        camMin.scl(camera.zoom / 2);
+        Vector2 camMax = new Vector2(airport.width, airport.height);
+        camMax.sub(camMin);
+
+        camera.position.x = Math.min(camMax.x, Math.max(camera.position.x, camMin.x));
+        camera.position.y = Math.min(camMax.y, Math.max(camera.position.y, camMin.y));
+
+        camera.update();
+    }
+
+    private void setSelectedAirplane(Airplane selectedAirplane){
+        // deselect old selectedAirplane if not null
+        if(this.selectedAirplane != null){
+            this.selectedAirplane.setSelected(false);
+        }
+        this.selectedAirplane = selectedAirplane;
+        // select new selectedAirplane if not null
+        if(selectedAirplane != null){
+            followingPlane = true;
+            selectedAirplane.setSelected(true);
+        }
+        else {
+            followingPlane = false;
+        }
+    }
+
+    public Airplane getSelectedAirplane(){
+        return this.selectedAirplane;
+    }
+
     public static PIScreen getInstance() {
         return self;
+    }
+
+    @Override
+    public void pinchStop() {}
+
+    @Override
+    public void hide() {}
+
+    @Override
+    public void create() {}
+
+    @Override
+    public void show() {}
+
+    @Override
+    public boolean panStop(float x, float y, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean zoom(float initialDistance, float distance) {
+        return false;
+    }
+
+    @Override
+    public boolean longPress(float x, float y) {
+        return false;
+    }
+
+    @Override
+    public boolean fling(float velocityX, float velocityY, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(float x, float y, int pointer, int button) {
+        return false;
     }
 }

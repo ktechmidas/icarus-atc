@@ -1,6 +1,5 @@
 package com.icarus.project;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -25,7 +24,6 @@ public class MainUi {
     private GlyphLayout layout;
     private SpriteBatch batch;
     public Stage stage;
-    private Game game;
 
     private ImageButton headingButton;
     private ImageButton altitudeButton;
@@ -34,9 +32,9 @@ public class MainUi {
 
     public static final String TAG = "MainUi";
 
-    public int buttonSize = (int) (100 * Gdx.graphics.getDensity());
-    public int buttonGap = (int) (5 * Gdx.graphics.getDensity());
-    public int statusBarHeight = (int) (25 * Gdx.graphics.getDensity());
+    private int buttonSize = (int) (100 * Gdx.graphics.getDensity());
+    private int buttonGap = (int) (5 * Gdx.graphics.getDensity());
+    private int statusBarHeight = (int) (25 * Gdx.graphics.getDensity());
 
     public MainUi(AssetManager assets, BitmapFont font) {
         this.font = font;
