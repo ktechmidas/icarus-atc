@@ -94,7 +94,7 @@ class Airplane {
             velocity.rotate(-turnRate * Gdx.graphics.getDeltaTime());
         }
         if(Math.abs(targetHeading.angle(velocity)) < 0.01) {
-            ProjectIcarus.getInstance().ui.setStatus(name + ": turn complete");
+            PIScreen.getInstance().ui.setStatus(name + ": turn complete");
             removeTarget();
         }
     }
