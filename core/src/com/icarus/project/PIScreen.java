@@ -224,16 +224,20 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
                         if(circle.contains(position.x, position.y)) {
                             Vector2 runwayHeading = runway.points[end].cpy()
                                     .sub(runway.points[Math.abs(end-1)]);
-                            float difference = Math.abs(
+                            float positionDifference = Math.abs(
                                     selectedAirplane.position.cpy()
                                             .sub(runway.points[1])
                                             .angle(runwayHeading)
                             );
-                            if (difference < 10){
-                                ui.setStatus("Within path " + difference);
+                            float headingDifference = Math.abs(
+                                    selectedAirplane.velocity.cpy()
+                                            .rotate(180).angle(runwayHeading)
+                            );
+                            if (positionDifference < 10 && headingDifference < 10){
+                                ui.setStatus("Good angle " + headingDifference);
                             }
                             else {
-                                ui.setStatus("Outside path " + difference);
+                                ui.setStatus("Can't land " + headingDifference);
                             }
                             uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
                             followingPlane = true;
