@@ -226,7 +226,7 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
                                     .sub(runway.points[Math.abs(end-1)]);
                             float positionDifference = Math.abs(
                                     selectedAirplane.position.cpy()
-                                            .sub(runway.points[1])
+                                            .sub(runway.points[end])
                                             .angle(runwayHeading)
                             );
                             float headingDifference = Math.abs(
