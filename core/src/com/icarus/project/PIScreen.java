@@ -218,38 +218,29 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
                 break;
             case SELECT_RUNWAY:
                 for(Runway runway: airport.runways) {
-                    Vector3 pos1 = camera.project(new Vector3(runway.points[0], 0));
-                    Circle circle1 = new Circle(pos1.x, pos1.y, 20 * Gdx.graphics.getDensity());
-                    Vector3 pos2 = camera.project(new Vector3(runway.points[1], 0));
-                    Circle circle2 = new Circle(pos2.x, pos2.y, 20 * Gdx.graphics.getDensity());
-                    if (circle1.contains(position.x, position.y)) {
-                        Vector2 runwayHeading = runway.points[0].cpy().sub(runway.points[1]);
-                        if (Math.abs(selectedAirplane.position.cpy().sub(runway.points[0]).angle(runwayHeading)) < 10){
-                            ui.setStatus("Within path " + selectedAirplane.position.cpy().sub(runway.points[0]).angle(runwayHeading));
+                    for(int end = 0; end < 2; end++) {
+                        Vector3 pos = camera.project(new Vector3(runway.points[end], 0));
+                        Circle circle = new Circle(pos.x, pos.y, 20 * Gdx.graphics.getDensity());
+                        if(circle.contains(position.x, position.y)) {
+                            Vector2 runwayHeading = runway.points[end].cpy()
+                                    .sub(runway.points[Math.abs(end-1)]);
+                            float difference = Math.abs(
+                                    selectedAirplane.position.cpy()
+                                            .sub(runway.points[1])
+                                            .angle(runwayHeading)
+                            );
+                            if (difference < 10){
+                                ui.setStatus("Within path " + difference);
+                            }
+                            else {
+                                ui.setStatus("Outside path " + difference);
+                            }
+                            uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
+                            followingPlane = true;
+                            break;
                         }
-                        else {
-                            ui.setStatus("Outside path " + selectedAirplane.position.cpy().sub(runway.points[0]).angle(runwayHeading));
-                        }
-//                        ui.setStatus("selected runway end 1 " + runway.names[0]);
-                        uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
-                        followingPlane = true;
-                        break;
-                    }
-                    else if (circle2.contains(position.x, position.y)) {
-                        Vector2 runwayHeading = runway.points[1].cpy().sub(runway.points[0]);
-                        if (Math.abs(selectedAirplane.position.cpy().sub(runway.points[1]).angle(runwayHeading)) < 10){
-                            ui.setStatus("Within path " + selectedAirplane.position.cpy().sub(runway.points[1]).angle(runwayHeading));
-                        }
-                        else {
-                            ui.setStatus("Outside path " + selectedAirplane.position.cpy().sub(runway.points[1]).angle(runwayHeading));
-                        }
-//                        ui.setStatus("selected runway end 2 " + runway.names[1]);
-                        uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
-                        followingPlane = true;
-                        break;
                     }
                 }
-                break;
             default:
                 break;
         }
