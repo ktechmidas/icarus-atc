@@ -47,11 +47,13 @@ public class MainUi {
 
         status = "Welcome to Icarus Air Traffic Control";
 
+        // Initialize waypoint selection button
         Drawable headingDrawable = new TextureRegionDrawable(
                 new TextureRegion((Texture) assets.get("buttons/heading_button.png"))
         );
         headingButton = new ImageButton(headingDrawable);
-        headingButton.setPosition(0, statusBarHeight + buttonGap);
+        headingButton.setSize(buttonSize, buttonSize);
+        headingButton.setPosition(buttonGap, statusBarHeight + buttonGap);
         headingButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -67,11 +69,13 @@ public class MainUi {
         stage.addActor(headingButton);
         headingButton.setSize(buttonSize, buttonSize);
 
+        // Initialize altitude button
         Drawable altitudeDrawable = new TextureRegionDrawable(
                 new TextureRegion((Texture) assets.get("buttons/altitude_button.png"))
         );
         altitudeButton = new ImageButton(altitudeDrawable);
-        altitudeButton.setPosition(buttonSize, statusBarHeight + buttonGap);
+        altitudeButton.setSize(buttonSize, buttonSize);
+        altitudeButton.setPosition(2 * buttonGap + buttonSize, statusBarHeight + buttonGap);
         altitudeButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -85,11 +89,13 @@ public class MainUi {
         stage.addActor(altitudeButton);
         altitudeButton.setSize(buttonSize, buttonSize);
 
+        // Initialize heading selection button
         Drawable circleDrawable = new TextureRegionDrawable(
                 new TextureRegion((Texture) assets.get("buttons/circle_button.png"))
         );
         circleButton = new ImageButton(circleDrawable);
-        circleButton.setPosition(2 * buttonSize, statusBarHeight + buttonGap);
+        circleButton.setSize(buttonSize, buttonSize);
+        circleButton.setPosition(3 * buttonGap + 2 * buttonSize, statusBarHeight + buttonGap);
         circleButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -105,6 +111,7 @@ public class MainUi {
         stage.addActor(circleButton);
         circleButton.setSize(buttonSize, buttonSize);
 
+        // Initialize heading selection wheel
         Drawable headingWheelDrawable = new TextureRegionDrawable(
                 new TextureRegion((Texture) assets.get("buttons/selection_wheel.png"))
         );
@@ -135,11 +142,13 @@ public class MainUi {
         });
         stage.addActor(headingWheel);
 
+        // Initialize landing button
         Drawable landingDrawable = new TextureRegionDrawable(
                 new TextureRegion((Texture) assets.get("buttons/landing_button.png"))
         );
         landingButton = new ImageButton(landingDrawable);
-        landingButton.setPosition(3 * buttonSize, statusBarHeight + buttonGap);
+        landingButton.setSize(buttonSize, buttonSize);
+        landingButton.setPosition(4 * buttonGap + 3 * buttonSize, statusBarHeight + buttonGap);
         landingButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
