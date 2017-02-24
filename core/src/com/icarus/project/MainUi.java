@@ -109,8 +109,10 @@ public class MainUi {
                 new TextureRegion((Texture) assets.get("buttons/selection_wheel.png"))
         );
         headingWheel = new ImageButton(headingWheelDrawable);
+        int wheelSize = Gdx.graphics.getHeight() - statusBarHeight;
+        headingWheel.setSize(wheelSize, wheelSize);
         headingWheel.setPosition(Gdx.graphics.getWidth()/2 - headingWheel.getWidth()/2,
-                                    Gdx.graphics.getHeight()/2 - headingWheel.getHeight()/2
+                                 statusBarHeight
         );
         headingWheel.addListener(new DragListener(){
             @Override
