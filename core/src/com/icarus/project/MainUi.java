@@ -32,9 +32,9 @@ public class MainUi {
 
     public static final String TAG = "MainUi";
 
-    public int buttonSize = (int) (100 * Gdx.graphics.getDensity());
-    public int buttonGap = (int) (5 * Gdx.graphics.getDensity());
-    public int statusBarHeight = (int) (25 * Gdx.graphics.getDensity());
+    private int buttonSize = (int) (100 * Gdx.graphics.getDensity());
+    private int buttonGap = (int) (5 * Gdx.graphics.getDensity());
+    private int statusBarHeight = (int) (25 * Gdx.graphics.getDensity());
 
     public MainUi(AssetManager assets, BitmapFont font) {
         this.font = font;
@@ -59,8 +59,8 @@ public class MainUi {
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 setStatus("Select a target waypoint");
-                ProjectIcarus.getInstance().followingPlane = false;
-                ProjectIcarus.getInstance().uiState = ProjectIcarus.UiState.SELECT_WAYPOINT;
+                PIScreen.getInstance().followingPlane = false;
+                PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_WAYPOINT;
             }
         });
         stage.addActor(headingButton);
@@ -98,7 +98,7 @@ public class MainUi {
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 showHeadingSelector(true);
                 showAirplaneButtons(false);
-                ProjectIcarus.getInstance().uiState = ProjectIcarus.UiState.SELECT_HEADING;
+                PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_HEADING;
             }
         });
         stage.addActor(circleButton);
@@ -125,12 +125,13 @@ public class MainUi {
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 Vector2 heading = new Vector2(x, y).sub(headingWheel.getWidth()/2, headingWheel.getHeight()/2);
                 showHeadingSelector(false);
-                ProjectIcarus.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
+                PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
                 setStatus((int) heading.angle() + "");
-                ProjectIcarus.getInstance().getSelectedAirplane().setTargetHeading(heading);
+                PIScreen.getInstance().getSelectedAirplane().setTargetHeading(heading);
             }
         });
         stage.addActor(headingWheel);
+
 
         showAirplaneButtons(false);
         showHeadingSelector(false);
@@ -153,8 +154,8 @@ public class MainUi {
         batch.end();
 
         //show airplane-specific buttons if an airplane is selected
-        showAirplaneButtons(ProjectIcarus.getInstance().getSelectedAirplane() != null
-                && ProjectIcarus.getInstance().uiState != ProjectIcarus.UiState.SELECT_HEADING);
+        showAirplaneButtons(PIScreen.getInstance().getSelectedAirplane() != null
+                && PIScreen.getInstance().uiState != ProjectIcarus.UiState.SELECT_HEADING);
     }
 
     public void setStatus(String status) {
