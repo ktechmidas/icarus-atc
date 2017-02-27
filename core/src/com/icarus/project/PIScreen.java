@@ -21,6 +21,8 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class PIScreen extends Game implements GestureDetector.GestureListener, Screen {
     private Game game;
@@ -331,6 +333,12 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         else {
             followingPlane = false;
         }
+    }
+
+    public void addAirplane() {
+        int flightNum = new Random().nextInt((9999 - 1) + 1) + 1;
+        String flightName = "";
+        airplanes.add(new Airplane("airplane1", new Vector2(100, 100), new Vector2(4, 0), 10000));
     }
 
     public Airplane getSelectedAirplane(){
