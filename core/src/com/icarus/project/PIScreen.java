@@ -104,7 +104,6 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
 
         //add test airplanes
         airplanes = new ArrayList<Airplane>();
-        addAirplane();
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         utils = new Utils();
@@ -122,6 +121,8 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
 
         selectedAirplane = null;
         uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
+
+        addAirplane();
 
         Gdx.input.setInputProcessor(new InputMultiplexer(ui.stage, new GestureDetector(this)));
     }
@@ -335,7 +336,7 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         Random r = new Random();
         int flightNum = r.nextInt(9999) + 1;
         String flightName = "";
-        for(int i = 0; i<2; i++) {
+        for(int i = 0; i < 3; i++) {
             char c = (char)(r.nextInt(26) + 'A');
             flightName += c;
         }
