@@ -20,6 +20,9 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.Viewport;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -65,6 +68,12 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
 
     public FreetypeFontLoader.FreeTypeFontLoaderParameter labelFontParams;
 
+    private Viewport mapViewport;
+    private int mapViewWidth;
+    private int mapViewHeight;
+
+    private Stage mapStage;
+
     public PIScreen(Game game) {
         this.game = game;
         self = this;
@@ -99,17 +108,25 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         labelFont = manager.get("fonts/3270Medium.ttf");
         Airplane.texture = manager.get("sprites/airplane.png");
 
+//        mapViewWidth = Gdx.graphics.getWidth();
+//        mapViewHeight = Gdx.graphics.getHeight() - ui.statusBarHeight;
+
         shapes = new ShapeRenderer();
         batch = new SpriteBatch();
+//        mapStage = new Stage();
 
         //add test airplanes
         airplanes = new ArrayList<Airplane>();
+        ui = new MainUi(manager, labelFont);
 
+//        camera = new OrthographicCamera(mapViewWidth, mapViewHeight);
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         utils = new Utils();
         // The maximum zoom level is the smallest dimension compared to the viewer
+//        maxZoomOut = Math.min(airport.width / mapViewWidth, airport.height / mapViewHeight);
         maxZoomOut = Math.min(airport.width / Gdx.graphics.getWidth(),
-                airport.height / Gdx.graphics.getHeight());
+                airport.height / Gdx.graphics.getHeight()
+        );
         maxZoomIn = maxZoomOut / 100;
 
         // Start the app in maximum zoomed out state
@@ -117,13 +134,23 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         camera.position.set(airport.width/2, airport.height/2, 0);
         camera.update();
 
-        ui = new MainUi(manager, labelFont);
-
         selectedAirplane = null;
         uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
 
         addAirplane();
         airplanes.add(new Airplane("TEST1", new Vector2(300, 0), new Vector2(1, 0), 10000));
+
+//        mapViewport = new Viewport() {
+//            @Override
+//            public void apply() {
+//                super.apply();
+//            }
+//        };
+//        mapViewport.setScreenPosition(0, ui.statusBarHeight);
+//        mapViewport.setScreenSize(mapViewWidth, mapViewHeight);
+//        mapViewport.setWorldSize(airport.width, airport.height);
+//        mapViewport.setCamera(camera);
+//        mapViewport.apply(true);
 
         Gdx.input.setInputProcessor(new InputMultiplexer(ui.stage, new GestureDetector(this)));
     }
@@ -300,18 +327,18 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         toBoundaryLeft = -camera.position.x + Gdx.graphics.getWidth()/2 * camera.zoom;
         toBoundaryTop = airport.height - camera.position.y
                 - Gdx.graphics.getHeight()/2 * camera.zoom;
-        toBoundaryBottom = -camera.position.y + Gdx.graphics.getHeight()/2 * camera.zoom
-                - ui.statusBarHeight;
+        toBoundaryBottom = -camera.position.y + Gdx.graphics.getHeight()/2 * camera.zoom;
+//                - ui.statusBarHeight;
     }
 
     private void setCameraPosition(Vector3 position) {
         camera.position.set(position);
 
         Vector2 camMin = new Vector2(camera.viewportWidth,
-                camera.viewportHeight - ui.statusBarHeight
-        );
+                camera.viewportHeight);// - ui.statusBarHeight
+//        );
         camMin.scl(camera.zoom / 2);
-        Vector2 camMax = new Vector2(airport.width, airport.height - ui.statusBarHeight);
+        Vector2 camMax = new Vector2(airport.width, airport.height);// - ui.statusBarHeight);
         camMax.sub(camMin);
 
         camera.position.x = Math.min(camMax.x, Math.max(camera.position.x, camMin.x));
