@@ -123,6 +123,7 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
 
         addAirplane();
+        airplanes.add(new Airplane("TEST1", new Vector2(300, 0), new Vector2(1, 0), 10000));
 
         Gdx.input.setInputProcessor(new InputMultiplexer(ui.stage, new GestureDetector(this)));
     }
@@ -294,20 +295,23 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
 
     private void setToBoundary() {
         // Calculates the distance from the edge of the camera to the specified boundary
-        toBoundaryRight = (airport.width - camera.position.x
-                - Gdx.graphics.getWidth()/2 * camera.zoom);
-        toBoundaryLeft = (-camera.position.x + Gdx.graphics.getWidth()/2 * camera.zoom);
-        toBoundaryTop = (airport.height - camera.position.y
-                - Gdx.graphics.getHeight()/2 * camera.zoom);
-        toBoundaryBottom = (-camera.position.y + Gdx.graphics.getHeight()/2 * camera.zoom);
+        toBoundaryRight = airport.width - camera.position.x
+                - Gdx.graphics.getWidth()/2 * camera.zoom;
+        toBoundaryLeft = -camera.position.x + Gdx.graphics.getWidth()/2 * camera.zoom;
+        toBoundaryTop = airport.height - camera.position.y
+                - Gdx.graphics.getHeight()/2 * camera.zoom;
+        toBoundaryBottom = -camera.position.y + Gdx.graphics.getHeight()/2 * camera.zoom
+                - ui.statusBarHeight;
     }
 
     private void setCameraPosition(Vector3 position) {
         camera.position.set(position);
 
-        Vector2 camMin = new Vector2(camera.viewportWidth, camera.viewportHeight);
+        Vector2 camMin = new Vector2(camera.viewportWidth,
+                camera.viewportHeight - ui.statusBarHeight
+        );
         camMin.scl(camera.zoom / 2);
-        Vector2 camMax = new Vector2(airport.width, airport.height);
+        Vector2 camMax = new Vector2(airport.width, airport.height - ui.statusBarHeight);
         camMax.sub(camMin);
 
         camera.position.x = Math.min(camMax.x, Math.max(camera.position.x, camMin.x));
@@ -346,6 +350,7 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         int speed = 5;
         Vector2 velocity = new Vector2(1, 0).setLength(speed).rotate(heading);
 
+        float margin = 50;
         Vector2 center = new Vector2(airport.width / 2, airport.height / 2);
         Vector2 upperRight = new Vector2(airport.width, airport.height).sub(center);
         Vector2 upperLeft = new Vector2(0, airport.height).sub(center);

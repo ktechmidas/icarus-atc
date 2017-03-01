@@ -34,7 +34,7 @@ public class MainUi {
 
     private int buttonSize = (int) (100 * Gdx.graphics.getDensity());
     private int buttonGap = (int) (5 * Gdx.graphics.getDensity());
-    private int statusBarHeight = (int) (25 * Gdx.graphics.getDensity());
+    public int statusBarHeight = (int) (25 * Gdx.graphics.getDensity());
 
     public MainUi(AssetManager assets, BitmapFont font) {
         this.font = font;
