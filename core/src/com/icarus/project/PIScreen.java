@@ -68,6 +68,12 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
 
     public FreetypeFontLoader.FreeTypeFontLoaderParameter labelFontParams;
 
+    private float minAirplaneInterval;
+    private float maxAirplaneInterval;
+    private int timeElapsed;
+    private float airplaneInterval;
+
+
     public PIScreen(Game game) {
         this.game = game;
         self = this;
@@ -124,6 +130,11 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         selectedAirplane = null;
         uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
 
+        minAirplaneInterval = 4;
+        maxAirplaneInterval = 30;
+        timeElapsed = 0;
+        airplaneInterval = maxAirplaneInterval;
+
         addAirplane();
         //add test airplanes
         airplanes.add(new Airplane("TEST1", new Vector2(300, 0), new Vector2(1, 0), 10000));
@@ -179,6 +190,18 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         // follow selected airplane
         if(selectedAirplane != null && followingPlane) {
             setCameraPosition(new Vector3(selectedAirplane.position, 0));
+        }
+
+        if(timeElapsed * Gdx.graphics.getDeltaTime() > airplaneInterval) {
+            Random r = new Random();
+            airplaneInterval = r.nextInt((int) (maxAirplaneInterval - minAirplaneInterval) + 1) + minAirplaneInterval;
+            timeElapsed = 0;
+            ui.setStatus("next interval: " + airplaneInterval + " seconds");
+            addAirplane();
+        }
+        else {
+            timeElapsed++;
+//            ui.setStatus(timeElapsed * Gdx.graphics.getDeltaTime() + ", " + airplaneInterval);
         }
     }
 
@@ -381,7 +404,10 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
             );
         }
         airplanes.add(new Airplane(flightName, position, velocity, 10000));
-        ui.setStatus(heading + ", " + position);
+    }
+
+    public void removeAirplane(Airplane airplane) {
+        airplanes.remove(airplane);
     }
 
     public Airplane getSelectedAirplane(){
