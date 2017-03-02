@@ -20,7 +20,7 @@ class Waypoint {
     //Constructs a waypoint directly
     public Waypoint(String name, Vector2 position) {
         this.name = name;
-        this.position = position;
+        this.position = position;//.add(0, MainUi.statusBarHeight);
     }
 
     //Constructs a waypoint based on JSON. This is used when loading a level.

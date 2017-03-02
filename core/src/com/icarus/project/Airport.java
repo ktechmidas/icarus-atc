@@ -9,13 +9,11 @@ class Airport {
     public float width;
     public float height;
 
-    private MainUi ui;
-
     //Constructs an airport given the data pulled from the JSON airport file
     public Airport(Waypoint[] waypoints, Runway[] runways, float width, float height) {
         this.waypoints = waypoints;
         this.runways = runways;
         this.width = width;
-        this.height = height;
+        this.height = height;// + MainUi.statusBarHeight;
     }
 }

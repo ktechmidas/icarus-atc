@@ -327,16 +327,16 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         toBoundaryLeft = -camera.position.x + Gdx.graphics.getWidth()/2 * camera.zoom;
         toBoundaryTop = airport.height - camera.position.y
                 - Gdx.graphics.getHeight()/2 * camera.zoom;
-        toBoundaryBottom = -camera.position.y + Gdx.graphics.getHeight()/2 * camera.zoom;
-//                - ui.statusBarHeight;
+        toBoundaryBottom = -camera.position.y + (Gdx.graphics.getHeight() + ui.statusBarHeight)/2 * camera.zoom;
+//                + ui.statusBarHeight;
     }
 
     private void setCameraPosition(Vector3 position) {
         camera.position.set(position);
 
         Vector2 camMin = new Vector2(camera.viewportWidth,
-                camera.viewportHeight);// - ui.statusBarHeight
-//        );
+                camera.viewportHeight - 2 * ui.statusBarHeight
+        );
         camMin.scl(camera.zoom / 2);
         Vector2 camMax = new Vector2(airport.width, airport.height);// - ui.statusBarHeight);
         camMax.sub(camMin);

@@ -31,7 +31,7 @@ public class MainUi {
     private ImageButton circleButton;
     private ImageButton headingWheel;
 
-    private Viewport uiViewport;
+//    private Viewport uiViewport;
 
     public static final String TAG = "MainUi";
 
