@@ -31,8 +31,6 @@ public class MainUi {
     private ImageButton circleButton;
     private ImageButton headingWheel;
 
-//    private Viewport uiViewport;
-
     public static final String TAG = "MainUi";
 
     private int buttonSize = (int) (100 * Gdx.graphics.getDensity());
@@ -48,15 +46,6 @@ public class MainUi {
         layout = new GlyphLayout();
 
         status = "Welcome to Icarus Air Traffic Control";
-
-//        uiViewport = new Viewport() {
-//            @Override
-//            public void apply() {
-//                super.apply();
-//            }
-//        };
-//        uiViewport.setScreenSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-//        uiViewport.setScreenPosition(0, 0);
 
         Drawable headingDrawable = new TextureRegionDrawable(
                 new TextureRegion((Texture) assets.get("buttons/heading_button.png"))

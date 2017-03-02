@@ -14,6 +14,6 @@ class Airport {
         this.waypoints = waypoints;
         this.runways = runways;
         this.width = width;
-        this.height = height;// + MainUi.statusBarHeight;
+        this.height = height;
     }
 }

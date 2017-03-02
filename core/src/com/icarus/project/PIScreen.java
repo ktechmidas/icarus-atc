@@ -68,12 +68,6 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
 
     public FreetypeFontLoader.FreeTypeFontLoaderParameter labelFontParams;
 
-    private Viewport mapViewport;
-    private int mapViewWidth;
-    private int mapViewHeight;
-
-    private Stage mapStage;
-
     public PIScreen(Game game) {
         this.game = game;
         self = this;
@@ -108,22 +102,15 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         labelFont = manager.get("fonts/3270Medium.ttf");
         Airplane.texture = manager.get("sprites/airplane.png");
 
-//        mapViewWidth = Gdx.graphics.getWidth();
-//        mapViewHeight = Gdx.graphics.getHeight() - ui.statusBarHeight;
-
         shapes = new ShapeRenderer();
         batch = new SpriteBatch();
-//        mapStage = new Stage();
 
-        //add test airplanes
         airplanes = new ArrayList<Airplane>();
         ui = new MainUi(manager, labelFont);
 
-//        camera = new OrthographicCamera(mapViewWidth, mapViewHeight);
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         utils = new Utils();
         // The maximum zoom level is the smallest dimension compared to the viewer
-//        maxZoomOut = Math.min(airport.width / mapViewWidth, airport.height / mapViewHeight);
         maxZoomOut = Math.min(airport.width / Gdx.graphics.getWidth(),
                 airport.height / Gdx.graphics.getHeight()
         );
@@ -138,19 +125,9 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
 
         addAirplane();
+        //add test airplanes
         airplanes.add(new Airplane("TEST1", new Vector2(300, 0), new Vector2(1, 0), 10000));
-
-//        mapViewport = new Viewport() {
-//            @Override
-//            public void apply() {
-//                super.apply();
-//            }
-//        };
-//        mapViewport.setScreenPosition(0, ui.statusBarHeight);
-//        mapViewport.setScreenSize(mapViewWidth, mapViewHeight);
-//        mapViewport.setWorldSize(airport.width, airport.height);
-//        mapViewport.setCamera(camera);
-//        mapViewport.apply(true);
+        airplanes.add(new Airplane("TEST1", new Vector2(300, airport.height), new Vector2(1, 0), 10000));
 
         Gdx.input.setInputProcessor(new InputMultiplexer(ui.stage, new GestureDetector(this)));
     }
@@ -327,8 +304,8 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         toBoundaryLeft = -camera.position.x + Gdx.graphics.getWidth()/2 * camera.zoom;
         toBoundaryTop = airport.height - camera.position.y
                 - Gdx.graphics.getHeight()/2 * camera.zoom;
-        toBoundaryBottom = -camera.position.y + (Gdx.graphics.getHeight() + ui.statusBarHeight)/2 * camera.zoom;
-//                + ui.statusBarHeight;
+        toBoundaryBottom = -camera.position.y
+                + (Gdx.graphics.getHeight()/2 - ui.statusBarHeight) * camera.zoom;
     }
 
     private void setCameraPosition(Vector3 position) {
@@ -338,7 +315,9 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
                 camera.viewportHeight - 2 * ui.statusBarHeight
         );
         camMin.scl(camera.zoom / 2);
-        Vector2 camMax = new Vector2(airport.width, airport.height);// - ui.statusBarHeight);
+        Vector2 camMax = new Vector2(airport.width,
+                airport.height - camera.zoom * ui.statusBarHeight
+        );
         camMax.sub(camMin);
 
         camera.position.x = Math.min(camMax.x, Math.max(camera.position.x, camMin.x));
