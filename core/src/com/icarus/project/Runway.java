@@ -25,6 +25,9 @@ class Runway {
     public Runway(Vector2[] points, String[] names, Vector2[] nameOffsets) {
         glyphLayout = new GlyphLayout();
         this.points = points;
+//        for(Vector2 point: this.points) {
+//            point.add(0, MainUi.statusBarHeight);
+//        }
         this.names = names;
         this.nameOffsets = nameOffsets;
         this.angles = new float[] {

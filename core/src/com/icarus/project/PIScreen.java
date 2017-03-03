@@ -20,6 +20,9 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.Viewport;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -65,6 +68,12 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
 
     public FreetypeFontLoader.FreeTypeFontLoaderParameter labelFontParams;
 
+    private float minAirplaneInterval;
+    private float maxAirplaneInterval;
+    private int timeElapsed;
+    private float airplaneInterval;
+
+
     public PIScreen(Game game) {
         this.game = game;
         self = this;
@@ -102,14 +111,15 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         shapes = new ShapeRenderer();
         batch = new SpriteBatch();
 
-        //add test airplanes
         airplanes = new ArrayList<Airplane>();
+        ui = new MainUi(manager, labelFont);
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         utils = new Utils();
         // The maximum zoom level is the smallest dimension compared to the viewer
         maxZoomOut = Math.min(airport.width / Gdx.graphics.getWidth(),
-                airport.height / Gdx.graphics.getHeight());
+                airport.height / Gdx.graphics.getHeight()
+        );
         maxZoomIn = maxZoomOut / 100;
 
         // Start the app in maximum zoomed out state
@@ -117,12 +127,18 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         camera.position.set(airport.width/2, airport.height/2, 0);
         camera.update();
 
-        ui = new MainUi(manager, labelFont);
-
         selectedAirplane = null;
         uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
 
+        minAirplaneInterval = 4;
+        maxAirplaneInterval = 30;
+        timeElapsed = 0;
+        airplaneInterval = maxAirplaneInterval;
+
         addAirplane();
+        //add test airplanes
+        airplanes.add(new Airplane("TEST1", new Vector2(300, 0), new Vector2(1, 0), 10000));
+        airplanes.add(new Airplane("TEST1", new Vector2(300, airport.height), new Vector2(1, 0), 10000));
 
         Gdx.input.setInputProcessor(new InputMultiplexer(ui.stage, new GestureDetector(this)));
     }
@@ -174,6 +190,18 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         // follow selected airplane
         if(selectedAirplane != null && followingPlane) {
             setCameraPosition(new Vector3(selectedAirplane.position, 0));
+        }
+
+        if(timeElapsed * Gdx.graphics.getDeltaTime() > airplaneInterval) {
+            Random r = new Random();
+            airplaneInterval = r.nextInt((int) (maxAirplaneInterval - minAirplaneInterval) + 1) + minAirplaneInterval;
+            timeElapsed = 0;
+            ui.setStatus("next interval: " + airplaneInterval + " seconds");
+            addAirplane();
+        }
+        else {
+            timeElapsed++;
+//            ui.setStatus(timeElapsed * Gdx.graphics.getDeltaTime() + ", " + airplaneInterval);
         }
     }
 
@@ -326,20 +354,25 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
 
     private void setToBoundary() {
         // Calculates the distance from the edge of the camera to the specified boundary
-        toBoundaryRight = (airport.width - camera.position.x
-                - Gdx.graphics.getWidth()/2 * camera.zoom);
-        toBoundaryLeft = (-camera.position.x + Gdx.graphics.getWidth()/2 * camera.zoom);
-        toBoundaryTop = (airport.height - camera.position.y
-                - Gdx.graphics.getHeight()/2 * camera.zoom);
-        toBoundaryBottom = (-camera.position.y + Gdx.graphics.getHeight()/2 * camera.zoom);
+        toBoundaryRight = airport.width - camera.position.x
+                - Gdx.graphics.getWidth()/2 * camera.zoom;
+        toBoundaryLeft = -camera.position.x + Gdx.graphics.getWidth()/2 * camera.zoom;
+        toBoundaryTop = airport.height - camera.position.y
+                - Gdx.graphics.getHeight()/2 * camera.zoom;
+        toBoundaryBottom = -camera.position.y
+                + (Gdx.graphics.getHeight()/2 - ui.statusBarHeight) * camera.zoom;
     }
 
     private void setCameraPosition(Vector3 position) {
         camera.position.set(position);
 
-        Vector2 camMin = new Vector2(camera.viewportWidth, camera.viewportHeight);
+        Vector2 camMin = new Vector2(camera.viewportWidth,
+                camera.viewportHeight - 2 * ui.statusBarHeight
+        );
         camMin.scl(camera.zoom / 2);
-        Vector2 camMax = new Vector2(airport.width, airport.height);
+        Vector2 camMax = new Vector2(airport.width,
+                airport.height - camera.zoom * ui.statusBarHeight
+        );
         camMax.sub(camMin);
 
         camera.position.x = Math.min(camMax.x, Math.max(camera.position.x, camMin.x));
@@ -378,6 +411,7 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         int speed = 5;
         Vector2 velocity = new Vector2(1, 0).setLength(speed).rotate(heading);
 
+        float margin = 50;
         Vector2 center = new Vector2(airport.width / 2, airport.height / 2);
         Vector2 upperRight = new Vector2(airport.width, airport.height).sub(center);
         Vector2 upperLeft = new Vector2(0, airport.height).sub(center);
@@ -402,7 +436,10 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
             );
         }
         airplanes.add(new Airplane(flightName, position, velocity, 10000));
-        ui.setStatus(heading + ", " + position);
+    }
+
+    public void removeAirplane(Airplane airplane) {
+        airplanes.remove(airplane);
     }
 
     public Airplane getSelectedAirplane(){
