@@ -136,9 +136,6 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         airplaneInterval = maxAirplaneInterval;
 
         addAirplane();
-        //add test airplanes
-        airplanes.add(new Airplane("TEST1", new Vector2(300, 0), new Vector2(1, 0), 10000));
-        airplanes.add(new Airplane("TEST1", new Vector2(300, airport.height), new Vector2(1, 0), 10000));
 
         Gdx.input.setInputProcessor(new InputMultiplexer(ui.stage, new GestureDetector(this)));
     }
