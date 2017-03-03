@@ -21,6 +21,7 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class PIScreen extends Game implements GestureDetector.GestureListener, Screen {
     private Game game;
@@ -103,10 +104,6 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
 
         //add test airplanes
         airplanes = new ArrayList<Airplane>();
-        airplanes.add(new Airplane("airplane1", new Vector2(100, 100), new Vector2(4, 0), 10000));
-        airplanes.add(new Airplane("airplane2", new Vector2(100, 500), new Vector2(4, 0), 10000));
-        airplanes.add(new Airplane("airplane3", new Vector2(500, 100), new Vector2(4, 0), 10000));
-        airplanes.add(new Airplane("airplane4", new Vector2(500, 500), new Vector2(4, 0), 10000));
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         utils = new Utils();
@@ -124,6 +121,8 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
 
         selectedAirplane = null;
         uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
+
+        addAirplane();
 
         Gdx.input.setInputProcessor(new InputMultiplexer(ui.stage, new GestureDetector(this)));
     }
@@ -363,6 +362,47 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         else {
             followingPlane = false;
         }
+    }
+
+    public void addAirplane() {
+        Random r = new Random();
+        int flightNum = r.nextInt(9999) + 1;
+        String flightName = "";
+        for(int i = 0; i < 3; i++) {
+            char c = (char)(r.nextInt(26) + 'A');
+            flightName += c;
+        }
+        flightName += flightNum;
+        int heading = r.nextInt(359);
+        float theta = (float) (heading * Math.PI / 180);
+        int speed = 5;
+        Vector2 velocity = new Vector2(1, 0).setLength(speed).rotate(heading);
+
+        Vector2 center = new Vector2(airport.width / 2, airport.height / 2);
+        Vector2 upperRight = new Vector2(airport.width, airport.height).sub(center);
+        Vector2 upperLeft = new Vector2(0, airport.height).sub(center);
+        Vector2 lowerLeft = new Vector2(0, 0).sub(center);
+        Vector2 lowerRight = new Vector2(airport.width, 0).sub(center);
+
+        Vector2 position = new Vector2();
+        if(heading < upperRight.angle() || heading > lowerRight.angle()) {
+            position.add(0, (float) (airport.height / 2 - airport.width / 2 * Math.tan(theta)));
+        }
+        else if(heading < upperLeft.angle()) {
+            position.add((float) (airport.width / 2 - (airport.height / 2) / Math.tan(theta)), 0);
+        }
+        else if(heading < lowerLeft.angle()) {
+            position.add(airport.width,
+                    (float) ((airport.width / 2) * Math.tan(theta) + airport.height / 2)
+            );
+        }
+        else {
+            position.add((float) ((airport.height / 2) / Math.tan(theta) + airport.width / 2),
+                    airport.height
+            );
+        }
+        airplanes.add(new Airplane(flightName, position, velocity, 10000));
+        ui.setStatus(heading + ", " + position);
     }
 
     public Airplane getSelectedAirplane(){
