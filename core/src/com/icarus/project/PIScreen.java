@@ -233,6 +233,8 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
                                     selectedAirplane.velocity.cpy()
                                             .rotate(180).angle(runwayHeading)
                             );
+
+                            selectedAirplane.setTargetRunway(runway, end);
                             if (positionDifference < 10 && headingDifference < 10){
                                 ui.setStatus("Good angle " + headingDifference);
                             }

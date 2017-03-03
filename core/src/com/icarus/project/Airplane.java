@@ -28,6 +28,8 @@ class Airplane {
     private Vector2 targetHeading;
     private Waypoint targetWaypoint;
     private Runway targetRunway;
+    private int targetRunwayPoint;
+    private int targetRunwayStage;
 
     public boolean isSelected;
 
@@ -68,10 +70,61 @@ class Airplane {
         position.add(velocity.cpy().scl(Gdx.graphics.getDeltaTime()));
 
         if(targetHeading != null) {
-            turnToHeading(targetHeading);
+            if(turnToHeading(targetHeading, turnRate)) {
+                PIScreen.getInstance().ui.setStatus(name + ": turn complete");
+                targetWaypoint = null;
+            }
         }
         else if(targetWaypoint != null) {
-            turnToHeading(targetWaypoint.position.cpy().sub(this.position));
+            if(turnToHeading(targetWaypoint.position.cpy().sub(this.position), turnRate)) {
+                PIScreen.getInstance().ui.setStatus(name + ": turn complete");
+                targetWaypoint = null;
+            }
+        }
+        else if(targetRunway != null) {
+            Vector2 target = targetRunway.points[1 - targetRunwayPoint].cpy()
+                .sub(targetRunway.points[targetRunwayPoint]).nor();
+            if(targetRunwayStage == 0) {
+                Vector2 line = position.cpy().sub(targetRunway.points[targetRunwayPoint]).nor();
+                if(velocity.dot(target) > line.dot(target)) {
+                    targetRunwayStage = 1;
+                                    }
+                else {
+                    float angle = target.angle(velocity);
+                    if(angle < 0) {
+                        velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
+                    }
+                    else {
+                        velocity.rotate(-turnRate * Gdx.graphics.getDeltaTime());
+                    }
+                }
+            }
+            else if(targetRunwayStage == 1) {
+                Vector2 targetVector = targetRunway.points[targetRunwayPoint].cpy()
+                        .sub(targetRunway.points[1 - targetRunwayPoint]);
+                Vector2 targetPoint = targetRunway.points[targetRunwayPoint];
+                float t = (targetVector.x * (position.y - targetPoint.y) +
+                        targetVector.y * (position.x - targetPoint.x)) / 
+                    (velocity.x * targetVector.y - velocity.y * targetVector.y);
+                Vector2 isect = position.cpy().add(velocity.cpy().scl(t));
+                float beta = (float) Math.acos(
+                        targetVector.cpy().nor().dot(velocity.cpy().nor()));
+                float alpha = beta / 2.0f;
+                float x = position.dst(targetPoint) / (float) Math.cos(alpha);
+                Vector2 center = isect.cpy().add((targetVector.cpy().nor().scl(-1.0f))
+                    .add(velocity.cpy().nor()).scl(0.5f).nor());
+                float radius = center.dst(position);
+                float turn = velocity.len() / radius;
+                if(turn < turnRate) {
+                    targetRunwayStage = 2;
+                }
+            }
+            else {
+                if(turnToHeading(target, turnRate)) {
+                    PIScreen.getInstance().ui.setStatus(name + ": turn complete");
+                    targetRunway = null;
+                }
+            }
         }
 
         //Point airplane in direction of travel
@@ -86,14 +139,24 @@ class Airplane {
     public void setTargetWaypoint(Waypoint waypoint) {
         this.targetWaypoint = waypoint;
         this.targetHeading = null;
+        this.targetRunway = null;
     }
 
     public void setTargetHeading(Vector2 targetHeading){
         this.targetHeading = targetHeading;
         this.targetWaypoint = null;
+        this.targetRunway = null;
     }
 
-    public void turnToHeading(Vector2 targetHeading) {
+    public void setTargetRunway(Runway targetRunway, int point) {
+        this.targetRunway = targetRunway;
+        this.targetRunwayPoint = point;
+        this.targetRunwayStage = 0;
+        this.targetHeading = null;
+        this.targetWaypoint = null;
+    }
+
+    public boolean turnToHeading(Vector2 targetHeading, float turnRate) {
         float angle = targetHeading.angle(velocity);
         if(angle < 0) {
             velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
@@ -101,10 +164,7 @@ class Airplane {
         else {
             velocity.rotate(-turnRate * Gdx.graphics.getDeltaTime());
         }
-        if(Math.abs(targetHeading.angle(velocity)) < 0.01) {
-            PIScreen.getInstance().ui.setStatus(name + ": turn complete");
-            removeTarget();
-        }
+        return Math.abs(targetHeading.angle(velocity)) < 0.001;
     }
 
     public void setSelected(boolean isSelected) {
