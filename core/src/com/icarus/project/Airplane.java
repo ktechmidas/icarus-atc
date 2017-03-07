@@ -11,6 +11,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.utils.Align;
 
+import static com.icarus.project.Airplane.TargetType.HEADING;
+import static com.icarus.project.Airplane.TargetType.NONE;
+import static com.icarus.project.Airplane.TargetType.RUNWAY;
+import static com.icarus.project.Airplane.TargetType.WAYPOINT;
+
 class Airplane {
     //The global airplane image
     public static Texture texture;
@@ -37,6 +42,7 @@ class Airplane {
     public float maxVelocity = 250; //meters per second
 
     public FlightType flightType;
+    public TargetType targetType;
 
     public Airplane(String name, FlightType flightType, Vector2 position, Vector2 velocity, float altitude) {
         this.name = name;
@@ -50,8 +56,8 @@ class Airplane {
         sprite.setOrigin(
                 sprite.getScaleX() * sprite.getWidth() / 2,
                 sprite.getScaleY() * sprite.getHeight() / 2);
-        this.targetHeading = null;
-        this.targetWaypoint = null;
+
+        targetType = NONE;
 
         sprite = new Sprite(texture);
         sprite.setOriginCenter();
@@ -72,91 +78,90 @@ class Airplane {
         //Move airplane
         position.add(velocity.cpy().scl(Gdx.graphics.getDeltaTime()));
 
-        if(targetHeading != null) {
-            if(turnToHeading(targetHeading, turnRate)) {
-                PIScreen.getInstance().ui.setStatus(name + ": turn complete");
-                targetWaypoint = null;
-            }
-        }
-        else if(targetWaypoint != null) {
-            if(turnToHeading(targetWaypoint.position.cpy().sub(this.position), turnRate)) {
-                PIScreen.getInstance().ui.setStatus(name + ": turn complete");
-                targetWaypoint = null;
-            }
-        }
-        else if(targetRunway != null) {
-            Vector2 target = targetRunway.points[1 - targetRunwayPoint].cpy()
-                .sub(targetRunway.points[targetRunwayPoint]).nor();
-            if(targetRunwayStage == 0) {
-                Vector2 line = position.cpy().sub(targetRunway.points[targetRunwayPoint]).nor();
-                if(velocity.dot(target) > line.dot(target)) {
-                    targetRunwayStage = 1;
-                                    }
-                else {
-                    float angle = target.angle(velocity);
-                    if(angle < 0) {
-                        velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
+        switch(targetType) {
+            case WAYPOINT:
+                if(turnToHeading(targetWaypoint.position.cpy().sub(this.position), turnRate)) {
+                    PIScreen.getInstance().ui.setStatus(name + ": turn complete");
+//                    targetWaypoint = null;
+                    targetType = NONE;
+                }
+                break;
+            case HEADING:
+                if(turnToHeading(targetHeading, turnRate)) {
+                    PIScreen.getInstance().ui.setStatus(name + ": turn complete");
+//                    targetWaypoint = null;
+                    targetType = NONE;
+                }
+                break;
+            case RUNWAY:
+                Vector2 target = targetRunway.points[1 - targetRunwayPoint].cpy()
+                        .sub(targetRunway.points[targetRunwayPoint]).nor();
+                if(targetRunwayStage == 0) {
+                    Vector2 line = position.cpy().sub(targetRunway.points[targetRunwayPoint]).nor();
+                    if(velocity.dot(target) > line.dot(target)) {
+                        targetRunwayStage = 1;
                     }
                     else {
-                        velocity.rotate(-turnRate * Gdx.graphics.getDeltaTime());
+                        float angle = target.angle(velocity);
+                        if(angle < 0) {
+                            velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
+                        }
+                        else {
+                            velocity.rotate(-turnRate * Gdx.graphics.getDeltaTime());
+                        }
                     }
                 }
-            }
-            else if(targetRunwayStage == 1) {
-                Vector2 targetVector = targetRunway.points[targetRunwayPoint].cpy()
-                        .sub(targetRunway.points[1 - targetRunwayPoint]);
-                Vector2 targetPoint = targetRunway.points[targetRunwayPoint];
-                float t = (targetVector.x * (position.y - targetPoint.y) +
-                        targetVector.y * (position.x - targetPoint.x)) / 
-                    (velocity.x * targetVector.y - velocity.y * targetVector.y);
-                Vector2 isect = position.cpy().add(velocity.cpy().scl(t));
-                float beta = (float) Math.acos(
-                        targetVector.cpy().nor().dot(velocity.cpy().nor()));
-                float alpha = beta / 2.0f;
-                float x = position.dst(targetPoint) / (float) Math.cos(alpha);
-                Vector2 center = isect.cpy().add((targetVector.cpy().nor().scl(-1.0f))
-                    .add(velocity.cpy().nor()).scl(0.5f).nor());
-                float radius = center.dst(position);
-                float turn = velocity.len() / radius;
-                if(turn < turnRate) {
-                    targetRunwayStage = 2;
+                else if(targetRunwayStage == 1) {
+                    Vector2 targetVector = targetRunway.points[targetRunwayPoint].cpy()
+                            .sub(targetRunway.points[1 - targetRunwayPoint]);
+                    Vector2 targetPoint = targetRunway.points[targetRunwayPoint];
+                    float t = (targetVector.x * (position.y - targetPoint.y) +
+                            targetVector.y * (position.x - targetPoint.x)) /
+                            (velocity.x * targetVector.y - velocity.y * targetVector.y);
+                    Vector2 isect = position.cpy().add(velocity.cpy().scl(t));
+                    float beta = (float) Math.acos(
+                            targetVector.cpy().nor().dot(velocity.cpy().nor()));
+                    float alpha = beta / 2.0f;
+                    float x = position.dst(targetPoint) / (float) Math.cos(alpha);
+                    Vector2 center = isect.cpy().add((targetVector.cpy().nor().scl(-1.0f))
+                            .add(velocity.cpy().nor()).scl(0.5f).nor());
+                    float radius = center.dst(position);
+                    float turn = velocity.len() / radius;
+                    if(turn < turnRate) {
+                        targetRunwayStage = 2;
+                    }
                 }
-            }
-            else {
-                if(turnToHeading(target, turnRate)) {
-                    PIScreen.getInstance().ui.setStatus(name + ": turn complete");
-                    targetRunway = null;
+                else {
+                    if(turnToHeading(target, turnRate)) {
+                        PIScreen.getInstance().ui.setStatus(name + ": turn complete");
+//                        targetRunway = null;
+                        targetType = NONE;
+                    }
                 }
-            }
+                break;
+            default:
+                break;
         }
 
         //Point airplane in direction of travel
         sprite.setRotation(velocity.angle());
     }
 
-    public void removeTarget() {
-        this.targetWaypoint = null;
-        this.targetHeading = null;
-    }
-
     public void setTargetWaypoint(Waypoint waypoint) {
         this.targetWaypoint = waypoint;
-        this.targetHeading = null;
-        this.targetRunway = null;
+        targetType = WAYPOINT;
     }
 
     public void setTargetHeading(Vector2 targetHeading){
         this.targetHeading = targetHeading;
-        this.targetWaypoint = null;
-        this.targetRunway = null;
+        targetType = HEADING;
     }
 
     public void setTargetRunway(Runway targetRunway, int point) {
         this.targetRunway = targetRunway;
         this.targetRunwayPoint = point;
         this.targetRunwayStage = 0;
-        this.targetHeading = null;
-        this.targetWaypoint = null;
+        targetType = RUNWAY;
     }
 
     public boolean turnToHeading(Vector2 targetHeading, float turnRate) {
@@ -176,5 +181,9 @@ class Airplane {
 
     public enum FlightType {
         ARRIVAL, DEPARTURE, FLYOVER
+    }
+
+    public enum TargetType {
+        WAYPOINT, HEADING, RUNWAY, NONE
     }
 }
