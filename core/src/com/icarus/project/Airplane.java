@@ -180,7 +180,7 @@ class Airplane {
     }
 
     public enum FlightType {
-        ARRIVAL, DEPARTURE, FLYOVER
+        ARRIVAL, DEPARTURE, FLYOVER, LANDED
     }
 
     public enum TargetType {

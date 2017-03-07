@@ -146,6 +146,17 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[2].b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        // Remove landed airplanes from game
+        ArrayList<Airplane> toRemove = new ArrayList<Airplane>();
+        for(Airplane airplane: airplanes) {
+            if(airplane.flightType == Airplane.FlightType.LANDED) {
+                toRemove.add(airplane);
+            }
+        }
+        for(Airplane airplane: toRemove) {
+            airplanes.remove(airplane);
+        }
+
         //draw waypoint triangles
         shapes.begin(ShapeRenderer.ShapeType.Filled);
         for(Waypoint waypoint: airport.waypoints) {
@@ -198,7 +209,6 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         }
         else {
             timeElapsed++;
-//            ui.setStatus(timeElapsed * Gdx.graphics.getDeltaTime() + ", " + airplaneInterval);
         }
     }
 
