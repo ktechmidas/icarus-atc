@@ -32,6 +32,8 @@ class Airplane {
 
     public float turnRate = 3;
 
+    public FlightType flightType;
+
     public Airplane(String name, Vector2 position, Vector2 velocity, float altitude) {
         this.name = name;
         this.position = position;
@@ -106,5 +108,9 @@ class Airplane {
 
     public void setSelected(boolean isSelected) {
         this.isSelected = isSelected;
+    }
+
+    public enum FlightType {
+        ARRIVAL, DEPARTURE, FLYOVER
     }
 }
