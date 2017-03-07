@@ -12,9 +12,7 @@ public class ProjectIcarus extends Game {
 
     public ProjectIcarus(){
         game = this;
-
     }
-
 
     public void create() {
         batch = new SpriteBatch();
@@ -23,7 +21,7 @@ public class ProjectIcarus extends Game {
     }
 
     public enum UiState {
-        SELECT_WAYPOINT, SELECT_AIRPLANE, SELECT_HEADING
+        SELECT_WAYPOINT, SELECT_AIRPLANE, SELECT_HEADING, SELECT_RUNWAY
     }
 
     public void dispose() {

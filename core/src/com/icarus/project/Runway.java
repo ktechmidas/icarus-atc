@@ -15,6 +15,8 @@ class Runway {
 
     Vector2[] nameOffsets;
 
+    float[] angles;
+
     String[] names;
 
     private GlyphLayout glyphLayout;
@@ -28,6 +30,10 @@ class Runway {
 //        }
         this.names = names;
         this.nameOffsets = nameOffsets;
+        this.angles = new float[] {
+            this.points[0].cpy().sub(this.points[1]).angle(),
+            this.points[1].cpy().sub(this.points[0]).angle()
+        };
     }
 
     //Constructs a runway based on JSON. This is used when loading a level.
