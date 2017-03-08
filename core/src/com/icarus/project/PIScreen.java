@@ -146,6 +146,17 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[2].b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        // Remove landed airplanes from game
+        ArrayList<Airplane> toRemove = new ArrayList<Airplane>();
+        for(Airplane airplane: airplanes) {
+            if(airplane.flightType == Airplane.FlightType.LANDED) {
+                toRemove.add(airplane);
+            }
+        }
+        for(Airplane airplane: toRemove) {
+            airplanes.remove(airplane);
+        }
+
         //draw waypoint triangles
         shapes.begin(ShapeRenderer.ShapeType.Filled);
         for(Waypoint waypoint: airport.waypoints) {
@@ -198,7 +209,6 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         }
         else {
             timeElapsed++;
-//            ui.setStatus(timeElapsed * Gdx.graphics.getDeltaTime() + ", " + airplaneInterval);
         }
     }
 
@@ -396,6 +406,25 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
 
     public void addAirplane() {
         Random r = new Random();
+
+        // Randomly choose between ARRIVAL and FLYOVER
+        // Also determine altitude and speed based on flight type
+        int altitude;
+        Airplane.FlightType flightType;
+        int speed;
+        int randFlightType = r.nextInt(2);
+        if(randFlightType == 0) {
+            flightType = Airplane.FlightType.FLYOVER;
+            altitude = 10000; //meters
+            speed = 5; //subject to change
+        }
+        else {
+            flightType = Airplane.FlightType.ARRIVAL;
+            altitude = 5000; //subject to change
+            speed = 3; //subject to change
+        }
+
+        // Generate a random flight name
         int flightNum = r.nextInt(9999) + 1;
         String flightName = "";
         for(int i = 0; i < 3; i++) {
@@ -403,18 +432,20 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
             flightName += c;
         }
         flightName += flightNum;
+
+        // Generate a random heading
         int heading = r.nextInt(359);
         float theta = (float) (heading * Math.PI / 180);
-        int speed = 5;
         Vector2 velocity = new Vector2(1, 0).setLength(speed).rotate(heading);
 
-        float margin = 50;
+        // Calculate vectors from the center to the corners
         Vector2 center = new Vector2(airport.width / 2, airport.height / 2);
         Vector2 upperRight = new Vector2(airport.width, airport.height).sub(center);
         Vector2 upperLeft = new Vector2(0, airport.height).sub(center);
         Vector2 lowerLeft = new Vector2(0, 0).sub(center);
         Vector2 lowerRight = new Vector2(airport.width, 0).sub(center);
 
+        // Generate a random position along the edge of the map
         Vector2 position = new Vector2();
         if(heading < upperRight.angle() || heading > lowerRight.angle()) {
             position.add(0, (float) (airport.height / 2 - airport.width / 2 * Math.tan(theta)));
@@ -432,7 +463,9 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
                     airport.height
             );
         }
-        airplanes.add(new Airplane(flightName, position, velocity, 10000));
+
+        // Add a new airplane
+        airplanes.add(new Airplane(flightName, flightType, position, velocity, altitude));
     }
 
     public void removeAirplane(Airplane airplane) {

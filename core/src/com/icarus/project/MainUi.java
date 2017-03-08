@@ -85,7 +85,6 @@ public class MainUi {
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 setStatus("altitudeButton up");
-                PIScreen.getInstance().addAirplane();
             }
         });
         stage.addActor(altitudeButton);

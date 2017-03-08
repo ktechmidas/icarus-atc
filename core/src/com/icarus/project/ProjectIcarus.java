@@ -12,9 +12,7 @@ public class ProjectIcarus extends Game {
 
     public ProjectIcarus(){
         game = this;
-
     }
-
 
     public void create() {
         batch = new SpriteBatch();
