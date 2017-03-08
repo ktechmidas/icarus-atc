@@ -85,13 +85,15 @@ class Airplane {
             Vector2 target = targetRunway.points[1 - targetRunwayPoint].cpy()
                 .sub(targetRunway.points[targetRunwayPoint]).nor();
             if(targetRunwayStage == 0) {
-                Vector2 line = position.cpy().sub(targetRunway.points[targetRunwayPoint]).nor();
-                if(velocity.dot(target) > line.dot(target)) {
+                System.out.println("stage 0");
+                Vector2 pos = position.cpy().sub(target.scl(velocity.len() / turnRate));
+                Vector2 line = pos.cpy().sub(targetRunway.points[targetRunwayPoint]).nor();
+                if(Math.abs(velocity.cpy().scl(-1).angle(target)) < Math.abs(line.angle(target))) {
                     targetRunwayStage = 1;
-                                    }
+                }
                 else {
-                    float angle = target.angle(velocity);
-                    if(angle < 0) {
+                    float angle = line.angle(velocity);
+                    if(angle > 0) {
                         velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
                     }
                     else {
@@ -100,6 +102,7 @@ class Airplane {
                 }
             }
             else if(targetRunwayStage == 1) {
+                System.out.println("stage 1");
                 Vector2 targetVector = targetRunway.points[targetRunwayPoint].cpy()
                         .sub(targetRunway.points[1 - targetRunwayPoint]);
                 Vector2 targetPoint = targetRunway.points[targetRunwayPoint];
@@ -107,19 +110,17 @@ class Airplane {
                         targetVector.y * (position.x - targetPoint.x)) / 
                     (velocity.x * targetVector.y - velocity.y * targetVector.y);
                 Vector2 isect = position.cpy().add(velocity.cpy().scl(t));
-                float beta = (float) Math.acos(
-                        targetVector.cpy().nor().dot(velocity.cpy().nor()));
-                float alpha = beta / 2.0f;
-                float x = position.dst(targetPoint) / (float) Math.cos(alpha);
-                Vector2 center = isect.cpy().add((targetVector.cpy().nor().scl(-1.0f))
-                    .add(velocity.cpy().nor()).scl(0.5f).nor());
-                float radius = center.dst(position);
-                float turn = velocity.len() / radius;
-                if(turn < turnRate) {
+                System.out.println(isect);
+                float alpha = Math.abs(velocity.angle(target.cpy().scl(-1.0f)));
+                float radius = velocity.len() / turnRate;
+                float d = (float) Math.sin(Math.PI / 2f - alpha / 2f) /
+                    ((float) Math.sin(alpha / 2f) / radius);
+                if(position.dst(isect) < d) {
                     targetRunwayStage = 2;
                 }
             }
             else {
+                System.out.println("stage 2");
                 if(turnToHeading(target, turnRate)) {
                     PIScreen.getInstance().ui.setStatus(name + ": turn complete");
                     targetRunway = null;
