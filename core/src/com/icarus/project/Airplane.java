@@ -100,17 +100,17 @@ class Airplane {
                 // If airplane is pointing away from runway line
                 if(targetRunwayStage == 0) {
                     System.out.println("stage 0");
-                    Vector2 pos = position.cpy().sub(target.scl(velocity.len() / turnRate));
-                    Vector2 line = pos.cpy().sub(targetRunway.points[targetRunwayPoint]).nor();
-                    float radius = (float) (180 / Math.PI) * (velocity.len() / turnRate);
-                    Vector2 turnCenter = targetRunway.points[targetRunwayPoint].cpy()
-                            .sub(target.cpy().setLength(radius).rotate(90)); //wrong for half the planes, to change
+                    // Calculate target point offset by turning radius
+                    Vector2 pos = targetRunway.points[targetRunwayPoint].cpy()
+                            .sub(target.scl(velocity.len() / turnRate));
+                    // Heading from airplane to pos
+                    Vector2 line = pos.cpy().sub(position).nor();
                     if(Math.abs(velocity.cpy().scl(-1).angle(target)) < Math.abs(line.angle(target))) {
                         targetRunwayStage = 1;
                     }
                     else {
                         float angle = line.angle(velocity);
-                        if(angle > 0) {
+                        if(angle < 0) {
                             velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
                         }
                         else {
@@ -126,7 +126,7 @@ class Airplane {
                     Vector2 targetPoint = targetRunway.points[targetRunwayPoint];
                     float t = (targetVector.x * (position.y - targetPoint.y) +
                             targetVector.y * (position.x - targetPoint.x)) /
-                            (velocity.x * targetVector.y - velocity.y * targetVector.y);
+                            (velocity.x * targetVector.y - velocity.y * targetVector.x);
                     Vector2 isect = position.cpy().add(velocity.cpy().scl(t));
                     System.out.println(isect);
                     float alpha = Math.abs(velocity.angle(target.cpy().scl(-1.0f)));
