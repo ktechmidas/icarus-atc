@@ -44,6 +44,8 @@ class Airplane {
     public FlightType flightType;
     public TargetType targetType;
 
+    Vector2 isect;
+
     public Airplane(String name, FlightType flightType, Vector2 position, Vector2 velocity, float altitude) {
         this.name = name;
         this.position = position;
@@ -62,6 +64,8 @@ class Airplane {
         sprite = new Sprite(texture);
         sprite.setOriginCenter();
         sprite.setScale(0.2f * Gdx.graphics.getDensity());
+
+        isect = position;
     }
 
     //Draw the airplane image. This assumes that the camera has already been set up.
@@ -94,6 +98,7 @@ class Airplane {
                 }
                 break;
             case RUNWAY:
+                float radius = velocity.len() / (turnRate * Gdx.graphics.getDeltaTime());
                 // Calculate heading of target runway
                 Vector2 target = targetRunway.points[1 - targetRunwayPoint].cpy()
                         .sub(targetRunway.points[targetRunwayPoint]).nor();
@@ -102,10 +107,10 @@ class Airplane {
                     System.out.println("stage 0");
                     // Calculate target point offset by turning radius
                     Vector2 pos = targetRunway.points[targetRunwayPoint].cpy()
-                            .sub(target.scl(velocity.len() / turnRate));
+                            .sub(target.scl(radius));
                     // Heading from airplane to pos
                     Vector2 line = pos.cpy().sub(position).nor();
-                    if(Math.abs(velocity.cpy().scl(-1).angle(target)) < Math.abs(line.angle(target))) {
+                    if(Math.abs(velocity.cpy().scl(-1).angle(target)) < Math.abs(line.cpy().scl(-1).angle(target)) + 0.05) {
                         targetRunwayStage = 1;
                     }
                     else {
@@ -121,20 +126,20 @@ class Airplane {
                 // If airplane is pointing towards runway line
                 else if(targetRunwayStage == 1) {
                     System.out.println("stage 1");
+                    // Runway heading vector
                     Vector2 targetVector = targetRunway.points[targetRunwayPoint].cpy()
                             .sub(targetRunway.points[1 - targetRunwayPoint]);
                     Vector2 targetPoint = targetRunway.points[targetRunwayPoint];
-                    float t = (targetVector.x * (position.y - targetPoint.y) +
+                    float t = (targetVector.x * (position.y - targetPoint.y) -
                             targetVector.y * (position.x - targetPoint.x)) /
                             (velocity.x * targetVector.y - velocity.y * targetVector.x);
-                    Vector2 isect = position.cpy().add(velocity.cpy().scl(t));
-                    System.out.println(isect);
+                    isect = position.cpy().add(velocity.cpy().nor().scl(t));
                     float alpha = Math.abs(velocity.angle(target.cpy().scl(-1.0f)));
-                    float radius = velocity.len() / turnRate;
                     float d = (float) Math.sin(Math.PI / 2f - alpha / 2f) /
                             ((float) Math.sin(alpha / 2f) / radius);
                     if(position.dst(isect) < d) {
                         targetRunwayStage = 2;
+                        isect = position;
                     }
                 }
                 // If turn to runway has completed

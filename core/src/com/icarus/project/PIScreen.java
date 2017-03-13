@@ -130,10 +130,10 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         selectedAirplane = null;
         uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
 
-        minAirplaneInterval = 4;
-        maxAirplaneInterval = 30;
+        minAirplaneInterval = 30; // seconds
+        maxAirplaneInterval = 240; // seconds
         timeElapsed = 0;
-        airplaneInterval = maxAirplaneInterval;
+        airplaneInterval = minAirplaneInterval;
 
         addAirplane();
 
@@ -168,6 +168,12 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         shapes.begin(ShapeRenderer.ShapeType.Filled);
         for(Runway runway: airport.runways) {
             runway.draw(shapes, camera);
+        }
+        shapes.end();
+
+        shapes.begin(ShapeRenderer.ShapeType.Line);
+        for(Airplane airplane: airplanes) {
+            shapes.line(camera.project(new Vector3(airplane.position, 0)),camera.project(new Vector3(airplane.isect, 0)));
         }
         shapes.end();
 
