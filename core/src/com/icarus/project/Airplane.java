@@ -44,7 +44,7 @@ class Airplane {
     public FlightType flightType;
     public TargetType targetType;
 
-    Vector2 intersect;
+    public boolean isLanded;
 
     public Airplane(String name, FlightType flightType, Vector2 position, Vector2 velocity, float altitude) {
         this.name = name;
@@ -65,7 +65,7 @@ class Airplane {
         sprite.setOriginCenter();
         sprite.setScale(0.2f * Gdx.graphics.getDensity());
 
-        intersect = position;
+        isLanded = false;
     }
 
     //Draw the airplane image. This assumes that the camera has already been set up.
@@ -133,13 +133,12 @@ class Airplane {
                     float toIntersect = (targetVector.x * (position.y - targetPoint.y) -
                             targetVector.y * (position.x - targetPoint.x)) /
                             (velocity.x * targetVector.y - velocity.y * targetVector.x);
-                    intersect = position.cpy().add(velocity.cpy().scl(toIntersect));
+                    Vector2 intersect = position.cpy().add(velocity.cpy().scl(toIntersect));
                     float alpha = Math.abs(velocity.angleRad(targetVector.cpy()));
                     float d = (float) Math.sin(Math.PI / 2f - alpha / 2f) /
                             ((float) Math.sin(alpha / 2f) / radius);
                     if(position.dst(intersect) < d) {
                         targetRunwayStage = 2;
-                        intersect = position;
                     }
                 }
                 // If turn to runway has completed
@@ -192,8 +191,13 @@ class Airplane {
         this.isSelected = isSelected;
     }
 
+    public void setLanded(boolean isLanded) {
+        this.isLanded = isLanded;
+        Gdx.app.log(name, "landed");
+    }
+
     public enum FlightType {
-        ARRIVAL, DEPARTURE, FLYOVER, LANDED
+        ARRIVAL, DEPARTURE, FLYOVER
     }
 
     public enum TargetType {

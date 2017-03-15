@@ -147,7 +147,7 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         // Remove landed airplanes from game
         ArrayList<Airplane> toRemove = new ArrayList<Airplane>();
         for(Airplane airplane: airplanes) {
-            if(airplane.flightType == Airplane.FlightType.LANDED) {
+            if(airplane.isLanded == true) {
                 toRemove.add(airplane);
             }
         }
@@ -166,12 +166,6 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         shapes.begin(ShapeRenderer.ShapeType.Filled);
         for(Runway runway: airport.runways) {
             runway.draw(shapes, camera);
-        }
-        shapes.end();
-
-        shapes.begin(ShapeRenderer.ShapeType.Line);
-        for(Airplane airplane: airplanes) {
-            shapes.line(camera.project(new Vector3(airplane.position, 0)),camera.project(new Vector3(airplane.intersect, 0)));
         }
         shapes.end();
 
@@ -260,25 +254,7 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
                         Vector3 pos = camera.project(new Vector3(runway.points[end], 0));
                         Circle circle = new Circle(pos.x, pos.y, 20 * Gdx.graphics.getDensity());
                         if(circle.contains(position.x, position.y)) {
-                            Vector2 runwayHeading = runway.points[end].cpy()
-                                    .sub(runway.points[Math.abs(end-1)]);
-                            float positionDifference = Math.abs(
-                                    selectedAirplane.position.cpy()
-                                            .sub(runway.points[end])
-                                            .angle(runwayHeading)
-                            );
-                            float headingDifference = Math.abs(
-                                    selectedAirplane.velocity.cpy()
-                                            .rotate(180).angle(runwayHeading)
-                            );
-
                             selectedAirplane.setTargetRunway(runway, end);
-                            if (positionDifference < 10 && headingDifference < 10){
-                                ui.setStatus("Good angle " + headingDifference);
-                            }
-                            else {
-                                ui.setStatus("Can't land " + headingDifference);
-                            }
                             uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
                             followingPlane = true;
                             break;
