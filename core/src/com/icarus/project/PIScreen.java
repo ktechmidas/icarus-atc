@@ -20,6 +20,7 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -147,11 +148,15 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         // Remove landed airplanes from game
         ArrayList<Airplane> toRemove = new ArrayList<Airplane>();
         for(Airplane airplane: airplanes) {
-            if(airplane.isLanded == true) {
+            BoundingBox airportBox = new BoundingBox(new Vector3(0, 0, 0),
+                    new Vector3(airport.width, airport.height, 0)
+            );
+            if(airplane.isLanded || !airportBox.contains(new Vector3(airplane.position, 0))) {
                 toRemove.add(airplane);
             }
         }
         for(Airplane airplane: toRemove) {
+            ui.setStatus(airplane.name + " removed");
             airplanes.remove(airplane);
         }
 

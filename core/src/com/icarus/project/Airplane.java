@@ -58,13 +58,11 @@ class Airplane {
         sprite.setOrigin(
                 sprite.getScaleX() * sprite.getWidth() / 2,
                 sprite.getScaleY() * sprite.getHeight() / 2);
-
-        targetType = NONE;
-
         sprite = new Sprite(texture);
         sprite.setOriginCenter();
         sprite.setScale(0.2f * Gdx.graphics.getDensity());
 
+        targetType = NONE;
         isLanded = false;
     }
 
