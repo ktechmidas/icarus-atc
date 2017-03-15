@@ -44,7 +44,7 @@ class Airplane {
     public FlightType flightType;
     public TargetType targetType;
 
-    Vector2 isect;
+    Vector2 intersect;
 
     public Airplane(String name, FlightType flightType, Vector2 position, Vector2 velocity, float altitude) {
         this.name = name;
@@ -65,7 +65,7 @@ class Airplane {
         sprite.setOriginCenter();
         sprite.setScale(0.2f * Gdx.graphics.getDensity());
 
-        isect = position;
+        intersect = position;
     }
 
     //Draw the airplane image. This assumes that the camera has already been set up.
@@ -130,16 +130,16 @@ class Airplane {
                     Vector2 targetVector = targetRunway.points[targetRunwayPoint].cpy()
                             .sub(targetRunway.points[1 - targetRunwayPoint]);
                     Vector2 targetPoint = targetRunway.points[targetRunwayPoint];
-                    float t = (targetVector.x * (position.y - targetPoint.y) -
+                    float toIntersect = (targetVector.x * (position.y - targetPoint.y) -
                             targetVector.y * (position.x - targetPoint.x)) /
                             (velocity.x * targetVector.y - velocity.y * targetVector.x);
-                    isect = position.cpy().add(velocity.cpy().nor().scl(t));
-                    float alpha = Math.abs(velocity.angle(target.cpy().scl(-1.0f)));
+                    intersect = position.cpy().add(velocity.cpy().scl(toIntersect));
+                    float alpha = Math.abs(velocity.angleRad(targetVector.cpy()));
                     float d = (float) Math.sin(Math.PI / 2f - alpha / 2f) /
                             ((float) Math.sin(alpha / 2f) / radius);
-                    if(position.dst(isect) < d) {
+                    if(position.dst(intersect) < d) {
                         targetRunwayStage = 2;
-                        isect = position;
+                        intersect = position;
                     }
                 }
                 // If turn to runway has completed

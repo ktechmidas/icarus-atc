@@ -20,8 +20,6 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -173,7 +171,7 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
 
         shapes.begin(ShapeRenderer.ShapeType.Line);
         for(Airplane airplane: airplanes) {
-            shapes.line(camera.project(new Vector3(airplane.position, 0)),camera.project(new Vector3(airplane.isect, 0)));
+            shapes.line(camera.project(new Vector3(airplane.position, 0)),camera.project(new Vector3(airplane.intersect, 0)));
         }
         shapes.end();
 
