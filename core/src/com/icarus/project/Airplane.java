@@ -35,11 +35,13 @@ class Airplane {
     private Runway targetRunway;
     private int targetRunwayPoint;
     private int targetRunwayStage;
+    public float targetAltitude;
 
     public boolean isSelected;
 
     public float turnRate = 3; //degree per second
     public float maxVelocity = 250; //meters per second
+    public float altitudeChangeRate = 0.0625f;
 
     public FlightType flightType;
     public TargetType targetType;
@@ -64,6 +66,7 @@ class Airplane {
 
         targetType = NONE;
         isLanded = false;
+        targetAltitude = this.altitude;
     }
 
     //Draw the airplane image. This assumes that the camera has already been set up.
@@ -155,6 +158,14 @@ class Airplane {
 
         //Point airplane in direction of travel
         sprite.setRotation(velocity.angle());
+
+        // Change altitude
+        if(altitude > targetAltitude && Math.abs(altitude - targetAltitude) > 1) {
+            altitude -= velocity.len() * altitudeChangeRate;
+        }
+        else if(altitude < targetAltitude && Math.abs(altitude - targetAltitude) > 1) {
+            altitude += velocity.len() * altitudeChangeRate;
+        }
     }
 
     public void setTargetWaypoint(Waypoint waypoint) {

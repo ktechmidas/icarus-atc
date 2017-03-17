@@ -272,7 +272,8 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
                 break;
             case CHANGE_ALTITUDE:
                 uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
-                ui.setStatus("target altitude set to: " + targetAltitude);
+                ui.setStatus("target altitude set to: " + altitudeTarget);
+                selectedAirplane.targetAltitude = altitudeTarget;
                 break;
             default:
                 break;
