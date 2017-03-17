@@ -95,6 +95,7 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         manager.load("sprites/airplane.png", Texture.class);
 
         manager.load("buttons/altitude_button.png", Texture.class);
+        manager.load("buttons/waypoint_button.png", Texture.class);
         manager.load("buttons/heading_button.png", Texture.class);
         manager.load("buttons/takeoff_button.png", Texture.class);
         manager.load("buttons/circle_button.png", Texture.class);
@@ -262,6 +263,7 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
                             selectedAirplane.setTargetRunway(runway, end);
                             uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
                             followingPlane = true;
+                            ui.setStatus(runway.names[end] + " selected");
                             break;
                         }
                     }

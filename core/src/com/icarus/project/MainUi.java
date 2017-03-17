@@ -27,6 +27,7 @@ public class MainUi {
     public Stage stage;
 
     private ImageButton headingButton;
+    private ImageButton waypointButton;
     private ImageButton altitudeButton;
     private ImageButton circleButton;
     private ImageButton headingWheel;
@@ -48,7 +49,7 @@ public class MainUi {
 
         status = "Welcome to Icarus Air Traffic Control";
 
-        // Initialize waypoint selection button
+        // Initialize heading selection button
         Drawable headingDrawable = new TextureRegionDrawable(
                 new TextureRegion((Texture) assets.get("buttons/heading_button.png"))
         );
@@ -62,13 +63,33 @@ public class MainUi {
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                showHeadingSelector(true);
+                showAirplaneButtons(false);
+                PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_HEADING;
+            }
+        });
+        stage.addActor(headingButton);
+
+        // Initialize waypoint selection button
+        Drawable waypointDrawable = new TextureRegionDrawable(
+                new TextureRegion((Texture) assets.get("buttons/waypoint_button.png"))
+        );
+        waypointButton = new ImageButton(waypointDrawable);
+        waypointButton.setSize(buttonSize, buttonSize);
+        waypointButton.setPosition(2 * buttonGap + buttonSize, statusBarHeight + buttonGap);
+        waypointButton.addListener(new InputListener(){
+            @Override
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+            @Override
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 setStatus("Select a target waypoint");
                 PIScreen.getInstance().followingPlane = false;
                 PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_WAYPOINT;
             }
         });
-        stage.addActor(headingButton);
-        headingButton.setSize(buttonSize, buttonSize);
+        stage.addActor(waypointButton);
 
         // Initialize altitude button
         Drawable altitudeDrawable = new TextureRegionDrawable(
@@ -76,7 +97,7 @@ public class MainUi {
         );
         altitudeButton = new ImageButton(altitudeDrawable);
         altitudeButton.setSize(buttonSize, buttonSize);
-        altitudeButton.setPosition(2 * buttonGap + buttonSize, statusBarHeight + buttonGap);
+        altitudeButton.setPosition(3 * buttonGap + 2 * buttonSize, statusBarHeight + buttonGap);
         altitudeButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -88,15 +109,14 @@ public class MainUi {
             }
         });
         stage.addActor(altitudeButton);
-        altitudeButton.setSize(buttonSize, buttonSize);
 
-        // Initialize heading selection button
+        // Initialize circling button
         Drawable circleDrawable = new TextureRegionDrawable(
                 new TextureRegion((Texture) assets.get("buttons/circle_button.png"))
         );
         circleButton = new ImageButton(circleDrawable);
         circleButton.setSize(buttonSize, buttonSize);
-        circleButton.setPosition(3 * buttonGap + 2 * buttonSize, statusBarHeight + buttonGap);
+        circleButton.setPosition(4 * buttonGap + 3 * buttonSize, statusBarHeight + buttonGap);
         circleButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -104,13 +124,31 @@ public class MainUi {
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                showHeadingSelector(true);
-                showAirplaneButtons(false);
-                PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_HEADING;
+                // Circle airport
             }
         });
         stage.addActor(circleButton);
-        circleButton.setSize(buttonSize, buttonSize);
+
+        // Initialize landing button
+        Drawable landingDrawable = new TextureRegionDrawable(
+                new TextureRegion((Texture) assets.get("buttons/landing_button.png"))
+        );
+        landingButton = new ImageButton(landingDrawable);
+        landingButton.setSize(buttonSize, buttonSize);
+        landingButton.setPosition(5 * buttonGap + 4 * buttonSize, statusBarHeight + buttonGap);
+        landingButton.addListener(new InputListener(){
+            @Override
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+            @Override
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                setStatus("landingButton");
+                PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_RUNWAY;
+                PIScreen.getInstance().followingPlane = false;
+            }
+        });
+        stage.addActor(landingButton);
 
         // Initialize heading selection wheel
         Drawable headingWheelDrawable = new TextureRegionDrawable(
@@ -143,28 +181,6 @@ public class MainUi {
         });
         stage.addActor(headingWheel);
 
-        // Initialize landing button
-        Drawable landingDrawable = new TextureRegionDrawable(
-                new TextureRegion((Texture) assets.get("buttons/landing_button.png"))
-        );
-        landingButton = new ImageButton(landingDrawable);
-        landingButton.setSize(buttonSize, buttonSize);
-        landingButton.setPosition(4 * buttonGap + 3 * buttonSize, statusBarHeight + buttonGap);
-        landingButton.addListener(new InputListener(){
-            @Override
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-            @Override
-            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                setStatus("landingButton");
-                PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_RUNWAY;
-                PIScreen.getInstance().followingPlane = false;
-            }
-        });
-        stage.addActor(landingButton);
-        landingButton.setSize(buttonSize, buttonSize);
-
         showAirplaneButtons(false);
         showHeadingSelector(false);
     }
@@ -196,6 +212,7 @@ public class MainUi {
 
     public void showAirplaneButtons(boolean isVisible){
         headingButton.setVisible(isVisible);
+        waypointButton.setVisible(isVisible);
         altitudeButton.setVisible(isVisible);
         circleButton.setVisible(isVisible);
         landingButton.setVisible(isVisible);
@@ -203,5 +220,6 @@ public class MainUi {
 
     public void showHeadingSelector(boolean isVisible){
         headingWheel.setVisible(isVisible);
+        showAirplaneButtons(!isVisible);
     }
 }
