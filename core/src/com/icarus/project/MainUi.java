@@ -105,6 +105,7 @@ public class MainUi {
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                PIScreen.getInstance().getSelectedAirplane().targetAltitude = 1000;
                 setStatus("altitudeButton up");
             }
         });
