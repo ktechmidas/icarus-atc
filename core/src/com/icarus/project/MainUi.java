@@ -101,11 +101,13 @@ public class MainUi {
         altitudeButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                PIScreen.getInstance().uiState = ProjectIcarus.UiState.CHANGE_ALTITUDE;
+                PIScreen.getInstance().altitudeTarget =
+                    PIScreen.getInstance().selectedAirplane.altitude;
                 return true;
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                setStatus("altitudeButton up");
             }
         });
         stage.addActor(altitudeButton);

@@ -21,7 +21,7 @@ public class ProjectIcarus extends Game {
     }
 
     public enum UiState {
-        SELECT_WAYPOINT, SELECT_AIRPLANE, SELECT_HEADING, SELECT_RUNWAY
+        SELECT_WAYPOINT, SELECT_AIRPLANE, SELECT_HEADING, SELECT_RUNWAY, CHANGE_ALTITUDE
     }
 
     public void dispose() {

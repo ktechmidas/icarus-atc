@@ -57,7 +57,8 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
 
     public boolean followingPlane;
 
-    private Airplane selectedAirplane;
+    public Airplane selectedAirplane;
+    public float altitudeTarget;
 
     public static final String TAG = "PIState";
 
@@ -268,6 +269,11 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
                         }
                     }
                 }
+                break;
+            case CHANGE_ALTITUDE:
+                uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
+                ui.setStatus("target altitude set to: " + targetAltitude);
+                break;
             default:
                 break;
         }
@@ -280,11 +286,20 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-        followingPlane = false;
-        setCameraPosition(camera.position.add(
-                camera.unproject(new Vector3(0, 0, 0))
-                        .add(camera.unproject(new Vector3(deltaX, deltaY, 0)).scl(-1f))
-        ));
+        if(uiState == ProjectIcarus.UiState.CHANGE_ALTITUDE) {
+            altitudeTarget -= deltaY * 3;
+            if(altitudeTarget < 0f) {
+                altitudeTarget = 0f;
+            }
+            ui.setStatus("altitude target: " + altitudeTarget);
+        }
+        else {
+            followingPlane = false;
+            setCameraPosition(camera.position.add(
+                    camera.unproject(new Vector3(0, 0, 0))
+                            .add(camera.unproject(new Vector3(deltaX, deltaY, 0)).scl(-1f))
+            ));
+        }
         return true;
     }
 
