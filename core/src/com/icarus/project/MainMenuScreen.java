@@ -34,9 +34,8 @@ public class MainMenuScreen implements Screen {
     OrthographicCamera camera;
     private BitmapFont font = new BitmapFont();
     private SpriteBatch batch;
-    private ImageButton gameButton;
-    private Skin skin = new Skin();
     private ImageButton menuButton;
+
 
     private int buttonSize = (int) (100 * Gdx.graphics.getDensity());
     private int buttonGap = (int) (5 * Gdx.graphics.getDensity());
@@ -54,30 +53,10 @@ public class MainMenuScreen implements Screen {
         camera.setToOrtho(false, 800, 480);
         batch = new SpriteBatch();
 
-    }
-    private void skinCreate(AssetManager assets){
-        Drawable landingDrawable = new TextureRegionDrawable(
-                new TextureRegion((Texture) assets.get("buttons/landing_button.png"))
-        );
-        menuButton = new ImageButton(landingDrawable);
-        menuButton.setSize(buttonSize, buttonSize);
-        menuButton.setPosition(4 * buttonGap + 3 * buttonSize, statusBarHeight + buttonGap);
-        menuButton.addListener(new InputListener(){
-            @Override
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-            @Override
-            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                setStatus("menuButton");
-                game.setScreen(new PIScreen(this));
-            }
-        });
-        stage.addActor(menuButton);
-        menuButton.setSize(buttonSize, buttonSize);
 
 
     }
+
 
     @Override
     public void show() {
