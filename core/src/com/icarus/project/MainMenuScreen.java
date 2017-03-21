@@ -37,7 +37,6 @@ public class MainMenuScreen implements Screen {
     private ImageButton gameButton;
     private Skin skin = new Skin();
     private ImageButton menuButton;
-
     private int buttonSize = (int) (100 * Gdx.graphics.getDensity());
     private int buttonGap = (int) (5 * Gdx.graphics.getDensity());
     public int statusBarHeight = (int) (25 * Gdx.graphics.getDensity());
@@ -54,8 +53,10 @@ public class MainMenuScreen implements Screen {
         camera.setToOrtho(false, 800, 480);
         batch = new SpriteBatch();
 
+
+
     }
-    private void skinCreate(AssetManager assets){
+    private void create(AssetManager assets){
         Drawable landingDrawable = new TextureRegionDrawable(
                 new TextureRegion((Texture) assets.get("buttons/landing_button.png"))
         );
@@ -75,8 +76,6 @@ public class MainMenuScreen implements Screen {
         });
         stage.addActor(menuButton);
         menuButton.setSize(buttonSize, buttonSize);
-
-
     }
 
     @Override
