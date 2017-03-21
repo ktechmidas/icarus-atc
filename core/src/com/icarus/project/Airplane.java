@@ -48,7 +48,9 @@ class Airplane {
 
     public boolean isLanded;
 
-    public Airplane(String name, FlightType flightType, Vector2 position, Vector2 velocity, float altitude) {
+    public Airplane(
+            String name, FlightType flightType, Vector2 position, Vector2 velocity, float altitude)
+    {
         this.name = name;
         this.position = position;
         this.velocity = velocity;
