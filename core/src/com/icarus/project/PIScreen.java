@@ -491,6 +491,10 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         airplanes.add(new Airplane(flightName, flightType, position, velocity, altitude));
     }
 
+    public static float toMeters(float pixels) {
+        return 50 * (float) pixels;
+    }
+
     public void removeAirplane(Airplane airplane) {
         airplanes.remove(airplane);
     }

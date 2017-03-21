@@ -163,6 +163,7 @@ class Airplane {
 
         // Change altitude
         if(altitude > targetAltitude && Math.abs(altitude - targetAltitude) > 1) {
+//            altitude -= PIScreen.toMeters(velocity.len()) * Gdx.graphics.getFramesPerSecond() * altitudeChangeRate;
             altitude -= velocity.len() * altitudeChangeRate;
         }
         else if(altitude < targetAltitude && Math.abs(altitude - targetAltitude) > 1) {
