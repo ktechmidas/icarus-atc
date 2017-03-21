@@ -36,6 +36,7 @@ class Airplane {
     private int targetRunwayPoint;
     private int targetRunwayStage;
     public float targetAltitude;
+    private float targetSpeed;
 
     public boolean isSelected;
 
@@ -167,6 +168,10 @@ class Airplane {
         else if(altitude < targetAltitude && Math.abs(altitude - targetAltitude) > 1) {
             altitude += velocity.len() * altitudeChangeRate;
         }
+
+        if(velocity.len() == 0 && altitude == 0) {
+            setLanded(true);
+        }
     }
 
     public void setTargetWaypoint(Waypoint waypoint) {
@@ -184,6 +189,8 @@ class Airplane {
         this.targetRunwayPoint = point;
         this.targetRunwayStage = 0;
         targetType = RUNWAY;
+        this.targetAltitude = 0;
+        this.targetSpeed = 70; // meters per second
     }
 
     public boolean turnToHeading(Vector2 targetHeading, float turnRate) {
