@@ -23,11 +23,14 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-public class PIScreen extends Game implements GestureDetector.GestureListener, Screen {
+public class PIScreen extends Game implements Screen, GestureDetector.GestureListener {
     private Game game;
     private Vector2 oldInitialFirstPointer=null, oldInitialSecondPointer=null;
     private float oldScale;
@@ -77,7 +80,7 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
     private int timeElapsed;
     private float airplaneInterval;
 
-    public PIScreen(Game game) {
+    public PIScreen(ProjectIcarus game) {
         this.game = game;
         self = this;
         fontSize = 20.0f * Gdx.graphics.getDensity();
@@ -384,13 +387,10 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
 
     private void setToBoundary() {
         // Calculates the distance from the edge of the camera to the specified boundary
-        toBoundaryRight = airport.width - camera.position.x
-                - Gdx.graphics.getWidth()/2 * camera.zoom;
+        toBoundaryRight = airport.width - camera.position.x - Gdx.graphics.getWidth()/2 * camera.zoom;
         toBoundaryLeft = -camera.position.x + Gdx.graphics.getWidth()/2 * camera.zoom;
-        toBoundaryTop = airport.height - camera.position.y
-                - Gdx.graphics.getHeight()/2 * camera.zoom;
-        toBoundaryBottom = -camera.position.y
-                + (Gdx.graphics.getHeight()/2 - ui.statusBarHeight) * camera.zoom;
+        toBoundaryTop = airport.height - camera.position.y - Gdx.graphics.getHeight()/2 * camera.zoom;
+        toBoundaryBottom = -camera.position.y + (Gdx.graphics.getHeight()/2 - ui.statusBarHeight) * camera.zoom;
     }
 
     private void setCameraPosition(Vector3 position) {
