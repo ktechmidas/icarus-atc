@@ -49,7 +49,9 @@ class Airplane {
 
     public boolean isLanded;
 
-    public Airplane(String name, FlightType flightType, Vector2 position, Vector2 velocity, float altitude) {
+    public Airplane(
+            String name, FlightType flightType, Vector2 position, Vector2 velocity, float altitude)
+    {
         this.name = name;
         this.position = position;
         this.velocity = velocity;
@@ -73,9 +75,10 @@ class Airplane {
     //Draw the airplane image. This assumes that the camera has already been set up.
     public void draw(BitmapFont font, SpriteBatch batch, Camera camera) {
         Vector3 pos = camera.project(new Vector3(position.x, position.y, 0));
+        sprite.setColor(Colors.colors[4]);
         sprite.setPosition(pos.x - sprite.getWidth() / 2, pos.y - sprite.getHeight() / 2);
         sprite.draw(batch);
-        font.setColor(new Color(1, 1, 1, 1));
+        font.setColor(Colors.colors[4]);
         font.draw(batch, (int) altitude + "m", pos.x - 100, pos.y - 40, 200, Align.center, false);
     }
 

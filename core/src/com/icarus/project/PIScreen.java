@@ -12,20 +12,25 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
-import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.utils.Align;
+
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
+import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-public class PIScreen extends Game implements GestureDetector.GestureListener, Screen {
+public class PIScreen extends Game implements Screen, GestureDetector.GestureListener {
     private Game game;
     private Vector2 oldInitialFirstPointer=null, oldInitialSecondPointer=null;
     private float oldScale;
@@ -37,6 +42,7 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
     private ArrayList<Airplane> airplanes;
     //The font used for labels
     private BitmapFont labelFont;
+    private BitmapFont titleFont;
     //Used for drawing airplanes
     private SpriteBatch batch;
     private Utils utils;
@@ -67,14 +73,14 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
     public ProjectIcarus.UiState uiState;
 
     public FreetypeFontLoader.FreeTypeFontLoaderParameter labelFontParams;
+    public FreetypeFontLoader.FreeTypeFontLoaderParameter titleFontParams;
 
     private float minAirplaneInterval;
     private float maxAirplaneInterval;
     private int timeElapsed;
     private float airplaneInterval;
 
-
-    public PIScreen(Game game) {
+    public PIScreen(ProjectIcarus game) {
         this.game = game;
         self = this;
         fontSize = 20.0f * Gdx.graphics.getDensity();
@@ -92,6 +98,12 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         labelFontParams.fontFileName = "fonts/3270Medium.ttf";
         labelFontParams.fontParameters.size = Math.round(fontSize);
         manager.load("fonts/3270Medium.ttf", BitmapFont.class, labelFontParams);
+
+        titleFontParams = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+        titleFontParams.fontFileName = "fonts/3270Medium.ttf";
+        titleFontParams.fontParameters.size = Math.round(fontSize * 4);
+        titleFontParams.fontFileName = "fonts/3270Medium.ttf";
+        manager.load("fonts/3270Medium_title.ttf", BitmapFont.class, titleFontParams);
         //load the airplane sprite
         manager.load("sprites/airplane.png", Texture.class);
 
@@ -107,6 +119,7 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
         manager.finishLoading();
         airport = manager.get("airports/test.json");
         labelFont = manager.get("fonts/3270Medium.ttf");
+        titleFont = manager.get("fonts/3270Medium_title.ttf");
         Airplane.texture = manager.get("sprites/airplane.png");
 
         shapes = new ShapeRenderer();
@@ -200,6 +213,17 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
 
         ui.draw();
 
+        if(uiState == ProjectIcarus.UiState.CHANGE_ALTITUDE) {
+            batch.begin();
+            titleFont.setColor(Colors.colors[4]);
+            titleFont.draw(batch, (int) altitudeTarget + "m",
+                    (float) Gdx.graphics.getWidth() / 2 - 100,
+                    (float) Gdx.graphics.getHeight() / 2,
+                    200,
+                    Align.center, false);
+            batch.end();
+        }
+
         // follow selected airplane
         if(selectedAirplane != null && followingPlane) {
             setCameraPosition(new Vector3(selectedAirplane.position, 0));
@@ -292,7 +316,6 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
             if(altitudeTarget < 0f) {
                 altitudeTarget = 0f;
             }
-            ui.setStatus("altitude target: " + altitudeTarget);
         }
         else {
             followingPlane = false;
@@ -364,13 +387,10 @@ public class PIScreen extends Game implements GestureDetector.GestureListener, S
 
     private void setToBoundary() {
         // Calculates the distance from the edge of the camera to the specified boundary
-        toBoundaryRight = airport.width - camera.position.x
-                - Gdx.graphics.getWidth()/2 * camera.zoom;
+        toBoundaryRight = airport.width - camera.position.x - Gdx.graphics.getWidth()/2 * camera.zoom;
         toBoundaryLeft = -camera.position.x + Gdx.graphics.getWidth()/2 * camera.zoom;
-        toBoundaryTop = airport.height - camera.position.y
-                - Gdx.graphics.getHeight()/2 * camera.zoom;
-        toBoundaryBottom = -camera.position.y
-                + (Gdx.graphics.getHeight()/2 - ui.statusBarHeight) * camera.zoom;
+        toBoundaryTop = airport.height - camera.position.y - Gdx.graphics.getHeight()/2 * camera.zoom;
+        toBoundaryBottom = -camera.position.y + (Gdx.graphics.getHeight()/2 - ui.statusBarHeight) * camera.zoom;
     }
 
     private void setCameraPosition(Vector3 position) {

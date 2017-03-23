@@ -11,6 +11,6 @@ public class AndroidLauncher extends AndroidApplication {
         super.onCreate(savedInstanceState);
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         config.numSamples = 16;
-        initialize(new ProjectIcarus(), config);
+        initialize(new ProjectIcarus());
     }
 }
