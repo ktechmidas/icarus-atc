@@ -23,7 +23,7 @@ class Airplane {
     public String name;
     //The position of this airplane
     public Vector2 position;
-    //The velocity of this airplane
+    //The velocity of this airplane in pixels per second
     public Vector2 velocity;
     //The altitude of this airplane in meters
     public float altitude;
@@ -41,7 +41,6 @@ class Airplane {
     public boolean isSelected;
 
     public float turnRate = 3; //degree per second
-    public float maxVelocity = 250; //meters per second
     public float altitudeChangeRate = 0.0625f;
 
     public FlightType flightType;

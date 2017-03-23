@@ -432,19 +432,19 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
         // Randomly choose between ARRIVAL and FLYOVER
         // Also determine altitude and speed based on flight type
-        int altitude;
+        float altitude;
         Airplane.FlightType flightType;
-        int speed;
+        float speed;
         int randFlightType = r.nextInt(2);
         if(randFlightType == 0) {
             flightType = Airplane.FlightType.FLYOVER;
             altitude = 10000; //meters
-            speed = 5; //subject to change
+            speed = toPixels(250); //subject to change
         }
         else {
             flightType = Airplane.FlightType.ARRIVAL;
             altitude = 5000; //subject to change
-            speed = 3; //subject to change
+            speed = toPixels(150); //subject to change
         }
 
         // Generate a random flight name
@@ -492,7 +492,11 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     }
 
     public static float toMeters(float pixels) {
-        return 50 * (float) pixels;
+        return 100 * pixels;
+    }
+
+    public static float toPixels(float meters) {
+        return meters / 100;
     }
 
     public void removeAirplane(Airplane airplane) {
