@@ -27,5 +27,6 @@ public class ProjectIcarus extends Game {
     public void dispose() {
         batch.dispose();
         font.dispose();
+        screen.dispose();
     }
 }

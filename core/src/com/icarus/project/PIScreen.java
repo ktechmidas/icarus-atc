@@ -20,9 +20,7 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.viewport.Viewport;
+
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -75,8 +73,9 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     private float airplaneInterval;
 
 
-    public PIScreen(InputListener inputListener) {
-        self = this;
+    public PIScreen(ProjectIcarus projectIcarus) {
+        game = this;
+
         fontSize = 20.0f * Gdx.graphics.getDensity();
         //initialize the AssetManager
         AssetManager manager = new AssetManager();

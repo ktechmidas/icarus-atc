@@ -3,6 +3,8 @@ package com.icarus.project;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -28,13 +30,13 @@ import com.badlogic.gdx.assets.AssetManager;
 public class MainMenuScreen implements Screen {
     final ProjectIcarus game;
     public Stage stage;
-    private String status;
+    AssetManager menuManager = new AssetManager();
+    FileHandleResolver menuResolver = new InternalFileHandleResolver();
 
 
     OrthographicCamera camera;
     private BitmapFont font = new BitmapFont();
     private SpriteBatch batch;
-    private ImageButton gameButton;
     private Skin skin = new Skin();
     private ImageButton menuButton;
     private int buttonSize = (int) (100 * Gdx.graphics.getDensity());
@@ -53,12 +55,10 @@ public class MainMenuScreen implements Screen {
         camera.setToOrtho(false, 800, 480);
         batch = new SpriteBatch();
 
-
-
-    }
-    private void create(AssetManager assets){
+        menuManager.load("buttons/landing_button.png", Texture.class);
+        menuManager.finishLoading();
         Drawable landingDrawable = new TextureRegionDrawable(
-                new TextureRegion((Texture) assets.get("buttons/landing_button.png"))
+                new TextureRegion((Texture) menuManager.get("buttons/landing_button.png"))
         );
         menuButton = new ImageButton(landingDrawable);
         menuButton.setSize(buttonSize, buttonSize);
@@ -70,13 +70,16 @@ public class MainMenuScreen implements Screen {
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                setStatus("menuButton");
-                game.setScreen(new PIScreen(this));
+               /* game.setScreen(new PIScreen(game));
+                dispose();*/
+               Gdx.app.log("MainMenuScreen","Main menu button");
             }
         });
         stage.addActor(menuButton);
         menuButton.setSize(buttonSize, buttonSize);
+
     }
+
 
     @Override
     public void show() {
@@ -91,8 +94,6 @@ public class MainMenuScreen implements Screen {
             stage.act();
             stage.draw();
 }
-
-
 
 
     @Override
@@ -115,13 +116,13 @@ public class MainMenuScreen implements Screen {
 
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
 
     @Override
     public void dispose() {
         batch.dispose();
         font.dispose();
+        menuManager.dispose();
+
     }
+
 }
