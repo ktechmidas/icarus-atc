@@ -37,7 +37,6 @@ public class MainMenuScreen implements Screen {
     OrthographicCamera camera;
     private BitmapFont font = new BitmapFont();
     private SpriteBatch batch;
-    private Skin skin = new Skin();
     private ImageButton menuButton;
     private int buttonSize = (int) (100 * Gdx.graphics.getDensity());
     private int buttonGap = (int) (5 * Gdx.graphics.getDensity());
