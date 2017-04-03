@@ -91,8 +91,10 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
         manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
 
+        String airportFile = "airports/airport.json";
+
         //load the airport
-        manager.load("airports/test.json", Airport.class);
+        manager.load(airportFile, Airport.class);
         //load the label font
         labelFontParams = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         labelFontParams.fontFileName = "fonts/3270Medium.ttf";
@@ -117,7 +119,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         manager.load("buttons/selection_wheel.png", Texture.class);
 
         manager.finishLoading();
-        airport = manager.get("airports/test.json");
+        airport = manager.get(airportFile);
         labelFont = manager.get("fonts/3270Medium.ttf");
         titleFont = manager.get("fonts/3270Medium_title.ttf");
         Airplane.texture = manager.get("sprites/airplane.png");
