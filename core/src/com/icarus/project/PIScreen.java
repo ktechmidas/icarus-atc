@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeType;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Circle;
@@ -43,6 +44,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     //The font used for labels
     private BitmapFont labelFont;
     private BitmapFont titleFont;
+    private BitmapFont airplaneFont;
     //Used for drawing airplanes
     private SpriteBatch batch;
     private Utils utils;
@@ -74,6 +76,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     public FreetypeFontLoader.FreeTypeFontLoaderParameter labelFontParams;
     public FreetypeFontLoader.FreeTypeFontLoaderParameter titleFontParams;
+    public FreetypeFontLoader.FreeTypeFontLoaderParameter airplaneFontParams;
 
     private float minAirplaneInterval;
     private float maxAirplaneInterval;
@@ -95,6 +98,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
         //load the airport
         manager.load(airportFile, Airport.class);
+
         //load the label font
         labelFontParams = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         labelFontParams.fontFileName = "fonts/3270Medium.ttf";
@@ -106,6 +110,13 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         titleFontParams.fontParameters.size = Math.round(fontSize * 4);
         titleFontParams.fontFileName = "fonts/3270Medium.ttf";
         manager.load("fonts/3270Medium_title.ttf", BitmapFont.class, titleFontParams);
+
+        airplaneFontParams = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+        airplaneFontParams.fontFileName = "fonts/3270Medium.ttf";
+        airplaneFontParams.fontParameters.size = Math.round(fontSize / 2);
+        airplaneFontParams.fontFileName = "fonts/3270Medium.ttf";
+        manager.load("fonts/3270Medium_airplane.ttf", BitmapFont.class, airplaneFontParams);
+
         //load the airplane sprite
         manager.load("sprites/airplane.png", Texture.class);
 
@@ -122,6 +133,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         airport = manager.get(airportFile);
         labelFont = manager.get("fonts/3270Medium.ttf");
         titleFont = manager.get("fonts/3270Medium_title.ttf");
+        airplaneFont = manager.get("fonts/3270Medium_airplane.ttf");
         Airplane.texture = manager.get("sprites/airplane.png");
 
         shapes = new ShapeRenderer();
@@ -209,7 +221,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         batch.begin();
         for(Airplane airplane: airplanes) {
             airplane.step(); //Move airplanes
-            airplane.draw(labelFont, batch, camera);
+            airplane.draw(airplaneFont, batch, camera);
         }
         batch.end();
 
@@ -494,11 +506,11 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     }
 
     public static float toMeters(float pixels) {
-        return 100 * pixels;
+        return 50 * pixels;
     }
 
     public static float toPixels(float meters) {
-        return meters / 100;
+        return meters / 50;
     }
 
     public void removeAirplane(Airplane airplane) {

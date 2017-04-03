@@ -41,7 +41,7 @@ class Airplane {
     public boolean isSelected;
 
     public float turnRate = 3; //degree per second
-    public float altitudeChangeRate = 0.0625f;
+    public float altitudeChangeRate = 0.1f;
 
     public FlightType flightType;
     public TargetType targetType;
@@ -78,7 +78,9 @@ class Airplane {
         sprite.setPosition(pos.x - sprite.getWidth() / 2, pos.y - sprite.getHeight() / 2);
         sprite.draw(batch);
         font.setColor(Colors.colors[4]);
-        font.draw(batch, (int) altitude + "m", pos.x - 100, pos.y - 40, 200, Align.center, false);
+        font.draw(batch, (int) altitude + "m|" + (int) PIScreen.toMeters(velocity.len()) + "m/s",
+                pos.x - 100, pos.y - 60, 200, Align.center, false
+        );
     }
 
     //Move the airplane image at evey render
