@@ -29,7 +29,6 @@ public class MainMenuScreen implements Screen {
     AssetManager menuManager = new AssetManager();
     FileHandleResolver menuResolver = new InternalFileHandleResolver();
 
-
     OrthographicCamera camera;
     private BitmapFont font = new BitmapFont();
     private SpriteBatch batch;
@@ -42,11 +41,8 @@ public class MainMenuScreen implements Screen {
 
     public MainMenuScreen(final ProjectIcarus game) {
         this.game = game;
-
         stage = new Stage();
         BitmapFont font = new BitmapFont();
-
-
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
         batch = new SpriteBatch();
@@ -62,13 +58,14 @@ public class MainMenuScreen implements Screen {
         menuButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                Gdx.app.log("MainMenuScreen","Main menu button");
                 return true;
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-               /* game.setScreen(new PIScreen(game));
+               /*game.setScreen(new PIScreen(game));
                 dispose();*/
-               Gdx.app.log("MainMenuScreen","Main menu button");
+
             }
         });
         stage.addActor(menuButton);
