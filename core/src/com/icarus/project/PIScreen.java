@@ -166,7 +166,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             BoundingBox airportBox = new BoundingBox(new Vector3(0, 0, 0),
                     new Vector3(airport.width, airport.height, 0)
             );
-            if(airplane.isLanded || !airportBox.contains(new Vector3(airplane.position, 0))) {
+            if(!airportBox.contains(new Vector3(airplane.getPosition(), 0))) {
                 toRemove.add(airplane);
             }
         }
@@ -226,7 +226,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
         // follow selected airplane
         if(selectedAirplane != null && followingPlane) {
-            setCameraPosition(new Vector3(selectedAirplane.position, 0));
+            setCameraPosition(new Vector3(selectedAirplane.getPosition(), 0));
         }
 
         if(timeElapsed * Gdx.graphics.getDeltaTime() > airplaneInterval) {
@@ -297,7 +297,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             case CHANGE_ALTITUDE:
                 uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
                 ui.setStatus("target altitude set to: " + altitudeTarget);
-                selectedAirplane.targetAltitude = altitudeTarget;
+                ((AirplaneFlying) selectedAirplane.state).targetAltitude = altitudeTarget;
                 break;
             default:
                 break;
