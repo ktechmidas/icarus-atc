@@ -78,8 +78,14 @@ class Airplane {
         sprite.setPosition(pos.x - sprite.getWidth() / 2, pos.y - sprite.getHeight() / 2);
         sprite.draw(batch);
         font.setColor(Colors.colors[4]);
-        font.draw(batch, (int) altitude + "m|" + (int) PIScreen.toMeters(velocity.len()) + "m/s",
-                pos.x - 100, pos.y - 60, 200, Align.center, false
+        // Draw airplane label
+        font.draw(batch,
+                (int) altitude + "m|" + (int) PIScreen.toMeters(velocity.len()) + "m/s", // Text
+                pos.x - 100, // Align text with left side of text box
+                pos.y - 25 * Gdx.graphics.getDensity(), // Offset text in y-direction
+                200, // Size of text box
+                Align.center,
+                false
         );
     }
 

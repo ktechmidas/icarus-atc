@@ -113,7 +113,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
         airplaneFontParams = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         airplaneFontParams.fontFileName = "fonts/3270Medium.ttf";
-        airplaneFontParams.fontParameters.size = Math.round(fontSize / 2);
+        airplaneFontParams.fontParameters.size = Math.round(fontSize * 0.8f);
         airplaneFontParams.fontFileName = "fonts/3270Medium.ttf";
         manager.load("fonts/3270Medium_airplane.ttf", BitmapFont.class, airplaneFontParams);
 
