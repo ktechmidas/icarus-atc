@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.utils.Align;
 
+import static com.icarus.project.Airplane.StateType;
+
 class Airplane {
     //The global airplane image
     public static Texture texture;
@@ -25,10 +27,14 @@ class Airplane {
 
     public FlightType flightType;
 
+    public StateType stateType;
+
     public Airplane(
             String name, FlightType flightType, Vector2 position, Vector2 velocity, float altitude)
     {
+        this.name = name;
         this.state = new AirplaneFlying(position, velocity, altitude);
+        this.stateType = StateType.FLYING;
 
         sprite = new Sprite(texture);
         sprite.setScale(0.25f * Gdx.graphics.getDensity());
@@ -51,15 +57,21 @@ class Airplane {
     }
 
     public void setTargetWaypoint(Waypoint waypoint) {
-        ((AirplaneFlying) state).setTargetWaypoint(waypoint);
+        if(stateType == StateType.FLYING) {
+            ((AirplaneFlying) state).setTargetWaypoint(waypoint);
+        }
     }
 
     public void setTargetHeading(Vector2 targetHeading){
-        ((AirplaneFlying) state).setTargetHeading(targetHeading);
+        if(stateType == StateType.FLYING) {
+            ((AirplaneFlying) state).setTargetHeading(targetHeading);
+        }
     }
 
     public void setTargetRunway(Runway targetRunway, int point) {
-        ((AirplaneFlying) state).setTargetRunway(targetRunway, point);
+        if(stateType == StateType.FLYING) {
+            ((AirplaneFlying) state).setTargetRunway(targetRunway, point);
+        }
     }
 
     public void setSelected(boolean isSelected) {
@@ -67,15 +79,33 @@ class Airplane {
     }
 
     public Vector2 getPosition() {
-        return ((AirplaneFlying) state).position;
+        if(stateType == StateType.FLYING) {
+            return ((AirplaneFlying) state).position;
+        }
+        else {
+            return ((AirplaneLanding) state).position;
+        }
     }
 
     public float getAltitude() {
-        return ((AirplaneFlying) state).altitude;
+        if(stateType == StateType.FLYING) {
+            return ((AirplaneFlying) state).altitude;
+        }
+        else {
+            return 0.0f;
+        }
+    }
+
+    public void transitionToLanding(Runway runway) {
+        state = state.transitionToLanding(runway);
+        stateType = StateType.LANDING;
     }
 
     public enum FlightType {
         ARRIVAL, DEPARTURE, FLYOVER
     }
 
+    public enum StateType {
+        FLYING, LANDING
+    }
 }
