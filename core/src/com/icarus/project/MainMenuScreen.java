@@ -61,7 +61,6 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener{
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
         batch = new SpriteBatch();
-
         playerBtnSkin1 = new Skin();   //create button skin
         playerBtnSkin1.add("playerBtn1", new Texture("buttons/landing_button.png"));    //add the image to the skin
         playerBtnStyle1 = new ImageButton.ImageButtonStyle();  //create button style
@@ -70,11 +69,15 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener{
         playerBtn1 = new ImageButton(playerBtnStyle1);    //initializes the ImageButton with the created style as a parameter
         playerBtn1.setBounds(positions[2], positions[3], playerBtn1.getWidth(), playerBtn1.getHeight());  //tells the button where to go
         stage.addActor(playerBtn1);
+        while(1==1) {
+            if (playerBtn1.isPressed()) {
+                Gdx.app.log("MainMenuScreen", "Main menu button");
+                playerBtn1.setDisabled(true);
+            } else {
 
-        if (playerBtn1.isPressed()) {
-
-            playerBtn1.setDisabled(true);
+            }
         }
+        //While loop is causeing black screen and am only chekcing once without it
         /*menuManager.load("buttons/landing_button.png", Texture.class);
         menuManager.finishLoading();
         Drawable landingDrawable = new TextureRegionDrawable(
