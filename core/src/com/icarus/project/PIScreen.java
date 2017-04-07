@@ -271,7 +271,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 for(Airplane airplane: airplanes) {
                     if(airplane.sprite.getBoundingRectangle().contains(position.x, position.y)) {
                         setSelectedAirplane(airplane);
-                        ui.setStatus("selected " + getSelectedAirplane().name);
+                        ui.setStatus("Selected flight " + getSelectedAirplane().name);
                         return true;
                     }
                 }
@@ -302,7 +302,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                             selectedAirplane.setTargetRunway(runway, end);
                             uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
                             followingPlane = true;
-                            ui.setStatus(runway.names[end] + " selected");
+                            ui.setStatus("Selected runway " + runway.names[end]);
                             break;
                         }
                     }
@@ -310,7 +310,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 break;
             case CHANGE_ALTITUDE:
                 uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
-                ui.setStatus("target altitude set to: " + altitudeTarget);
+                ui.setStatus("Set target altitude to " + altitudeTarget + "m");
                 selectedAirplane.targetAltitude = altitudeTarget;
                 break;
             default:
@@ -318,7 +318,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         }
 
         if(selectedAirplane == null){
-            ui.setStatus("deselected airplane");
+            ui.setStatus("Deselected airplane");
         }
         return true;
     }
