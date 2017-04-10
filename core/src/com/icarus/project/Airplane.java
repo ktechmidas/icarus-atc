@@ -72,6 +72,13 @@ class Airplane {
     public void setTargetRunway(Runway targetRunway, int point) {
         if(stateType == StateType.FLYING) {
             ((AirplaneFlying) state).setTargetRunway(targetRunway, point);
+            setTargetAltitude(0);
+        }
+    }
+
+    public void setTargetAltitude(float targetAltitude) {
+        if(stateType == StateType.FLYING) {
+            ((AirplaneFlying) state).targetAltitude = targetAltitude;
         }
     }
 
@@ -107,6 +114,6 @@ class Airplane {
     }
 
     public enum StateType {
-        FLYING, LANDING
+        FLYING, LANDING, LANDED
     }
 }

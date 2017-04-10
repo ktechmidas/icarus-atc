@@ -61,7 +61,8 @@ class AirplaneFlying extends AirplaneState {
                 pos.y - 26 * Gdx.graphics.getDensity(),
                 200,
                 Align.center,
-                false);
+                false
+        );
     }
 
     public void step(Airplane airplane) {
