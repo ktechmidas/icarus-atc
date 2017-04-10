@@ -31,6 +31,9 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static com.icarus.project.Airplane.FlightType.ARRIVAL;
+import static com.icarus.project.Airplane.StateType.LANDED;
+
 public class PIScreen extends Game implements Screen, GestureDetector.GestureListener {
     private Game game;
     private Vector2 oldInitialFirstPointer=null, oldInitialSecondPointer=null;
@@ -177,10 +180,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         // Remove landed airplanes from game
         ArrayList<Airplane> toRemove = new ArrayList<Airplane>();
         for(Airplane airplane: airplanes) {
-            BoundingBox airportBox = new BoundingBox(new Vector3(0, 0, 0),
-                    new Vector3(airport.width, airport.height, 0)
-            );
-            if(!airportBox.contains(new Vector3(airplane.getPosition(), 0))) {
+            if(airplane.stateType == LANDED && airplane.flightType == ARRIVAL) {
                 toRemove.add(airplane);
             }
         }
