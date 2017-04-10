@@ -35,6 +35,7 @@ class Airplane {
         this.name = name;
         this.state = new AirplaneFlying(position, velocity, altitude);
         this.stateType = StateType.FLYING;
+        this.flightType = flightType;
 
         sprite = new Sprite(texture);
         sprite.setScale(0.25f * Gdx.graphics.getDensity());

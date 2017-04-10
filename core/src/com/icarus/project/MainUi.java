@@ -63,8 +63,9 @@ public class MainUi {
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                showHeadingSelector(true);
-                showAirplaneButtons(false);
+//                showHeadingSelector(true);
+//                showAirplaneButtons(false);
+//                hideAirplaneButtons();
                 PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_HEADING;
             }
         });
@@ -175,7 +176,7 @@ public class MainUi {
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 Vector2 heading = new Vector2(x, y).sub(headingWheel.getWidth()/2, headingWheel.getHeight()/2);
-                showHeadingSelector(false);
+//                showHeadingSelector(false);
                 PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
                 setStatus((int) heading.angle() + "");
                 PIScreen.getInstance().getSelectedAirplane().setTargetHeading(heading);
@@ -183,7 +184,8 @@ public class MainUi {
         });
         stage.addActor(headingWheel);
 
-        showAirplaneButtons(false);
+        hideAirplaneButtons();
+//        showAirplaneButtons(false);
         showHeadingSelector(false);
     }
 
@@ -204,24 +206,44 @@ public class MainUi {
         batch.end();
 
         //show airplane-specific buttons if an airplane is selected
-        showAirplaneButtons(PIScreen.getInstance().getSelectedAirplane() != null
-                && PIScreen.getInstance().uiState != ProjectIcarus.UiState.SELECT_HEADING);
+        if(PIScreen.getInstance().uiState == ProjectIcarus.UiState.SELECT_HEADING) {
+            showHeadingSelector(true);
+            hideAirplaneButtons();
+        }
+        else if(PIScreen.getInstance().getSelectedAirplane() != null) {
+            showAirplaneButtons(true, PIScreen.getInstance().getSelectedAirplane().flightType);
+            showHeadingSelector(false);
+        }
+        else {
+            hideAirplaneButtons();
+        }
+//        showAirplaneButtons(PIScreen.getInstance().getSelectedAirplane() != null
+//                && PIScreen.getInstance().uiState != ProjectIcarus.UiState.SELECT_HEADING);
     }
 
     public void setStatus(String status) {
         this.status = status;
     }
 
-    public void showAirplaneButtons(boolean isVisible){
+    public void showAirplaneButtons(boolean isVisible, Airplane.FlightType flightType){
+        if(flightType == Airplane.FlightType.ARRIVAL) {
+            circleButton.setVisible(isVisible);
+            landingButton.setVisible(isVisible);
+        }
         headingButton.setVisible(isVisible);
         waypointButton.setVisible(isVisible);
         altitudeButton.setVisible(isVisible);
-        circleButton.setVisible(isVisible);
-        landingButton.setVisible(isVisible);
+    }
+
+    public void hideAirplaneButtons() {
+        headingButton.setVisible(false);
+        waypointButton.setVisible(false);
+        altitudeButton.setVisible(false);
+        circleButton.setVisible(false);
+        landingButton.setVisible(false);
     }
 
     public void showHeadingSelector(boolean isVisible){
         headingWheel.setVisible(isVisible);
-        showAirplaneButtons(!isVisible);
     }
 }

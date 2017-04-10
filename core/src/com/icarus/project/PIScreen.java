@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeType;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Circle;
@@ -43,6 +44,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     //The font used for labels
     private BitmapFont labelFont;
     private BitmapFont titleFont;
+    private BitmapFont airplaneFont;
     //Used for drawing airplanes
     private SpriteBatch batch;
     private Utils utils;
@@ -74,6 +76,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     public FreetypeFontLoader.FreeTypeFontLoaderParameter labelFontParams;
     public FreetypeFontLoader.FreeTypeFontLoaderParameter titleFontParams;
+    public FreetypeFontLoader.FreeTypeFontLoaderParameter airplaneFontParams;
 
     private float minAirplaneInterval;
     private float maxAirplaneInterval;
@@ -91,8 +94,11 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
         manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
 
+        String airportFile = "airports/airport.json";
+
         //load the airport
-        manager.load("airports/test.json", Airport.class);
+        manager.load(airportFile, Airport.class);
+
         //load the label font
         labelFontParams = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         labelFontParams.fontFileName = "fonts/3270Medium.ttf";
@@ -104,6 +110,13 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         titleFontParams.fontParameters.size = Math.round(fontSize * 4);
         titleFontParams.fontFileName = "fonts/3270Medium.ttf";
         manager.load("fonts/3270Medium_title.ttf", BitmapFont.class, titleFontParams);
+
+        airplaneFontParams = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+        airplaneFontParams.fontFileName = "fonts/3270Medium.ttf";
+        airplaneFontParams.fontParameters.size = Math.round(fontSize * 0.8f);
+        airplaneFontParams.fontFileName = "fonts/3270Medium.ttf";
+        manager.load("fonts/3270Medium_airplane.ttf", BitmapFont.class, airplaneFontParams);
+
         //load the airplane sprite
         manager.load("sprites/airplane.png", Texture.class);
 
@@ -117,9 +130,10 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         manager.load("buttons/selection_wheel.png", Texture.class);
 
         manager.finishLoading();
-        airport = manager.get("airports/test.json");
+        airport = manager.get(airportFile);
         labelFont = manager.get("fonts/3270Medium.ttf");
         titleFont = manager.get("fonts/3270Medium_title.ttf");
+        airplaneFont = manager.get("fonts/3270Medium_airplane.ttf");
         Airplane.texture = manager.get("sprites/airplane.png");
 
         shapes = new ShapeRenderer();
@@ -207,7 +221,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         batch.begin();
         for(Airplane airplane: airplanes) {
             airplane.step(); //Move airplanes
-            airplane.draw(labelFont, batch, camera);
+            airplane.draw(airplaneFont, batch, camera);
         }
         batch.end();
 
@@ -257,7 +271,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 for(Airplane airplane: airplanes) {
                     if(airplane.sprite.getBoundingRectangle().contains(position.x, position.y)) {
                         setSelectedAirplane(airplane);
-                        ui.setStatus("selected " + getSelectedAirplane().name);
+                        ui.setStatus("Selected flight " + getSelectedAirplane().name);
                         return true;
                     }
                 }
@@ -288,7 +302,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                             selectedAirplane.setTargetRunway(runway, end);
                             uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
                             followingPlane = true;
-                            ui.setStatus(runway.names[end] + " selected");
+                            ui.setStatus("Selected runway " + runway.names[end]);
                             break;
                         }
                     }
@@ -296,7 +310,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 break;
             case CHANGE_ALTITUDE:
                 uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
-                ui.setStatus("target altitude set to: " + altitudeTarget);
+                ui.setStatus("Set target altitude to: " + altitudeTarget + "m");
                 ((AirplaneFlying) selectedAirplane.state).targetAltitude = altitudeTarget;
                 break;
             default:
@@ -304,7 +318,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         }
 
         if(selectedAirplane == null){
-            ui.setStatus("deselected airplane");
+            ui.setStatus("Deselected airplane");
         }
         return true;
     }
@@ -432,19 +446,19 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
         // Randomly choose between ARRIVAL and FLYOVER
         // Also determine altitude and speed based on flight type
-        int altitude;
+        float altitude;
         Airplane.FlightType flightType;
-        int speed;
+        float speed;
         int randFlightType = r.nextInt(2);
         if(randFlightType == 0) {
             flightType = Airplane.FlightType.FLYOVER;
             altitude = 10000; //meters
-            speed = 5; //subject to change
+            speed = toPixels(250); //subject to change
         }
         else {
             flightType = Airplane.FlightType.ARRIVAL;
             altitude = 5000; //subject to change
-            speed = 3; //subject to change
+            speed = toPixels(150); //subject to change
         }
 
         // Generate a random flight name
@@ -492,7 +506,11 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     }
 
     public static float toMeters(float pixels) {
-        return 50 * (float) pixels;
+        return 50 * pixels;
+    }
+
+    public static float toPixels(float meters) {
+        return meters / 50;
     }
 
     public void removeAirplane(Airplane airplane) {

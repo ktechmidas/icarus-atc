@@ -56,7 +56,12 @@ class AirplaneFlying extends AirplaneState {
                 pos.y - airplane.sprite.getHeight() / 2);
         airplane.sprite.draw(batch);
         font.setColor(Colors.colors[4]);
-        font.draw(batch, (int) altitude + "m", pos.x - 100, pos.y - 40, 200, Align.center, false);
+        font.draw(batch, (int) altitude + "m",
+                pos.x - 100, // Position left edge of text box
+                pos.y - 26 * Gdx.graphics.getDensity(),
+                200,
+                Align.center,
+                false);
     }
 
     public void step(Airplane airplane) {
