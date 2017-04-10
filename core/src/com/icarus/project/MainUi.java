@@ -104,7 +104,7 @@ public class MainUi {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 PIScreen.getInstance().uiState = ProjectIcarus.UiState.CHANGE_ALTITUDE;
                 PIScreen.getInstance().altitudeTarget =
-                    PIScreen.getInstance().selectedAirplane.altitude;
+                    PIScreen.getInstance().selectedAirplane.getAltitude();
                 return true;
             }
             @Override
