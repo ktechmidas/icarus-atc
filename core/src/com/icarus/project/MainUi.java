@@ -256,6 +256,41 @@ public class MainUi {
         else if(PIScreen.getInstance().getSelectedAirplane() != null) {
             showAirplaneButtons(true, PIScreen.getInstance().getSelectedAirplane().flightType);
             showHeadingSelector(false);
+
+            //draw a rectangle for airplane status
+            shapes.begin(ShapeRenderer.ShapeType.Filled);
+            shapes.setColor(Colors.colors[4]);
+            int statusWidth = (int)(200.0 * Gdx.graphics.getDensity());
+            shapes.rect(
+                    Gdx.graphics.getWidth() - statusWidth, Gdx.graphics.getHeight() - 100,
+                    statusWidth, 100);
+            shapes.end();
+
+            batch.begin();
+            font.setColor(Colors.colors[0]);
+            font.draw(batch, PIScreen.getInstance().getSelectedAirplane().name,
+                    Gdx.graphics.getWidth() - statusWidth + 10, Gdx.graphics.getHeight() - 20);
+
+            String type = null;
+            if(PIScreen.getInstance().getSelectedAirplane().flightType ==
+                    Airplane.FlightType.ARRIVAL)
+            {
+                type = "Arrival";
+            }
+            else if(PIScreen.getInstance().getSelectedAirplane().flightType ==
+                    Airplane.FlightType.FLYOVER)
+            {
+                type = "Flyover";
+            }
+            else if(PIScreen.getInstance().getSelectedAirplane().flightType ==
+                    Airplane.FlightType.DEPARTURE)
+            {
+                type = "Departure";
+            }
+
+            font.draw(batch, type,
+                    Gdx.graphics.getWidth() - statusWidth + 10, Gdx.graphics.getHeight() - 50);
+            batch.end();
         }
         else {
             hideAirplaneButtons();
