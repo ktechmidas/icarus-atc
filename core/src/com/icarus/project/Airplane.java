@@ -52,8 +52,8 @@ class Airplane {
     }
 
     //Move the airplane image at evey render
-    public void step() {
-        state.step(this);
+    public void step(float dt) {
+        state.step(this, dt);
     }
 
     public void setTargetWaypoint(Waypoint waypoint) {

@@ -75,6 +75,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     public FreetypeFontLoader.FreeTypeFontLoaderParameter labelFontParams;
     public FreetypeFontLoader.FreeTypeFontLoaderParameter titleFontParams;
 
+    public float warpSpeed;
+
     private float minAirplaneInterval;
     private float maxAirplaneInterval;
     private int timeElapsed;
@@ -83,6 +85,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     public PIScreen(ProjectIcarus game) {
         this.game = game;
         self = this;
+
         fontSize = 20.0f * Gdx.graphics.getDensity();
         //initialize the AssetManager
         AssetManager manager = new AssetManager();
@@ -115,6 +118,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         manager.load("buttons/landing_button.png", Texture.class);
         manager.load("buttons/more_button.png", Texture.class);
         manager.load("buttons/selection_wheel.png", Texture.class);
+        manager.load("buttons/warpup.png", Texture.class);
+        manager.load("buttons/warpdown.png", Texture.class);
 
         manager.finishLoading();
         airport = manager.get("airports/test.json");
@@ -149,6 +154,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         timeElapsed = 0;
         airplaneInterval = minAirplaneInterval;
 
+        warpSpeed = 1.0f;
+
         addAirplane();
 
         Gdx.input.setInputProcessor(new InputMultiplexer(ui.stage, new GestureDetector(this)));
@@ -159,6 +166,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         super.render();
         Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[2].b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        float dt = Gdx.graphics.getDeltaTime() * warpSpeed;
 
         // Remove landed airplanes from game
         ArrayList<Airplane> toRemove = new ArrayList<Airplane>();
@@ -206,7 +215,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         //draw airplanes
         batch.begin();
         for(Airplane airplane: airplanes) {
-            airplane.step(); //Move airplanes
+            airplane.step(dt); //Move airplanes
             airplane.draw(labelFont, batch, camera);
         }
         batch.end();
@@ -229,7 +238,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             setCameraPosition(new Vector3(selectedAirplane.getPosition(), 0));
         }
 
-        if(timeElapsed * Gdx.graphics.getDeltaTime() > airplaneInterval) {
+        if(timeElapsed * dt > airplaneInterval) {
             Random r = new Random();
             airplaneInterval = r.nextInt((int) (maxAirplaneInterval - minAirplaneInterval) + 1) + minAirplaneInterval;
             timeElapsed = 0;

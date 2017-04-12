@@ -59,25 +59,25 @@ class AirplaneFlying extends AirplaneState {
         font.draw(batch, (int) altitude + "m", pos.x - 100, pos.y - 40, 200, Align.center, false);
     }
 
-    public void step(Airplane airplane) {
+    public void step(Airplane airplane, float dt) {
         //Move airplane
-        position.add(velocity.cpy().scl(Gdx.graphics.getDeltaTime()));
+        position.add(velocity.cpy().scl(dt));
 
         switch(targetType) {
             case WAYPOINT:
-                if(turnToHeading(targetWaypoint.position.cpy().sub(this.position), turnRate)) {
+                if(turnToHeading(targetWaypoint.position.cpy().sub(this.position), turnRate, dt)) {
                     PIScreen.getInstance().ui.setStatus(airplane.name + ": turn complete");
                     targetType = NONE;
                 }
                 break;
             case HEADING:
-                if(turnToHeading(targetHeading, turnRate)) {
+                if(turnToHeading(targetHeading, turnRate, dt)) {
                     PIScreen.getInstance().ui.setStatus(airplane.name + ": turn complete");
                     targetType = NONE;
                 }
                 break;
             case RUNWAY:
-                float radius = velocity.len() / (turnRate * Gdx.graphics.getDeltaTime());
+                float radius = velocity.len() / (turnRate * dt);
                 // Calculate heading of target runway
                 Vector2 target = targetRunway.points[1 - targetRunwayPoint].cpy()
                         .sub(targetRunway.points[targetRunwayPoint]).nor();
@@ -97,10 +97,10 @@ class AirplaneFlying extends AirplaneState {
                     else {
                         float angle = line.angle(velocity);
                         if(angle < 0) {
-                            velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
+                            velocity.rotate(turnRate * dt);
                         }
                         else {
-                            velocity.rotate(-turnRate * Gdx.graphics.getDeltaTime());
+                            velocity.rotate(-turnRate * dt);
                         }
                     }
                 }
@@ -125,7 +125,7 @@ class AirplaneFlying extends AirplaneState {
                 // If turn to runway has completed
                 else if(targetRunwayStage == 2) {
                     System.out.println("stage 2");
-                    if(turnToHeading(target, turnRate)) {
+                    if(turnToHeading(target, turnRate, dt)) {
                         PIScreen.getInstance().ui.setStatus(airplane.name + ": turn complete");
                         targetRunwayStage = 3;
                     }
@@ -171,13 +171,13 @@ class AirplaneFlying extends AirplaneState {
         targetType = RUNWAY;
     }
 
-    public boolean turnToHeading(Vector2 targetHeading, float turnRate) {
+    public boolean turnToHeading(Vector2 targetHeading, float turnRate, float dt) {
         float angle = targetHeading.angle(velocity);
         if(angle < 0) {
-            velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
+            velocity.rotate(turnRate * dt);
         }
         else {
-            velocity.rotate(-turnRate * Gdx.graphics.getDeltaTime());
+            velocity.rotate(-turnRate * dt);
         }
         return Math.abs(targetHeading.angle(velocity)) < 0.001;
     }

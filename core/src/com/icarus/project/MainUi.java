@@ -32,6 +32,8 @@ public class MainUi {
     private ImageButton circleButton;
     private ImageButton headingWheel;
     private ImageButton landingButton;
+    private ImageButton warpUpButton;
+    private ImageButton warpDownButton;
 
     public static final String TAG = "MainUi";
 
@@ -182,6 +184,48 @@ public class MainUi {
             }
         });
         stage.addActor(headingWheel);
+
+        Drawable warpUpDrawable = new TextureRegionDrawable(
+                new TextureRegion((Texture) assets.get("buttons/warpup.png"))
+        );
+        warpUpButton = new ImageButton(warpUpDrawable);
+        warpUpButton.setSize(buttonSize / 2, buttonSize / 2);
+        warpUpButton.setPosition(2 * buttonGap + buttonSize / 2,
+                Gdx.graphics.getHeight() - buttonGap - buttonSize / 2);
+        warpUpButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                PIScreen.getInstance().warpSpeed *= 2.0;
+            }
+        });
+        stage.addActor(warpUpButton);
+
+        Drawable warpDownDrawable = new TextureRegionDrawable(
+                new TextureRegion((Texture) assets.get("buttons/warpdown.png"))
+        );
+        warpDownButton = new ImageButton(warpDownDrawable);
+        warpDownButton.setSize(buttonSize / 2, buttonSize / 2);
+        warpDownButton.setPosition(1 * buttonGap,
+                Gdx.graphics.getHeight() - buttonGap - buttonSize / 2);
+        warpDownButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                if(PIScreen.getInstance().warpSpeed > 1.0) {
+                    PIScreen.getInstance().warpSpeed *= 0.5;
+                }
+            }
+        });
+        stage.addActor(warpDownButton);
 
         showAirplaneButtons(false);
         showHeadingSelector(false);
