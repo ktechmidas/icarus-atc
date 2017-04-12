@@ -22,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.Input;
 import com.sun.glass.ui.EventLoop;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 
 import java.util.Random;
 /**
@@ -69,14 +70,10 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener{
         playerBtn1 = new ImageButton(playerBtnStyle1);    //initializes the ImageButton with the created style as a parameter
         playerBtn1.setBounds(positions[2], positions[3], playerBtn1.getWidth(), playerBtn1.getHeight());  //tells the button where to go
         stage.addActor(playerBtn1);
-        while(1==1) {
-            if (playerBtn1.isPressed()) {
-                Gdx.app.log("MainMenuScreen", "Main menu button");
-                playerBtn1.setDisabled(true);
-            } else {
 
-            }
-        }
+
+
+       button();
         //While loop is causeing black screen and am only chekcing once without it
         /*menuManager.load("buttons/landing_button.png", Texture.class);
         menuManager.finishLoading();
@@ -102,6 +99,20 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener{
         stage.addActor(menuButton);
         menuButton.setSize(buttonSize, buttonSize);*/
 
+    }
+
+    public void button(){
+        playerBtn1.addListener(new InputListener(){
+            @Override
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+            @Override
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                Gdx.app.log("MainMenuScreen", "Main menu button if");
+                playerBtn1.setDisabled(true);
+            }
+        });
     }
 
     @Override
@@ -152,6 +163,8 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener{
 
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
+
+
         return false;
     }
 
