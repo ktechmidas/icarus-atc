@@ -178,7 +178,7 @@ public class MainUi {
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 Vector2 heading = new Vector2(x, y).sub(headingWheel.getWidth()/2, headingWheel.getHeight()/2);
-                showHeadingSelector(false);
+//                showHeadingSelector(false);
                 PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
                 setStatus((int) heading.angle() + "");
                 PIScreen.getInstance().getSelectedAirplane().setTargetHeading(heading);
@@ -186,6 +186,10 @@ public class MainUi {
         });
         stage.addActor(headingWheel);
 
+<<<<<<< HEAD
+        hideAirplaneButtons();
+//        showAirplaneButtons(false);
+=======
         Drawable warpUpDrawable = new TextureRegionDrawable(
                 new TextureRegion((Texture) assets.get("buttons/warpup.png"))
         );
@@ -228,7 +232,8 @@ public class MainUi {
         });
         stage.addActor(warpDownButton);
 
-        //showAirplaneButtons(false);
+        showAirplaneButtons(false);
+>>>>>>> b31ba4c24ca4586d97fa881a8d415dbcdd37ab64
         showHeadingSelector(false);
     }
 
@@ -288,6 +293,5 @@ public class MainUi {
 
     public void showHeadingSelector(boolean isVisible){
         headingWheel.setVisible(isVisible);
-        //showAirplaneButtons(!isVisible);
     }
 }

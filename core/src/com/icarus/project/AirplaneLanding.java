@@ -35,13 +35,13 @@ class AirplaneLanding extends AirplaneState {
         airplane.sprite.draw(batch);
     }
 
-    public void step(Airplane airplane) {
+    public void step(Airplane airplane, float dt) {
         //Move airplane
-        position.add(velocity.cpy().scl(Gdx.graphics.getDeltaTime()));
+        position.add(velocity.cpy().scl(dt));
 
         //Point airplane in direction of travel
         airplane.sprite.setRotation(heading.angle());
 
-        velocity.sub(velocity.cpy().nor().scl(Gdx.graphics.getDeltaTime() * decelRate));
+        velocity.sub(velocity.cpy().nor().scl(dt * decelRate));
     }
 }
