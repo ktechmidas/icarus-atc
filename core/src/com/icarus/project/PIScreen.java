@@ -326,7 +326,11 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                                 break;
                             }
                             else {
-                                ui.setStatus(selectedAirplane.name + " cannot land there");
+                                ui.setStatus(selectedAirplane.name
+                                        + " cannot land at runway "
+                                        + runway.names[end]
+                                );
+                                break;
                             }
                         }
                     }
