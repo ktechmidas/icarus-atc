@@ -312,11 +312,22 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                         Vector3 pos = camera.project(new Vector3(runway.points[end], 0));
                         Circle circle = new Circle(pos.x, pos.y, 20 * Gdx.graphics.getDensity());
                         if(circle.contains(position.x, position.y)) {
-                            selectedAirplane.setTargetRunway(runway, end);
-                            uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
-                            followingPlane = true;
-                            ui.setStatus("Selected runway " + runway.names[end]);
-                            break;
+                            float distance = Math.abs(selectedAirplane.getPosition().cpy()
+                                    .sub(runway.points[end]).len()
+                            );
+                            float minDistance = 200;
+                            float headingVariance;
+                            float positionVariance;
+                            if(distance > minDistance) { // If the airplane is in the correct place
+                                selectedAirplane.setTargetRunway(runway, end);
+                                uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
+                                followingPlane = true;
+                                ui.setStatus("Selected runway " + runway.names[end]);
+                                break;
+                            }
+                            else {
+                                ui.setStatus(selectedAirplane.name + " cannot land there");
+                            }
                         }
                     }
                 }
