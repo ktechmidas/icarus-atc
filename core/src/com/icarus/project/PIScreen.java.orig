@@ -80,12 +80,12 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     public FreetypeFontLoader.FreeTypeFontLoaderParameter labelFontParams;
     public FreetypeFontLoader.FreeTypeFontLoaderParameter titleFontParams;
     public FreetypeFontLoader.FreeTypeFontLoaderParameter airplaneFontParams;
-    
+
     public float warpSpeed;
 
     private float minAirplaneInterval;
     private float maxAirplaneInterval;
-    private float timeElapsed;
+    private int timeElapsed;
     private float airplaneInterval;
 
     public PIScreen(ProjectIcarus game) {
@@ -154,13 +154,13 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         utils = new Utils();
         // The maximum zoom level is the smallest dimension compared to the viewer
         maxZoomOut = Math.min(airport.width / Gdx.graphics.getWidth(),
-                airport.height / (Gdx.graphics.getHeight() - ui.statusBarHeight)
+                airport.height / Gdx.graphics.getHeight()
         );
         maxZoomIn = maxZoomOut / 100;
 
         // Start the app in maximum zoomed out state
         camera.zoom = maxZoomOut;
-        camera.position.set(airport.width/2, (airport.height - ui.statusBarHeight)/2, 0);
+        camera.position.set(airport.width/2, airport.height/2, 0);
         camera.update();
 
         selectedAirplane = null;
@@ -168,14 +168,14 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
         minAirplaneInterval = 30; // seconds
         maxAirplaneInterval = 240; // seconds
-        timeElapsed = 0.0f;
+        timeElapsed = 0;
         airplaneInterval = minAirplaneInterval;
+
+        warpSpeed = 1.0f;
 
         addAirplane();
 
         Gdx.input.setInputProcessor(new InputMultiplexer(ui.stage, new GestureDetector(this)));
-
-        warpSpeed = 1.0f;
     }
 
     @Override
@@ -188,12 +188,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
         // Remove landed airplanes from game
         ArrayList<Airplane> toRemove = new ArrayList<Airplane>();
-        BoundingBox airportBoundary = new BoundingBox(new Vector3(0, 0, 0),
-                new Vector3(airport.width, airport.height, 0)
-        );
         for(Airplane airplane: airplanes) {
-            if(airplane.stateType == LANDED && airplane.flightType == ARRIVAL
-                    || !airportBoundary.contains(new Vector3(airplane.getPosition(), 0))) {
+            if(airplane.stateType == LANDED && airplane.flightType == ARRIVAL) {
                 toRemove.add(airplane);
             }
         }
@@ -233,8 +229,13 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         //draw airplanes
         batch.begin();
         for(Airplane airplane: airplanes) {
-            airplane.step(dt); //Move airplanes
+<<<<<<< HEAD
+            airplane.step(); //Move airplanes
             airplane.draw(airplaneFont, batch, camera);
+=======
+            airplane.step(dt); //Move airplanes
+            airplane.draw(labelFont, batch, camera);
+>>>>>>> b31ba4c24ca4586d97fa881a8d415dbcdd37ab64
         }
         batch.end();
 
@@ -256,15 +257,15 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             setCameraPosition(new Vector3(selectedAirplane.getPosition(), 0));
         }
 
-        if(timeElapsed > airplaneInterval) {
+        if(timeElapsed * dt > airplaneInterval) {
             Random r = new Random();
             airplaneInterval = r.nextInt((int) (maxAirplaneInterval - minAirplaneInterval) + 1) + minAirplaneInterval;
-            timeElapsed = 0.0f;
+            timeElapsed = 0;
             ui.setStatus("next interval: " + airplaneInterval + " seconds");
             addAirplane();
         }
         else {
-            timeElapsed += dt;
+            timeElapsed++;
         }
     }
 
@@ -284,7 +285,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 for(Airplane airplane: airplanes) {
                     if(airplane.sprite.getBoundingRectangle().contains(position.x, position.y)) {
                         setSelectedAirplane(airplane);
-                        ui.setStatus("selected " + getSelectedAirplane().name);
+                        ui.setStatus("Selected flight " + getSelectedAirplane().name);
                         return true;
                     }
                 }
