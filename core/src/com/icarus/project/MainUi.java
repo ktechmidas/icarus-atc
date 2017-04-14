@@ -300,7 +300,7 @@ public class MainUi {
             if(airplane.stateType == Airplane.StateType.FLYING ||
                     airplane.stateType == Airplane.StateType.LANDING)
             {
-                String alt = airplane.getAltitude() + " m";
+                String alt = (int)airplane.getAltitude() + "m";
                 font.draw(batch, alt,
                         Gdx.graphics.getWidth() - statusWidth / 2 + 10,
                         Gdx.graphics.getHeight() - 20);
