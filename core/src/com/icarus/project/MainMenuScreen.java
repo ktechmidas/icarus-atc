@@ -1,6 +1,7 @@
 package com.icarus.project;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
@@ -69,11 +70,20 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener{
         playerBtnStyle1.imageDown = playerBtnSkin1.getDrawable("playerBtn1");    //sets the button appearance when it is pressed
         playerBtn1 = new ImageButton(playerBtnStyle1);    //initializes the ImageButton with the created style as a parameter
         playerBtn1.setBounds(positions[2], positions[3], playerBtn1.getWidth(), playerBtn1.getHeight());  //tells the button where to go
+        Gdx.app.log("MainMenuScreen", "Main menu button");
+        playerBtn1.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                game.setScreen(new PIScreen(game));
+                playerBtn1.setDisabled(true);
+            }
+        });
         stage.addActor(playerBtn1);
-
-
-
-       button();
         //While loop is causeing black screen and am only chekcing once without it
         /*menuManager.load("buttons/landing_button.png", Texture.class);
         menuManager.finishLoading();
@@ -99,21 +109,12 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener{
         stage.addActor(menuButton);
         menuButton.setSize(buttonSize, buttonSize);*/
 
+        Gdx.input.setInputProcessor(new InputMultiplexer(stage, new GestureDetector(this)));
     }
 
-    public void button(){
-        playerBtn1.addListener(new InputListener(){
-            @Override
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-            @Override
-            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                Gdx.app.log("MainMenuScreen", "Main menu button if");
-                playerBtn1.setDisabled(true);
-            }
-        });
-    }
+    public void button() {
+
+        }
 
     @Override
     public void show() {

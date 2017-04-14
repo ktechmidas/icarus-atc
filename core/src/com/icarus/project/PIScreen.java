@@ -73,8 +73,9 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     private float airplaneInterval;
 
 
-    public PIScreen(MainMenuScreen projectIcarus) {
+    public PIScreen(ProjectIcarus projectIcarus) {
         game = this;
+        self = this;
 
         fontSize = 20.0f * Gdx.graphics.getDensity();
         //initialize the AssetManager
