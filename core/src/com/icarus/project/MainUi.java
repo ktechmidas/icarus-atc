@@ -191,7 +191,7 @@ public class MainUi {
         );
         warpUpButton = new ImageButton(warpUpDrawable);
         warpUpButton.setSize(buttonSize / 2, buttonSize / 2);
-        warpUpButton.setPosition(2 * buttonGap + buttonSize / 2,
+        warpUpButton.setPosition(3 * buttonGap + buttonSize,
                 Gdx.graphics.getHeight() - buttonGap - buttonSize / 2);
         warpUpButton.addListener(new InputListener() {
             @Override
@@ -246,6 +246,12 @@ public class MainUi {
         font.draw(batch, status, Gdx.graphics.getWidth() / 2 - layout.width / 2,
                 20 * Gdx.graphics.getDensity()
         );
+
+        font.setColor(Colors.colors[4]);
+        String warp = "x" + (int)(PIScreen.getInstance().warpSpeed);
+        layout.setText(font, warp);
+        font.draw(batch, warp, 2 * buttonGap + 3 * buttonSize / 4 - layout.width / 2,
+                Gdx.graphics.getHeight() - buttonGap - buttonSize / 4);
         batch.end();
 
         //show airplane-specific buttons if an airplane is selected
@@ -254,7 +260,8 @@ public class MainUi {
             hideAirplaneButtons();
         }
         else if(PIScreen.getInstance().getSelectedAirplane() != null) {
-            showAirplaneButtons(true, PIScreen.getInstance().getSelectedAirplane().flightType);
+            Airplane airplane = PIScreen.getInstance().getSelectedAirplane();
+            showAirplaneButtons(true, airplane.flightType);
             showHeadingSelector(false);
 
             //draw a rectangle for airplane status
@@ -268,7 +275,7 @@ public class MainUi {
 
             batch.begin();
             font.setColor(Colors.colors[0]);
-            font.draw(batch, PIScreen.getInstance().getSelectedAirplane().name,
+            font.draw(batch, airplane.name,
                     Gdx.graphics.getWidth() - statusWidth + 10, Gdx.graphics.getHeight() - 20);
 
             String type = null;
@@ -287,9 +294,18 @@ public class MainUi {
             {
                 type = "Departure";
             }
-
             font.draw(batch, type,
                     Gdx.graphics.getWidth() - statusWidth + 10, Gdx.graphics.getHeight() - 50);
+
+            if(airplane.stateType == Airplane.StateType.FLYING ||
+                    airplane.stateType == Airplane.StateType.LANDING)
+            {
+                String alt = airplane.getAltitude() + " m";
+                font.draw(batch, alt,
+                        Gdx.graphics.getWidth() - statusWidth / 2 + 10,
+                        Gdx.graphics.getHeight() - 20);
+            }
+
             batch.end();
         }
         else {
