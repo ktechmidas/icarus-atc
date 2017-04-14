@@ -154,13 +154,13 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         utils = new Utils();
         // The maximum zoom level is the smallest dimension compared to the viewer
         maxZoomOut = Math.min(airport.width / Gdx.graphics.getWidth(),
-                airport.height / Gdx.graphics.getHeight()
+                airport.height / (Gdx.graphics.getHeight() - ui.statusBarHeight)
         );
         maxZoomIn = maxZoomOut / 100;
 
         // Start the app in maximum zoomed out state
         camera.zoom = maxZoomOut;
-        camera.position.set(airport.width/2, airport.height/2, 0);
+        camera.position.set(airport.width/2, (airport.height - ui.statusBarHeight)/2, 0);
         camera.update();
 
         selectedAirplane = null;
@@ -188,8 +188,12 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
         // Remove landed airplanes from game
         ArrayList<Airplane> toRemove = new ArrayList<Airplane>();
+        BoundingBox airportBoundary = new BoundingBox(new Vector3(0, 0, 0),
+                new Vector3(airport.width, airport.height, 0)
+        );
         for(Airplane airplane: airplanes) {
-            if(airplane.stateType == LANDED && airplane.flightType == ARRIVAL) {
+            if(airplane.stateType == LANDED && airplane.flightType == ARRIVAL
+                    || !airportBoundary.contains(new Vector3(airplane.getPosition(), 0))) {
                 toRemove.add(airplane);
             }
         }
