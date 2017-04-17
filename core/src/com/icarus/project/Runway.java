@@ -1,4 +1,5 @@
 package com.icarus.project;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -90,9 +91,12 @@ class Runway {
             Vector3 pos = camera.project(new Vector3(points[i].x, points[i].y, 0f));
             font.setColor(Colors.colors[3]);
             font.draw(batch, names[i],
-                    pos.x + nameOffsets[i].x - 100,
-                    pos.y + nameOffsets[i].y + glyphLayout.height / 2,
-                    200, Align.center, false);
+                    pos.x + nameOffsets[i].x * Gdx.graphics.getDensity() - 100,
+                    pos.y - nameOffsets[i].y * Gdx.graphics.getDensity() + glyphLayout.height / 2,
+                    200, // Text box width
+                    Align.center,
+                    false);
+            Gdx.app.log("Runway", nameOffsets[i].y + "");
         }
     }
 }
