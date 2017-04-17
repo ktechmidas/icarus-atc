@@ -312,17 +312,23 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                         Vector3 pos = camera.project(new Vector3(runway.points[end], 0));
                         Circle circle = new Circle(pos.x, pos.y, 20 * Gdx.graphics.getDensity());
                         if(circle.contains(position.x, position.y)) {
+                            float minDistance = 200;
+                            float headingVariance = 30;
+                            float positionVariance;
                             float distance = Math.abs(selectedAirplane.getPosition().cpy()
                                     .sub(runway.points[end]).len()
                             );
-                            float minDistance = 200;
-                            float headingVariance;
-                            float positionVariance;
-                            if(distance > minDistance) { // If the airplane is in the correct place
+                            Vector2 targetRunway = runway.points[1-end].cpy().sub(runway.points[end]);
+                            float angleDifference = selectedAirplane.getVelocity().angle(targetRunway);
+                            Gdx.app.log(TAG, "Angle difference: " + angleDifference);
+                            if(distance > minDistance
+                                    && Math.abs(angleDifference) < headingVariance) {
+                                // If the airplane is in the correct place
                                 selectedAirplane.setTargetRunway(runway, end);
                                 uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
                                 followingPlane = true;
                                 ui.setStatus("Selected runway " + runway.names[end]);
+                                Gdx.app.log(TAG, "Selected runway " + runway.names[end]);
                                 break;
                             }
                             else {
@@ -330,6 +336,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                                         + " cannot land at runway "
                                         + runway.names[end]
                                 );
+                                uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
                                 break;
                             }
                         }
