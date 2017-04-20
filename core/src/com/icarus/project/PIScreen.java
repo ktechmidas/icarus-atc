@@ -312,17 +312,27 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                         Vector3 pos = camera.project(new Vector3(runway.points[end], 0));
                         Circle circle = new Circle(pos.x, pos.y, 20 * Gdx.graphics.getDensity());
                         if(circle.contains(position.x, position.y)) {
-                            float minDistance = 200;
-                            float headingVariance = 30;
-                            float positionVariance;
+                            // Landing constraints
+                            float minDistance = 200; // Minimum distance from end of runway
+                            float headingVariance = 30; // Maximum heading deviation from runway
+                            float positionVariance = 30; // Maximum position deviation from runway
+                            Vector2 targetRunway = runway.points[1-end].cpy()
+                                    .sub(runway.points[end]);
+                            // Calculate distance
                             float distance = Math.abs(selectedAirplane.getPosition().cpy()
                                     .sub(runway.points[end]).len()
                             );
-                            Vector2 targetRunway = runway.points[1-end].cpy().sub(runway.points[end]);
-                            float angleDifference = selectedAirplane.getVelocity().angle(targetRunway);
-                            Gdx.app.log(TAG, "Angle difference: " + angleDifference);
+                            // Calculate difference between airplane heading and runway heading
+                            float angleDifference = selectedAirplane.getVelocity()
+                                    .angle(targetRunway);
+                            // Calculate radial distance of airplane from runway
+                            // with respect to the runway's heading
+                            Vector2 relativePosition = runway.points[end].cpy()
+                                    .sub(selectedAirplane.getPosition());
+                            float positionDifference = relativePosition.angle(targetRunway);
                             if(distance > minDistance
-                                    && Math.abs(angleDifference) < headingVariance) {
+                                    && Math.abs(angleDifference) < headingVariance
+                                    && Math.abs(positionDifference) < positionVariance) {
                                 // If the airplane is in the correct place
                                 selectedAirplane.setTargetRunway(runway, end);
                                 uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
