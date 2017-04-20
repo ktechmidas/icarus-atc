@@ -104,6 +104,15 @@ class Airplane {
         }
     }
 
+    public Vector2 getVelocity() {
+        if(stateType == StateType.FLYING) {
+            return ((AirplaneFlying) state).velocity;
+        }
+        else {
+            return ((AirplaneLanding) state).velocity;
+        }
+    }
+
     public void transitionToLanding(Runway runway) {
         state = state.transitionToLanding(runway);
         stateType = StateType.LANDING;
