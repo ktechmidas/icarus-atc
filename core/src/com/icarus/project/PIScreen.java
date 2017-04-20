@@ -154,13 +154,13 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         utils = new Utils();
         // The maximum zoom level is the smallest dimension compared to the viewer
         maxZoomOut = Math.min(airport.width / Gdx.graphics.getWidth(),
-                airport.height / Gdx.graphics.getHeight()
+                airport.height / (Gdx.graphics.getHeight() - ui.statusBarHeight)
         );
         maxZoomIn = maxZoomOut / 100;
 
         // Start the app in maximum zoomed out state
         camera.zoom = maxZoomOut;
-        camera.position.set(airport.width/2, airport.height/2, 0);
+        camera.position.set(airport.width/2, (airport.height - ui.statusBarHeight)/2, 0);
         camera.update();
 
         selectedAirplane = null;
@@ -188,8 +188,12 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
         // Remove landed airplanes from game
         ArrayList<Airplane> toRemove = new ArrayList<Airplane>();
+        BoundingBox airportBoundary = new BoundingBox(new Vector3(0, 0, 0),
+                new Vector3(airport.width, airport.height, 0)
+        );
         for(Airplane airplane: airplanes) {
-            if(airplane.stateType == LANDED && airplane.flightType == ARRIVAL) {
+            if(airplane.stateType == LANDED && airplane.flightType == ARRIVAL
+                    || !airportBoundary.contains(new Vector3(airplane.getPosition(), 0))) {
                 toRemove.add(airplane);
             }
         }
@@ -308,11 +312,43 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                         Vector3 pos = camera.project(new Vector3(runway.points[end], 0));
                         Circle circle = new Circle(pos.x, pos.y, 20 * Gdx.graphics.getDensity());
                         if(circle.contains(position.x, position.y)) {
-                            selectedAirplane.setTargetRunway(runway, end);
-                            uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
-                            followingPlane = true;
-                            ui.setStatus("Selected runway " + runway.names[end]);
-                            break;
+                            // Landing constraints
+                            float minDistance = 200; // Minimum distance from end of runway
+                            float headingVariance = 30; // Maximum heading deviation from runway
+                            float positionVariance = 30; // Maximum position deviation from runway
+                            Vector2 targetRunway = runway.points[1-end].cpy()
+                                    .sub(runway.points[end]);
+                            // Calculate distance
+                            float distance = Math.abs(selectedAirplane.getPosition().cpy()
+                                    .sub(runway.points[end]).len()
+                            );
+                            // Calculate difference between airplane heading and runway heading
+                            float angleDifference = selectedAirplane.getVelocity()
+                                    .angle(targetRunway);
+                            // Calculate radial distance of airplane from runway
+                            // with respect to the runway's heading
+                            Vector2 relativePosition = runway.points[end].cpy()
+                                    .sub(selectedAirplane.getPosition());
+                            float positionDifference = relativePosition.angle(targetRunway);
+                            if(distance > minDistance
+                                    && Math.abs(angleDifference) < headingVariance
+                                    && Math.abs(positionDifference) < positionVariance) {
+                                // If the airplane is in the correct place
+                                selectedAirplane.setTargetRunway(runway, end);
+                                uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
+                                followingPlane = true;
+                                ui.setStatus("Selected runway " + runway.names[end]);
+                                Gdx.app.log(TAG, "Selected runway " + runway.names[end]);
+                                break;
+                            }
+                            else {
+                                ui.setStatus(selectedAirplane.name
+                                        + " cannot land at runway "
+                                        + runway.names[end]
+                                );
+                                uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
+                                break;
+                            }
                         }
                     }
                 }

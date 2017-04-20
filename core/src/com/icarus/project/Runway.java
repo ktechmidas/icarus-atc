@@ -96,7 +96,6 @@ class Runway {
                     200, // Text box width
                     Align.center,
                     false);
-            Gdx.app.log("Runway", nameOffsets[i].y + "");
         }
     }
 }
