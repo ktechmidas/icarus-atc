@@ -134,7 +134,6 @@ class AirplaneFlying extends AirplaneState {
                     }
                 }
                 else {
-                    System.out.println("stage 3");
                     Vector2 targetPoint = targetRunway.points[targetRunwayPoint];
                     if(targetPoint.dst(position) < 3) {
                         airplane.transitionToLanding(targetRunway);
