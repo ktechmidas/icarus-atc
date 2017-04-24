@@ -89,7 +89,6 @@ class AirplaneFlying extends AirplaneState {
                         .sub(targetRunway.points[targetRunwayPoint]).nor();
                 // If airplane is pointing away from runway line
                 if(targetRunwayStage == 0) {
-                    System.out.println("stage 0");
                     // Calculate target point offset by turning radius
                     Vector2 pos = targetRunway.points[targetRunwayPoint].cpy()
                             .sub(target.scl(radius));
@@ -112,7 +111,6 @@ class AirplaneFlying extends AirplaneState {
                 }
                 // If airplane is pointing towards runway line
                 else if(targetRunwayStage == 1) {
-                    System.out.println("stage 1");
                     // Runway heading vector
                     Vector2 targetVector = targetRunway.points[targetRunwayPoint].cpy()
                             .sub(targetRunway.points[1 - targetRunwayPoint]);
@@ -130,14 +128,12 @@ class AirplaneFlying extends AirplaneState {
                 }
                 // If turn to runway has completed
                 else if(targetRunwayStage == 2) {
-                    System.out.println("stage 2");
                     if(turnToHeading(target, turnRate, dt)) {
                         PIScreen.getInstance().ui.setStatus(airplane.name + ": turn complete");
                         targetRunwayStage = 3;
                     }
                 }
                 else {
-                    System.out.println("stage 3");
                     Vector2 targetPoint = targetRunway.points[targetRunwayPoint];
                     if(targetPoint.dst(position) < 3) {
                         airplane.transitionToLanding(targetRunway);
