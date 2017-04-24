@@ -90,8 +90,11 @@ class Airplane {
         if(stateType == StateType.FLYING) {
             return ((AirplaneFlying) state).position;
         }
-        else {
+        else if(stateType == StateType.LANDING) {
             return ((AirplaneLanding) state).position;
+        }
+        else {
+            return null;
         }
     }
 

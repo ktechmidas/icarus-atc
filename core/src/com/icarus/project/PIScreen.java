@@ -88,6 +88,74 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     private float timeElapsed;
     private float airplaneInterval;
 
+    private ArrayList<Collision> collisions = new ArrayList();
+    private Random r = new Random();
+
+    class Collision {
+        Airplane a;
+        Airplane b;
+        float time;
+        float startWarp;
+        public int stage;
+        Vector3 origin;
+
+        float nextShake;
+
+        public Collision(Airplane a, Airplane b) {
+            this.a = a;
+            this.b = b;
+            time = 0.0f;
+            stage = 0;
+            startWarp = warpSpeed;
+            Vector2 o = a.getPosition().cpy().add(b.getPosition()).scl(0.5f);
+            origin = new Vector3(o.x, o.y, 0.0f);
+        }
+
+        public void step() {
+            float dt = Gdx.graphics.getDeltaTime();
+            time += dt;
+            followingPlane = false;
+            selectedAirplane = null;
+            if(stage == 0) {
+                float alpha = 0.01f * dt;
+                warpSpeed = (warpSpeed * (1.0f - alpha) + 0.1f * alpha);
+
+                alpha = 0.0075f * dt;
+                zoomCamera(origin, camera.zoom * (1.0f - alpha) + 0.2f * alpha);
+                setCameraPosition(origin);
+
+                if(Math.abs(camera.zoom - 0.2f) < 0.05f) {
+                    stage = 1;
+                    time = 0.0f;
+                    nextShake = 0.0f;
+                }
+            }
+            else if(stage == 1) {
+                airplanes.remove(a);
+                airplanes.remove(b);
+                ui.setStatus(a.name + " collided with " + b.name + "!");
+                stage = 2;
+                time = 0.0f;
+            }
+            else if(stage == 2) {
+                warpSpeed = 1.0f;
+                //screenshake
+                nextShake -= dt;
+                if(nextShake < 0.0f) {
+                    nextShake += r.nextFloat() * 0.05;
+                    setCameraPosition(
+                            origin.cpy().add(
+                                new Vector3(r.nextFloat() - 0.5f, r.nextFloat() - 0.5f, 0.0f)
+                            .scl(10.0f)));
+                }
+                if(time > 2.0) {
+                    stage = 3;
+                }
+            }
+
+        }
+    }
+
     public PIScreen(ProjectIcarus game) {
         this.game = game;
         self = this;
@@ -196,10 +264,35 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                     || !airportBoundary.contains(new Vector3(airplane.getPosition(), 0))) {
                 toRemove.add(airplane);
             }
+
+            for(Airplane other: airplanes) {
+                if(other != airplane) {
+                    Vector2 pos1 = airplane.getPosition();
+                    Vector2 pos2 = other.getPosition();
+                    if(pos1 != null && pos2 != null) {
+                        if(pos1.dst(pos2) < 100) {
+                            collisions.add(new Collision(airplane, other));
+                        }
+                    }
+                }
+            }
         }
         for(Airplane airplane: toRemove) {
-            ui.setStatus(airplane.name + " removed");
-            airplanes.remove(airplane);
+            if(airplanes.contains(airplane)) {
+                airplanes.remove(airplane);
+            }
+        }
+
+
+        ArrayList<Collision> collisionsToRemove = new ArrayList<Collision>();
+        for(Collision collision: collisions) {
+            collision.step();
+            if(collision.stage == 3) {
+                collisionsToRemove.add(collision);
+            }
+        }
+        for(Collision collision: collisionsToRemove) {
+            collisions.remove(collision);
         }
 
         //draw waypoint triangles
@@ -455,8 +548,6 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     }
 
     public void addAirplane() {
-        Random r = new Random();
-
         // Randomly choose between ARRIVAL and FLYOVER
         // Also determine altitude and speed based on flight type
         float altitude;
