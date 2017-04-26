@@ -87,7 +87,12 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     private ArrayList<CollisionAnimation> collisions = new ArrayList();
     private Random r = new Random();
 
-    private float collisionRadius = toPixels(70); // pixels
+    private float collisionRadius = toPixels(100); // pixels
+    private float collisionWarningHSep = toPixels(5500); // pixels
+    private float collisionWarningVSep = toPixels(305); // pixels
+    private float collisionWarningVSepCruise = toPixels(610); //pixels
+
+    private float cruiseAlt = 8800; // meters
 
     class CollisionAnimation {
         Airplane a;
@@ -258,7 +263,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 new Vector3(airport.width, airport.height, 0)
         );
         for(Airplane airplane: airplanes) {
-            if(airplane.stateType == LANDED && airplane.flightType == ARRIVAL
+            if((airplane.stateType == LANDED && airplane.flightType == ARRIVAL)
                     || !airportBoundary.contains(new Vector3(airplane.getPosition(), 0))) {
                 toRemove.add(airplane);
             }
@@ -266,9 +271,20 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             for(Airplane other: airplanes) {
                 if(other != airplane) {
                     Vector2 pos1 = airplane.getPosition();
+                    float alt1 = airplane.getAltitude();
                     Vector2 pos2 = other.getPosition();
+                    float alt2 = other.getAltitude();
                     if(pos1 != null && pos2 != null) {
-                        if(pos1.dst(pos2) < collisionRadius) {
+                        if(pos1.dst(pos2) < collisionWarningHSep
+                                && ((Math.abs(alt1 - alt2) < collisionWarningVSep
+                                    && alt1 < cruiseAlt)
+                                || (Math.abs(alt1 - alt2) < collisionWarningVSepCruise
+                                    && alt1 > cruiseAlt))) {
+                            ui.setStatus(airplane.name + " and " + other.name + " are too close!");
+                            Gdx.app.log(TAG, airplane.name + " and " + other.name + " are too close!");
+                        }
+                        if(pos1.dst(pos2) < collisionRadius
+                                && Math.abs(alt1 - alt2) < collisionRadius) { // Collision
                             collisions.add(new CollisionAnimation(airplane, other));
                         }
                     }
