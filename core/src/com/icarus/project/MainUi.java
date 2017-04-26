@@ -33,6 +33,7 @@ public class MainUi {
     private ImageButton landingButton;
     private ImageButton warpUpButton;
     private ImageButton warpDownButton;
+    private ImageButton pauseButton;
 
     public static final String TAG = "MainUi";
 
@@ -225,6 +226,28 @@ public class MainUi {
             }
         });
         stage.addActor(warpDownButton);
+
+        Drawable pauseDrawable = new TextureRegionDrawable(
+                new TextureRegion((Texture) assets.get("buttons/pause_button.png"))
+        );
+        pauseButton = new ImageButton(warpDownDrawable);
+        pauseButton.setSize(buttonSize / 2, buttonSize / 2);
+        pauseButton.setPosition(1 * buttonGap,
+                Gdx.graphics.getHeight() - buttonGap - buttonSize / 2);
+        pauseButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                if(PIScreen.getInstance().warpSpeed > 1.0) {
+                    PIScreen.getInstance().warpSpeed *= 0.5;
+                }
+            }
+        });
+        stage.addActor(pauseButton);
 
         //showAirplaneButtons(false);
         showHeadingSelector(false);
