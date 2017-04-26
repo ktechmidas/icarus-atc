@@ -42,7 +42,7 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
         camera.setToOrtho(false, 800, 480);
         batch = new SpriteBatch();
         playerBtnSkin1 = new Skin();   //create button skin
-        playerBtnSkin1.add("playerBtn1", new Texture("buttons/landing_button.png"));//add the image to the skin
+        playerBtnSkin1.add("playerBtn1", new Texture("buttons/play_button.png"));//add the image to the skin
         playerBtnStyle1 = new ImageButton.ImageButtonStyle();  //create button style
         playerBtnStyle1.imageUp = playerBtnSkin1.getDrawable("playerBtn1");  //sets the button appearance when it is not pressed
         playerBtnStyle1.imageDown = playerBtnSkin1.getDrawable("playerBtn1");    //sets the button appearance when it is pressed
@@ -73,7 +73,7 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[2].b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         playerBtn1.draw(batch, 1);
