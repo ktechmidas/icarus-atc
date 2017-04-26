@@ -16,7 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class MainUi {
     private BitmapFont font;
@@ -40,7 +39,6 @@ public class MainUi {
     private int buttonSize = (int) (100 * Gdx.graphics.getDensity());
     private int buttonGap = (int) (5 * Gdx.graphics.getDensity());
     public int statusBarHeight = (int) (25 * Gdx.graphics.getDensity());
-
     public MainUi(AssetManager assets, BitmapFont font) {
         this.font = font;
 

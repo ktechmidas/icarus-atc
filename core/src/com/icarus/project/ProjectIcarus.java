@@ -17,7 +17,7 @@ public class ProjectIcarus extends Game {
     public void create() {
         batch = new SpriteBatch();
         font = new BitmapFont();
-        this.setScreen(new PIScreen(this));
+        this.setScreen(new MainMenuScreen(this));
     }
 
     public enum UiState {
@@ -27,5 +27,6 @@ public class ProjectIcarus extends Game {
     public void dispose() {
         batch.dispose();
         font.dispose();
+        screen.dispose();
     }
 }
