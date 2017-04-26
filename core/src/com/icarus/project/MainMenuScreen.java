@@ -24,6 +24,8 @@ import com.badlogic.gdx.assets.AssetManager;
 public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
     final ProjectIcarus game;
     public Stage stage;
+    int width = 0;
+    int height = 0;
     AssetManager menuManager = new AssetManager();
     OrthographicCamera camera;
     private BitmapFont font = new BitmapFont();
@@ -40,12 +42,16 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
         camera.setToOrtho(false, 800, 480);
         batch = new SpriteBatch();
         playerBtnSkin1 = new Skin();   //create button skin
-        playerBtnSkin1.add("playerBtn1", new Texture("buttons/landing_button.png"));    //add the image to the skin
+        playerBtnSkin1.add("playerBtn1", new Texture("buttons/landing_button.png"));//add the image to the skin
         playerBtnStyle1 = new ImageButton.ImageButtonStyle();  //create button style
         playerBtnStyle1.imageUp = playerBtnSkin1.getDrawable("playerBtn1");  //sets the button appearance when it is not pressed
         playerBtnStyle1.imageDown = playerBtnSkin1.getDrawable("playerBtn1");    //sets the button appearance when it is pressed
         playerBtn1 = new ImageButton(playerBtnStyle1);    //initializes the ImageButton with the created style as a parameter
-        playerBtn1.setBounds(positions[2], positions[3], playerBtn1.getWidth(), playerBtn1.getHeight());  //tells the button where to go
+        int width = (int) ((Gdx.graphics.getWidth() - playerBtn1.getWidth())/2);
+        int height = (int) ((Gdx.graphics.getHeight() - playerBtn1.getHeight())/2);
+        playerBtn1.setBounds(width, height, playerBtn1.getWidth(), playerBtn1.getHeight());  //tells the button where to go
+
+
         playerBtn1.addListener(new InputListener() {//adds listener to check for touch
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
