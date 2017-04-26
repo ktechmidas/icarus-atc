@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeType;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Circle;
@@ -24,9 +23,6 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -88,10 +84,12 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     private float timeElapsed;
     private float airplaneInterval;
 
-    private ArrayList<Collision> collisions = new ArrayList();
+    private ArrayList<CollisionAnimation> collisions = new ArrayList();
     private Random r = new Random();
 
-    class Collision {
+    private float collisionRadius = toPixels(70); // pixels
+
+    class CollisionAnimation {
         Airplane a;
         Airplane b;
         float time;
@@ -101,13 +99,13 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
         float nextShake;
 
-        public Collision(Airplane a, Airplane b) {
+        public CollisionAnimation(Airplane a, Airplane b) {
             this.a = a;
             this.b = b;
             time = 0.0f;
             stage = 0;
             startWarp = warpSpeed;
-            Vector2 o = a.getPosition().cpy().add(b.getPosition()).scl(0.5f);
+            Vector2 o = a.getPosition().cpy().add(b.getPosition()).scl(0.5f); // Temporary origin
             origin = new Vector3(o.x, o.y, 0.0f);
         }
 
@@ -270,8 +268,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                     Vector2 pos1 = airplane.getPosition();
                     Vector2 pos2 = other.getPosition();
                     if(pos1 != null && pos2 != null) {
-                        if(pos1.dst(pos2) < 100) {
-                            collisions.add(new Collision(airplane, other));
+                        if(pos1.dst(pos2) < collisionRadius) {
+                            collisions.add(new CollisionAnimation(airplane, other));
                         }
                     }
                 }
@@ -283,15 +281,14 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             }
         }
 
-
-        ArrayList<Collision> collisionsToRemove = new ArrayList<Collision>();
-        for(Collision collision: collisions) {
+        ArrayList<CollisionAnimation> collisionsToRemove = new ArrayList<CollisionAnimation>();
+        for(CollisionAnimation collision: collisions) {
             collision.step();
             if(collision.stage == 3) {
                 collisionsToRemove.add(collision);
             }
         }
-        for(Collision collision: collisionsToRemove) {
+        for(CollisionAnimation collision: collisionsToRemove) {
             collisions.remove(collision);
         }
 
