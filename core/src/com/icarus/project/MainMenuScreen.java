@@ -35,6 +35,7 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
     private ImageButton.ImageButtonStyle playBtnStyle;
     int[] positions = {1240, 150, 235, 500, 600, 500, 975, 500, 440, 200, 785, 200, 1280, 485};
     private int buttonSize = (int) (100 * Gdx.graphics.getDensity());
+    private Texture logo;
 
     public MainMenuScreen(final ProjectIcarus game) {
         this.game = game;
@@ -48,12 +49,10 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
         playBtnStyle.imageUp = playBtnSkin.getDrawable("playerBtn1");  //sets the button appearance when it is not pressed
         playBtnStyle.imageDown = playBtnSkin.getDrawable("playerBtn1");    //sets the button appearance when it is pressed
         playerBtn1 = new ImageButton(playBtnStyle);    //initializes the ImageButton with the created style as a parameter
-        playerBtn1.setSize(buttonSize, buttonSize);
-        int width = (int) ((Gdx.graphics.getWidth() - playerBtn1.getWidth())/2);
-        int height = (int) ((Gdx.graphics.getHeight() - playerBtn1.getHeight())/2);
+        playerBtn1.setSize(buttonSize, buttonSize); //set button size
+        int width = (int) ((Gdx.graphics.getWidth() - playerBtn1.getWidth())/2); //set button orientation horizontally
+        int height = (int) ((Gdx.graphics.getHeight() - playerBtn1.getHeight())/4); //set button orientation vertically
         playerBtn1.setBounds(width, height, playerBtn1.getWidth(), playerBtn1.getHeight());  //tells the button where to go
-
-
         playerBtn1.addListener(new InputListener() {//adds listener to check for touch
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -67,6 +66,8 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
         });
         stage.addActor(playerBtn1);//adds the button to the stage
         Gdx.input.setInputProcessor(new InputMultiplexer(stage, new GestureDetector(this)));
+
+        //logo = new Texture(Gdx.files.internal("buttons/Icarus_Logo.png"));
     }
 
     @Override
@@ -79,6 +80,7 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         playerBtn1.draw(batch, 1);
+        //batch.draw(logo,((Gdx.graphics.getWidth() - logo.getWidth())/2) ,(Gdx.graphics.getHeight() - logo.getHeight())/2);
         batch.end();
         stage.act();
         stage.draw();
