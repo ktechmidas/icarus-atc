@@ -126,6 +126,6 @@ class Airplane {
     }
 
     public enum StateType {
-        FLYING, LANDING, LANDED
+        FLYING, LANDING
     }
 }

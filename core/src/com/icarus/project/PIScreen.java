@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import static com.icarus.project.Airplane.FlightType.ARRIVAL;
-import static com.icarus.project.Airplane.StateType.LANDED;
 
 public class PIScreen extends Game implements Screen, GestureDetector.GestureListener {
     private Game game;
@@ -117,8 +116,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             followingPlane = false;
             selectedAirplane = null;
             if(stage == 0) {
-                float alpha = 0.01f * dt;
-                warpSpeed = (warpSpeed * (1.0f - alpha) + 0.1f * alpha);
+                float alpha = 0.1f * dt;
+                warpSpeed = 0.0f;//(warpSpeed * (1.0f - alpha) + 0.1f * alpha);
 
                 alpha = 0.0075f * dt;
                 zoomCamera(origin, camera.zoom * (1.0f - alpha) + 0.2f * alpha);
@@ -260,7 +259,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 new Vector3(airport.width, airport.height, 0)
         );
         for(Airplane airplane: airplanes) {
-            if(airplane.stateType == LANDED && airplane.flightType == ARRIVAL
+            if((airplane.getVelocity().len() < 0.1 && airplane.flightType == ARRIVAL)
                     || !airportBoundary.contains(new Vector3(airplane.getPosition(), 0))) {
                 toRemove.add(airplane);
             }
@@ -270,7 +269,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                     Vector2 pos1 = airplane.getPosition();
                     Vector2 pos2 = other.getPosition();
                     if(pos1 != null && pos2 != null) {
-                        if(pos1.dst(pos2) < 100) {
+                        if(pos1.dst(pos2) < 25) {
                             collisions.add(new Collision(airplane, other));
                         }
                     }
