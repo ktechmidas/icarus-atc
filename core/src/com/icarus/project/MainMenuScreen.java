@@ -31,9 +31,10 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
     private BitmapFont font = new BitmapFont();
     private SpriteBatch batch;
     private ImageButton playerBtn1;
-    private Skin playerBtnSkin1;
-    private ImageButton.ImageButtonStyle playerBtnStyle1;
+    private Skin playBtnSkin;
+    private ImageButton.ImageButtonStyle playBtnStyle;
     int[] positions = {1240, 150, 235, 500, 600, 500, 975, 500, 440, 200, 785, 200, 1280, 485};
+    private int buttonSize = (int) (100 * Gdx.graphics.getDensity());
 
     public MainMenuScreen(final ProjectIcarus game) {
         this.game = game;
@@ -41,12 +42,13 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
         batch = new SpriteBatch();
-        playerBtnSkin1 = new Skin();   //create button skin
-        playerBtnSkin1.add("playerBtn1", new Texture("buttons/play_button.png"));//add the image to the skin
-        playerBtnStyle1 = new ImageButton.ImageButtonStyle();  //create button style
-        playerBtnStyle1.imageUp = playerBtnSkin1.getDrawable("playerBtn1");  //sets the button appearance when it is not pressed
-        playerBtnStyle1.imageDown = playerBtnSkin1.getDrawable("playerBtn1");    //sets the button appearance when it is pressed
-        playerBtn1 = new ImageButton(playerBtnStyle1);    //initializes the ImageButton with the created style as a parameter
+        playBtnSkin = new Skin();   //create button skin
+        playBtnSkin.add("playerBtn1", new Texture("buttons/play_button.png"));//add the image to the skin
+        playBtnStyle = new ImageButton.ImageButtonStyle();  //create button style
+        playBtnStyle.imageUp = playBtnSkin.getDrawable("playerBtn1");  //sets the button appearance when it is not pressed
+        playBtnStyle.imageDown = playBtnSkin.getDrawable("playerBtn1");    //sets the button appearance when it is pressed
+        playerBtn1 = new ImageButton(playBtnStyle);    //initializes the ImageButton with the created style as a parameter
+        playerBtn1.setSize(buttonSize, buttonSize);
         int width = (int) ((Gdx.graphics.getWidth() - playerBtn1.getWidth())/2);
         int height = (int) ((Gdx.graphics.getHeight() - playerBtn1.getHeight())/2);
         playerBtn1.setBounds(width, height, playerBtn1.getWidth(), playerBtn1.getHeight());  //tells the button where to go
