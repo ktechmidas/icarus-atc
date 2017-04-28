@@ -62,6 +62,7 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 game.setScreen(new PIScreen(game));//switch screen to game state
                 playerBtn1.setDisabled(true);
+
             }
         });
         stage.addActor(playerBtn1);//adds the button to the stage

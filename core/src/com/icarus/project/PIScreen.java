@@ -131,6 +131,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         manager.load("buttons/selection_wheel.png", Texture.class);
         manager.load("buttons/warpup.png", Texture.class);
         manager.load("buttons/warpdown.png", Texture.class);
+        manager.load("buttons/pause_button.png", Texture.class);
+        manager.load("buttons/play_button_pause.png", Texture.class);
 
         manager.finishLoading();
         airport = manager.get(airportFile);
