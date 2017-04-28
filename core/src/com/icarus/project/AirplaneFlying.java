@@ -137,6 +137,12 @@ class AirplaneFlying extends AirplaneState {
                         PIScreen.getInstance().ui.setStatus(airplane.name + ": turn complete");
                         targetRunwayStage = 3;
                     }
+
+                    Vector2 targetPoint = targetRunway.points[targetRunwayPoint];
+                    System.out.println(targetPoint.dst(position));
+                    if(targetPoint.dst(position) < 3) {
+                        airplane.transitionToLanding(targetRunway);
+                    }
                 }
                 else {
                     Vector2 targetPoint = targetRunway.points[targetRunwayPoint];

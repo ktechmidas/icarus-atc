@@ -82,10 +82,17 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     private float timeElapsed;
     private float airplaneInterval;
 
-    private ArrayList<Collision> collisions = new ArrayList();
+    private ArrayList<CollisionAnimation> collisions = new ArrayList();
     private Random r = new Random();
 
-    class Collision {
+    private float collisionRadius = toPixels(100); // pixels
+    private float collisionWarningHSep = toPixels(5500); // pixels
+    private float collisionWarningVSep = toPixels(305); // pixels
+    private float collisionWarningVSepCruise = toPixels(610); //pixels
+
+    private float cruiseAlt = 8800; // meters
+
+    class CollisionAnimation {
         Airplane a;
         Airplane b;
         float time;
@@ -95,13 +102,13 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
         float nextShake;
 
-        public Collision(Airplane a, Airplane b) {
+        public CollisionAnimation(Airplane a, Airplane b) {
             this.a = a;
             this.b = b;
             time = 0.0f;
             stage = 0;
             startWarp = warpSpeed;
-            Vector2 o = a.getPosition().cpy().add(b.getPosition()).scl(0.5f);
+            Vector2 o = a.getPosition().cpy().add(b.getPosition()).scl(0.5f); // Temporary origin
             origin = new Vector3(o.x, o.y, 0.0f);
         }
 
@@ -262,10 +269,21 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             for(Airplane other: airplanes) {
                 if(other != airplane) {
                     Vector2 pos1 = airplane.getPosition();
+                    float alt1 = airplane.getAltitude();
                     Vector2 pos2 = other.getPosition();
+                    float alt2 = other.getAltitude();
                     if(pos1 != null && pos2 != null) {
-                        if(pos1.dst(pos2) < 25) {
-                            collisions.add(new Collision(airplane, other));
+                        if(pos1.dst(pos2) < collisionWarningHSep
+                                && ((Math.abs(alt1 - alt2) < collisionWarningVSep
+                                    && alt1 < cruiseAlt)
+                                || (Math.abs(alt1 - alt2) < collisionWarningVSepCruise
+                                    && alt1 > cruiseAlt))) {
+                            ui.setStatus(airplane.name + " and " + other.name + " are too close!");
+                            Gdx.app.log(TAG, airplane.name + " and " + other.name + " are too close!");
+                        }
+                        if(pos1.dst(pos2) < collisionRadius
+                                && Math.abs(alt1 - alt2) < collisionRadius) { // Collision
+                            collisions.add(new CollisionAnimation(airplane, other));
                         }
                     }
                 }
@@ -277,15 +295,14 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             }
         }
 
-
-        ArrayList<Collision> collisionsToRemove = new ArrayList<Collision>();
-        for(Collision collision: collisions) {
+        ArrayList<CollisionAnimation> collisionsToRemove = new ArrayList<CollisionAnimation>();
+        for(CollisionAnimation collision: collisions) {
             collision.step();
             if(collision.stage == 3) {
                 collisionsToRemove.add(collision);
             }
         }
-        for(Collision collision: collisionsToRemove) {
+        for(CollisionAnimation collision: collisionsToRemove) {
             collisions.remove(collision);
         }
 
