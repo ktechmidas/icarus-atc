@@ -34,6 +34,8 @@ public class MainUi {
     private ImageButton warpUpButton;
     private ImageButton warpDownButton;
     private ImageButton pauseButton;
+    private ImageButton playPauseButton;
+    float warpPause = 0;
 
     public static final String TAG = "MainUi";
 
@@ -230,24 +232,56 @@ public class MainUi {
         Drawable pauseDrawable = new TextureRegionDrawable(
                 new TextureRegion((Texture) assets.get("buttons/pause_button.png"))
         );
-        pauseButton = new ImageButton(warpDownDrawable);
+        pauseButton = new ImageButton(pauseDrawable);
         pauseButton.setSize(buttonSize / 2, buttonSize / 2);
-        pauseButton.setPosition(1 * buttonGap,
-                Gdx.graphics.getHeight() - buttonGap - buttonSize / 2);
+        pauseButton.setPosition(2 * buttonGap + buttonSize / 2, Gdx.graphics.getHeight() - buttonGap - buttonSize / 2);
         pauseButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 return true;
             }
-
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                if(PIScreen.getInstance().warpSpeed > 1.0) {
-                    PIScreen.getInstance().warpSpeed *= 0.5;
-                }
+                if(PIScreen.getInstance().warpSpeed >= 1.0 ) {
+                    warpPause = PIScreen.getInstance().warpSpeed;
+                    PIScreen.getInstance().warpSpeed = 0;
+                    playPauseButton.setVisible(true);
+                    pauseButton.setVisible(false);
+               }
+               /* else if(PIScreen.getInstance().warpSpeed == 0) {
+                   PIScreen.getInstance().warpSpeed = warpPause;
+                }*/
             }
         });
         stage.addActor(pauseButton);
+
+        Drawable playPauseDrawable = new TextureRegionDrawable(
+                new TextureRegion((Texture) assets.get("buttons/play_button_pause.png"))
+        );
+        playPauseButton = new ImageButton(playPauseDrawable);
+        playPauseButton.setSize(buttonSize / 2, buttonSize / 2);
+        playPauseButton.setPosition(2 * buttonGap + buttonSize / 2, Gdx.graphics.getHeight() - buttonGap - buttonSize / 2);
+        playPauseButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                //if(PIScreen.getInstance().warpSpeed >= 1.0 ) {
+                //    warpPause = PIScreen.getInstance().warpSpeed;
+                //    PIScreen.getInstance().warpSpeed = 0;
+                //}
+                if(PIScreen.getInstance().warpSpeed == 0) {
+                    PIScreen.getInstance().warpSpeed = warpPause;
+                    playPauseButton.setVisible(false);
+                    pauseButton.setVisible(true);
+
+                }
+            }
+        });
+        stage.addActor(playPauseButton);
+        playPauseButton.setVisible(false);
 
         //showAirplaneButtons(false);
         showHeadingSelector(false);
@@ -332,6 +366,7 @@ public class MainUi {
         else {
             hideAirplaneButtons();
         }
+
 //        showAirplaneButtons(PIScreen.getInstance().getSelectedAirplane() != null
 //                && PIScreen.getInstance().uiState != ProjectIcarus.UiState.SELECT_HEADING);
     }
