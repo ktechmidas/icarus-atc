@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import static com.icarus.project.Airplane.FlightType.ARRIVAL;
+import static com.icarus.project.Airplane.FlightType.FLYOVER;
 
 public class PIScreen extends Game implements Screen, GestureDetector.GestureListener {
     private Game game;
@@ -593,61 +594,79 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     }
 
     public void addAirplane() {
-        // Randomly choose between ARRIVAL and FLYOVER
+        // Randomly choose between ARRIVAL, FLYOVER, and DEPARTURE
         // Also determine altitude and speed based on flight type
         float altitude;
         Airplane.FlightType flightType;
         float speed;
-        int randFlightType = r.nextInt(2);
-        if(randFlightType == 0) {
+        int randFlightType = r.nextInt(10);
+        if(randFlightType < 2) {
             flightType = Airplane.FlightType.FLYOVER;
             altitude = 10000; //meters
             speed = toPixels(250); //subject to change
         }
-        else {
+        else if(randFlightType < 6) {
             flightType = Airplane.FlightType.ARRIVAL;
             altitude = 5000; //subject to change
             speed = toPixels(150); //subject to change
+        }
+        else {
+            flightType = Airplane.FlightType.DEPARTURE;
+            altitude = 0;
+            speed = 0.01f;
         }
 
         // Generate a random flight name
         int flightNum = r.nextInt(9999) + 1;
         String flightName = "";
-        for(int i = 0; i < 3; i++) {
-            char c = (char)(r.nextInt(26) + 'A');
+        for (int i = 0; i < 3; i++) {
+            char c = (char) (r.nextInt(26) + 'A');
             flightName += c;
         }
         flightName += flightNum;
 
-        // Generate a random heading
-        int heading = r.nextInt(359);
-        float theta = (float) (heading * Math.PI / 180);
-        Vector2 velocity = new Vector2(1, 0).setLength(speed).rotate(heading);
+        Vector2 position;
+        Vector2 velocity;
 
-        // Calculate vectors from the center to the corners
-        Vector2 center = new Vector2(airport.width / 2, airport.height / 2);
-        Vector2 upperRight = new Vector2(airport.width, airport.height).sub(center);
-        Vector2 upperLeft = new Vector2(0, airport.height).sub(center);
-        Vector2 lowerLeft = new Vector2(0, 0).sub(center);
-        Vector2 lowerRight = new Vector2(airport.width, 0).sub(center);
+        if (flightType == FLYOVER || flightType == ARRIVAL) {
+            // Generate a random heading
+            int heading = r.nextInt(359);
+            float theta = (float) (heading * Math.PI / 180);
+            velocity = new Vector2(1, 0).setLength(speed).rotate(heading);
 
-        // Generate a random position along the edge of the map
-        Vector2 position = new Vector2();
-        if(heading < upperRight.angle() || heading > lowerRight.angle()) {
-            position.add(0, (float) (airport.height / 2 - airport.width / 2 * Math.tan(theta)));
-        }
-        else if(heading < upperLeft.angle()) {
-            position.add((float) (airport.width / 2 - (airport.height / 2) / Math.tan(theta)), 0);
-        }
-        else if(heading < lowerLeft.angle()) {
-            position.add(airport.width,
-                    (float) ((airport.width / 2) * Math.tan(theta) + airport.height / 2)
-            );
+            // Calculate vectors from the center to the corners
+            Vector2 center = new Vector2(airport.width / 2, airport.height / 2);
+            Vector2 upperRight = new Vector2(airport.width, airport.height).sub(center);
+            Vector2 upperLeft = new Vector2(0, airport.height).sub(center);
+            Vector2 lowerLeft = new Vector2(0, 0).sub(center);
+            Vector2 lowerRight = new Vector2(airport.width, 0).sub(center);
+
+            // Generate a random position along the edge of the map
+            position = new Vector2();
+            if (heading < upperRight.angle() || heading > lowerRight.angle()) {
+                position.add(0, (float) (airport.height / 2 - airport.width / 2 * Math.tan(theta)));
+            }
+            else if (heading < upperLeft.angle()) {
+                position.add((float) (airport.width / 2 - (airport.height / 2) / Math.tan(theta)), 0);
+            }
+            else if (heading < lowerLeft.angle()) {
+                position.add(airport.width,
+                        (float) ((airport.width / 2) * Math.tan(theta) + airport.height / 2)
+                );
+            }
+            else {
+                position.add((float) ((airport.height / 2) / Math.tan(theta) + airport.width / 2),
+                        airport.height
+                );
+            }
         }
         else {
-            position.add((float) ((airport.height / 2) / Math.tan(theta) + airport.width / 2),
-                    airport.height
-            );
+            int randRunway = r.nextInt(airport.runways.length);
+            int randEnd = r.nextInt(2);
+            position = airport.runways[randRunway].points[randEnd].cpy();
+            Vector2 heading = airport.runways[randRunway].points[1-randEnd].cpy()
+                    .sub(position).nor();
+            velocity = heading.scl(speed);
         }
 
         // Add a new airplane

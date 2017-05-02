@@ -31,6 +31,7 @@ public class MainUi {
     private ImageButton circleButton;
     private ImageButton headingWheel;
     private ImageButton landingButton;
+    private ImageButton takeoffButton;
     private ImageButton warpUpButton;
     private ImageButton warpDownButton;
     private ImageButton pauseButton;
@@ -156,6 +157,27 @@ public class MainUi {
         });
         stage.addActor(landingButton);
 
+        // Initialize takeoff button
+        Drawable takeoffDrawable = new TextureRegionDrawable(
+                new TextureRegion((Texture) assets.get("buttons/takeoff_button.png"))
+        );
+        takeoffButton = new ImageButton(landingDrawable);
+        takeoffButton.setSize(buttonSize, buttonSize);
+        takeoffButton.setPosition(5 * buttonGap + 4 * buttonSize, statusBarHeight + buttonGap);
+        takeoffButton.addListener(new InputListener(){
+            @Override
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+            @Override
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                setStatus("takeoffButton");
+                PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_RUNWAY;
+                PIScreen.getInstance().followingPlane = false;
+            }
+        });
+        stage.addActor(takeoffButton);
+
         // Initialize heading selection wheel
         Drawable headingWheelDrawable = new TextureRegionDrawable(
                 new TextureRegion((Texture) assets.get("buttons/selection_wheel.png"))
@@ -212,7 +234,7 @@ public class MainUi {
         );
         warpDownButton = new ImageButton(warpDownDrawable);
         warpDownButton.setSize(buttonSize / 2, buttonSize / 2);
-        warpDownButton.setPosition(1 * buttonGap,
+        warpDownButton.setPosition(buttonGap,
                 Gdx.graphics.getHeight() - buttonGap - buttonSize / 2);
         warpDownButton.addListener(new InputListener() {
             @Override
@@ -361,6 +383,12 @@ public class MainUi {
                         Gdx.graphics.getHeight() - 20);
             }
 
+            font.draw(batch,
+                    (int) PIScreen.toMeters(airplane.getVelocity().len()) + "m/s",
+                    Gdx.graphics.getWidth() - statusWidth / 2 + 10,
+                    Gdx.graphics.getHeight() - 50
+            );
+
             batch.end();
         }
         else {
@@ -380,6 +408,9 @@ public class MainUi {
             circleButton.setVisible(isVisible);
             landingButton.setVisible(isVisible);
         }
+        else if(flightType == Airplane.FlightType.DEPARTURE) {
+            takeoffButton.setVisible(isVisible);
+        }
         headingButton.setVisible(isVisible);
         waypointButton.setVisible(isVisible);
         altitudeButton.setVisible(isVisible);
@@ -391,6 +422,7 @@ public class MainUi {
         altitudeButton.setVisible(false);
         circleButton.setVisible(false);
         landingButton.setVisible(false);
+        takeoffButton.setVisible(false);
     }
 
     public void showHeadingSelector(boolean isVisible){
