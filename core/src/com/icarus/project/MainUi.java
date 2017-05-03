@@ -17,6 +17,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 
+import static com.icarus.project.Airplane.StateType.FLYING;
+import static com.icarus.project.Airplane.StateType.LANDING;
+
 public class MainUi {
     private BitmapFont font;
     private ShapeRenderer shapes;
@@ -33,6 +36,7 @@ public class MainUi {
     private ImageButton landingButton;
     private ImageButton takeoffButton;
     private ImageButton handoffButton;
+    private ImageButton cancelButton;
     private ImageButton warpUpButton;
     private ImageButton warpDownButton;
     private ImageButton pauseButton;
@@ -68,7 +72,7 @@ public class MainUi {
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-//                showHeadingSelector(true);
+//                toggleHeadingSelector(true);
 //                showAirplaneButtons(false);
 //                hideAirplaneButtons();
                 PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_HEADING;
@@ -183,7 +187,7 @@ public class MainUi {
         Drawable handoffDrawable = new TextureRegionDrawable(
                 new TextureRegion((Texture) assets.get("buttons/handoff_button.png"))
         );
-        handoffButton = new ImageButton(takeoffDrawable);
+        handoffButton = new ImageButton(handoffDrawable);
         handoffButton.setSize(buttonSize, buttonSize);
         handoffButton.setPosition(5 * buttonGap + 4 * buttonSize, statusBarHeight + buttonGap);
         handoffButton.addListener(new InputListener(){
@@ -199,6 +203,27 @@ public class MainUi {
             }
         });
         stage.addActor(handoffButton);
+
+        // Initialize cancel button
+        Drawable cancelDrawable = new TextureRegionDrawable(
+                new TextureRegion((Texture) assets.get("buttons/cancel_button.png"))
+        );
+        cancelButton = new ImageButton(cancelDrawable);
+        cancelButton.setSize(buttonSize, buttonSize);
+        cancelButton.setPosition(5 * buttonGap + 4 * buttonSize, statusBarHeight + buttonGap);
+        cancelButton.addListener(new InputListener(){
+            @Override
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+            @Override
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                setStatus("cancelButton");
+                PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_RUNWAY;
+                PIScreen.getInstance().followingPlane = false;
+            }
+        });
+        stage.addActor(cancelButton);
 
         // Initialize heading selection wheel
         Drawable headingWheelDrawable = new TextureRegionDrawable(
@@ -223,7 +248,7 @@ public class MainUi {
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 Vector2 heading = new Vector2(x, y).sub(headingWheel.getWidth()/2, headingWheel.getHeight()/2);
-                showHeadingSelector(false);
+                toggleHeadingSelector(false);
                 PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
                 setStatus((int) heading.angle() + "");
                 PIScreen.getInstance().getSelectedAirplane().setTargetHeading(heading);
@@ -328,7 +353,7 @@ public class MainUi {
         playPauseButton.setVisible(false);
 
         //showAirplaneButtons(false);
-        showHeadingSelector(false);
+        toggleHeadingSelector(false);
     }
 
     public void draw() {
@@ -355,13 +380,13 @@ public class MainUi {
 
         //show airplane-specific buttons if an airplane is selected
         if(PIScreen.getInstance().uiState == ProjectIcarus.UiState.SELECT_HEADING) {
-            showHeadingSelector(true);
+            toggleHeadingSelector(true);
             hideAirplaneButtons();
         }
         else if(PIScreen.getInstance().getSelectedAirplane() != null) {
             Airplane airplane = PIScreen.getInstance().getSelectedAirplane();
-            showAirplaneButtons(true, airplane.flightType);
-            showHeadingSelector(false);
+            showAirplaneButtons(airplane.flightType);
+            toggleHeadingSelector(false);
 
             //draw a rectangle for airplane status
             shapes.begin(ShapeRenderer.ShapeType.Filled);
@@ -396,8 +421,8 @@ public class MainUi {
             font.draw(batch, type,
                     Gdx.graphics.getWidth() - statusWidth + 10, Gdx.graphics.getHeight() - 50);
 
-            if(airplane.stateType == Airplane.StateType.FLYING ||
-                    airplane.stateType == Airplane.StateType.LANDING)
+            if(airplane.stateType == FLYING ||
+                    airplane.stateType == LANDING)
             {
                 String alt = (int)airplane.getAltitude() + "m";
                 font.draw(batch, alt,
@@ -425,17 +450,25 @@ public class MainUi {
         this.status = status;
     }
 
-    public void showAirplaneButtons(boolean isVisible, Airplane.FlightType flightType){
-        if(flightType == Airplane.FlightType.ARRIVAL) {
-            circleButton.setVisible(isVisible);
-            landingButton.setVisible(isVisible);
+    public void showAirplaneButtons(Airplane.FlightType flightType){
+        Airplane selectedAirplane = PIScreen.getInstance().getSelectedAirplane();
+        hideAirplaneButtons();
+        if(selectedAirplane.stateType == FLYING) {
+            if(flightType == Airplane.FlightType.ARRIVAL) {
+                circleButton.setVisible(true);
+                landingButton.setVisible(true);
+            }
+            else if(flightType == Airplane.FlightType.DEPARTURE
+                    || flightType == Airplane.FlightType.FLYOVER) {
+                handoffButton.setVisible(true);
+            }
+            headingButton.setVisible(true);
+            waypointButton.setVisible(true);
+            altitudeButton.setVisible(true);
         }
-        else if(flightType == Airplane.FlightType.DEPARTURE) {
-            takeoffButton.setVisible(isVisible);
+        else if(selectedAirplane.stateType == LANDING) {
+
         }
-        headingButton.setVisible(isVisible);
-        waypointButton.setVisible(isVisible);
-        altitudeButton.setVisible(isVisible);
     }
 
     public void hideAirplaneButtons() {
@@ -448,8 +481,7 @@ public class MainUi {
         handoffButton.setVisible(false);
     }
 
-    public void showHeadingSelector(boolean isVisible){
+    public void toggleHeadingSelector(boolean isVisible){
         headingWheel.setVisible(isVisible);
-        //showAirplaneButtons(!isVisible);
     }
 }

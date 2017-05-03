@@ -204,6 +204,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         manager.load("buttons/landing_button.png", Texture.class);
         manager.load("buttons/more_button.png", Texture.class);
         manager.load("buttons/handoff_button.png", Texture.class);
+        manager.load("buttons/cancel_button.png", Texture.class);
         manager.load("buttons/selection_wheel.png", Texture.class);
         manager.load("buttons/warpup.png", Texture.class);
         manager.load("buttons/warpdown.png", Texture.class);
@@ -412,7 +413,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 break;
             case SELECT_HEADING:
                 uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
-                ui.showHeadingSelector(false);
+                ui.toggleHeadingSelector(false);
                 break;
             case SELECT_RUNWAY:
                 for(Runway runway: airport.runways) {
