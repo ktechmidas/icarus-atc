@@ -32,6 +32,7 @@ public class MainUi {
     private ImageButton headingWheel;
     private ImageButton landingButton;
     private ImageButton takeoffButton;
+    private ImageButton handoffButton;
     private ImageButton warpUpButton;
     private ImageButton warpDownButton;
     private ImageButton pauseButton;
@@ -161,7 +162,7 @@ public class MainUi {
         Drawable takeoffDrawable = new TextureRegionDrawable(
                 new TextureRegion((Texture) assets.get("buttons/takeoff_button.png"))
         );
-        takeoffButton = new ImageButton(landingDrawable);
+        takeoffButton = new ImageButton(takeoffDrawable);
         takeoffButton.setSize(buttonSize, buttonSize);
         takeoffButton.setPosition(5 * buttonGap + 4 * buttonSize, statusBarHeight + buttonGap);
         takeoffButton.addListener(new InputListener(){
@@ -177,6 +178,27 @@ public class MainUi {
             }
         });
         stage.addActor(takeoffButton);
+
+        // Initialize handoff button
+        Drawable handoffDrawable = new TextureRegionDrawable(
+                new TextureRegion((Texture) assets.get("buttons/handoff_button.png"))
+        );
+        handoffButton = new ImageButton(takeoffDrawable);
+        handoffButton.setSize(buttonSize, buttonSize);
+        handoffButton.setPosition(5 * buttonGap + 4 * buttonSize, statusBarHeight + buttonGap);
+        handoffButton.addListener(new InputListener(){
+            @Override
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+            @Override
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                setStatus("handoffButton");
+                PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_RUNWAY;
+                PIScreen.getInstance().followingPlane = false;
+            }
+        });
+        stage.addActor(handoffButton);
 
         // Initialize heading selection wheel
         Drawable headingWheelDrawable = new TextureRegionDrawable(
@@ -423,6 +445,7 @@ public class MainUi {
         circleButton.setVisible(false);
         landingButton.setVisible(false);
         takeoffButton.setVisible(false);
+        handoffButton.setVisible(false);
     }
 
     public void showHeadingSelector(boolean isVisible){
