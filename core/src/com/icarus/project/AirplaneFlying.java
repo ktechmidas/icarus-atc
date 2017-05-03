@@ -185,6 +185,10 @@ class AirplaneFlying extends AirplaneState {
         targetType = RUNWAY;
     }
 
+    public void setNoTarget() {
+        targetType = NONE;
+    }
+
     public boolean turnToHeading(Vector2 targetHeading, float turnRate, float dt) {
         float angle = targetHeading.angle(velocity);
         if(angle < 0) {

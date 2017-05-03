@@ -77,6 +77,12 @@ class Airplane {
         }
     }
 
+    public void setNoTarget() {
+        if(stateType == StateType.FLYING) {
+            ((AirplaneFlying) state).setNoTarget();
+        }
+    }
+
     public void setTargetAltitude(float targetAltitude) {
         if(stateType == StateType.FLYING) {
             ((AirplaneFlying) state).targetAltitude = targetAltitude;
@@ -124,6 +130,13 @@ class Airplane {
         else {
             return null;
         }
+    }
+
+    public AirplaneFlying.TargetType getTargetType() {
+        if(stateType == StateType.FLYING) {
+            return ((AirplaneFlying) state).targetType;
+        }
+        return null;
     }
 
     public void transitionToLanding(Runway runway) {
