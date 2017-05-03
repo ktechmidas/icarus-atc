@@ -28,7 +28,7 @@ class AirplaneFlying extends AirplaneState {
 
     public float turnRate = 3 * (float) Math.PI / 180.0f; //radians per second
     public float maxVelocity = 250; //meters per second
-    public float altitudeChangeRate = 0.0625f;
+    public float altitudeChangeRate = 12.7f; //meters per second
 
     public TargetType targetType;
 
@@ -161,10 +161,10 @@ class AirplaneFlying extends AirplaneState {
 
         // Change altitude
         if(altitude > targetAltitude && Math.abs(altitude - targetAltitude) > 1) {
-            altitude -= velocity.len() * altitudeChangeRate;
+            altitude -= altitudeChangeRate * dt;
         }
         else if(altitude < targetAltitude && Math.abs(altitude - targetAltitude) > 1) {
-            altitude += velocity.len() * altitudeChangeRate;
+            altitude += altitudeChangeRate * dt;
         }
     }
 

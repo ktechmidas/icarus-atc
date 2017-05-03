@@ -158,7 +158,7 @@ public class MainUi {
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                setStatus("landingButton");
+                setStatus("Please select one end of a runway");
                 PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_RUNWAY;
                 PIScreen.getInstance().followingPlane = false;
             }
@@ -242,14 +242,16 @@ public class MainUi {
             @Override
             public void touchDragged (InputEvent event, float x, float y, int pointer) {
                 Vector2 heading = new Vector2(x, y).sub(headingWheel.getWidth()/2, headingWheel.getHeight()/2);
-                setStatus((int) heading.rotate(-90).angle() + "");
+                setStatus((int) heading.cpy().rotate(-90).angle() + "°");
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 Vector2 heading = new Vector2(x, y).sub(headingWheel.getWidth()/2, headingWheel.getHeight()/2);
                 toggleHeadingSelector(false);
                 PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
-                setStatus((int) heading.angle() + "");
+                setStatus(selectedAirplane.name + ": turning to "
+                        + (int) heading.cpy().rotate(-90).angle() + "°"
+                );
                 selectedAirplane.setTargetHeading(heading);
             }
         });
@@ -351,8 +353,8 @@ public class MainUi {
         stage.addActor(playPauseButton);
         playPauseButton.setVisible(false);
 
-        //showAirplaneButtons(false);
         toggleHeadingSelector(false);
+        hideAirplaneButtons();
     }
 
     public void draw() {

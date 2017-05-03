@@ -373,7 +373,6 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             Random r = new Random();
             airplaneInterval = r.nextInt((int) (maxAirplaneInterval - minAirplaneInterval) + 1) + minAirplaneInterval;
             timeElapsed = 0.0f;
-            ui.setStatus("next interval: " + airplaneInterval + " seconds");
             addAirplane();
         }
         else {
@@ -397,7 +396,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 for(Airplane airplane: airplanes) {
                     if(airplane.sprite.getBoundingRectangle().contains(position.x, position.y)) {
                         setSelectedAirplane(airplane);
-                        ui.setStatus("selected " + getSelectedAirplane().name);
+                        ui.setStatus("Selected " + getSelectedAirplane().name);
                         return true;
                     }
                 }
@@ -408,7 +407,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                     Circle circle = new Circle(pos.x, pos.y, Waypoint.waypointSize);
                     if(circle.contains(position.x, position.y)) {
                         selectedAirplane.setTargetWaypoint(waypoint);
-                        ui.setStatus("Selected waypoint " + waypoint.name);
+                        ui.setStatus(selectedAirplane.name + ": targeting waypoint " + waypoint.name);
                         uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
                         followingPlane = true;
                         return true;
@@ -613,7 +612,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         }
         else if(randFlightType < 6) {
             flightType = Airplane.FlightType.ARRIVAL;
-            altitude = 5000; //subject to change
+            altitude = 2000; //subject to change
             speed = toPixels(150); //subject to change
         }
         else {
