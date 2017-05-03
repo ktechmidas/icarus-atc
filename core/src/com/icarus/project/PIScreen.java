@@ -426,7 +426,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                         Circle circle = new Circle(pos.x, pos.y, 20 * Gdx.graphics.getDensity());
                         if(circle.contains(position.x, position.y)) {
                             // Landing constraints
-                            float minDistance = 200; // Minimum distance from end of runway
+                            float minDistance = 100; // Minimum distance from end of runway
                             float headingVariance = 30; // Maximum heading deviation from runway
                             float positionVariance = 30; // Maximum position deviation from runway
                             Vector2 targetRunway = runway.points[1-end].cpy()
