@@ -45,7 +45,7 @@ public class MainUi {
 
     public static final String TAG = "MainUi";
 
-    private int buttonSize = (int) (100 * Gdx.graphics.getDensity());
+    private int buttonSize = (int) (80 * Gdx.graphics.getDensity());
     private int buttonGap = (int) (5 * Gdx.graphics.getDensity());
     public int statusBarHeight = (int) (25 * Gdx.graphics.getDensity());
 
