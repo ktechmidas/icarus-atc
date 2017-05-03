@@ -17,7 +17,7 @@ class AirplaneLanding extends AirplaneState {
     private Runway runway;
 
     public float maxVelocity = 250; //meters per second
-    public float decelRate = 0.05f;
+    public float decelRate = 0.065f;
 
     public AirplaneLanding(Vector2 position, Vector2 velocity, Runway runway) {
         this.position = position;

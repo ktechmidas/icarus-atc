@@ -266,9 +266,13 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 new Vector3(airport.width, airport.height, 0)
         );
         for(Airplane airplane: airplanes) {
-            if((airplane.getVelocity().len() < 0.1 && airplane.flightType == ARRIVAL)
-                    || !airportBoundary.contains(new Vector3(airplane.getPosition(), 0))) {
+            if(airplane.getVelocity().len() < 0.001 && airplane.stateType == Airplane.StateType.LANDING) {
                 toRemove.add(airplane);
+                ui.setStatus(airplane.name + " landed successfully!");
+            }
+            else if(!airportBoundary.contains(new Vector3(airplane.getPosition(), 0))) {
+                toRemove.add(airplane);
+                ui.setStatus(airplane.name + " left the airport improperly!");
             }
 
             for(Airplane other: airplanes) {
