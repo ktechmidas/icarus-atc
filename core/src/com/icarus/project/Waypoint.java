@@ -48,6 +48,6 @@ class Waypoint {
     public void drawLabel(BitmapFont font, SpriteBatch batch, Camera camera) {
         Vector3 pos = camera.project(new Vector3(position.x, position.y, 0f));
         font.setColor(Colors.colors[3]);
-        font.draw(batch, name, pos.x - 100, pos.y - 15, 200, Align.center, false);
+        font.draw(batch, name, pos.x - 100, pos.y - 20, 200, Align.center, false);
     }
 }

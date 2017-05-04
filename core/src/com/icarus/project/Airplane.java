@@ -1,50 +1,48 @@
 package com.icarus.project;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.utils.Align;
 
 class Airplane {
     //The global airplane image
     public static Texture texture;
     //The name of this airplane
     public String name;
-    //The position of this airplane
-    public Vector2 position;
-    //The velocity of this airplane
-    public Vector2 velocity;
-    //The altitude of this airplane in meters
-    public float altitude;
     //The sprite used by this airplane for display. It references the global texture.
     public Sprite sprite;
 
-    private Vector2 targetHeading;
-    private Waypoint targetWaypoint;
+    public AirplaneState state;
 
     public boolean isSelected;
 
-    public float turnRate = 3;
+    public FlightType flightType;
 
-    public Airplane(String name, Vector2 position, Vector2 velocity, float altitude) {
+    public StateType stateType;
+
+    public Airplane(
+            String name, FlightType flightType, Vector2 position, Vector2 velocity, float altitude)
+    {
         this.name = name;
-        this.position = position;
-        this.velocity = velocity;
-        this.altitude = altitude;
+        this.flightType = flightType;
+        if(flightType == FlightType.ARRIVAL || flightType == FlightType.FLYOVER) {
+            this.stateType = StateType.FLYING;
+            this.state = new AirplaneFlying(position, velocity, altitude);
+        }
+        else {
+            this.stateType = StateType.TAKINGOFF;
+            this.state = new AirplaneTakingOff(position, velocity);
+        }
+
         sprite = new Sprite(texture);
         sprite.setScale(0.25f * Gdx.graphics.getDensity());
         sprite.setOrigin(
                 sprite.getScaleX() * sprite.getWidth() / 2,
                 sprite.getScaleY() * sprite.getHeight() / 2);
-        this.targetHeading = null;
-        this.targetWaypoint = null;
-
         sprite = new Sprite(texture);
         sprite.setOriginCenter();
         sprite.setScale(0.2f * Gdx.graphics.getDensity());
@@ -52,60 +50,110 @@ class Airplane {
 
     //Draw the airplane image. This assumes that the camera has already been set up.
     public void draw(BitmapFont font, SpriteBatch batch, Camera camera) {
-        Vector3 pos = camera.project(new Vector3(position.x, position.y, 0));
-        sprite.setColor(Colors.colors[4]);
-        sprite.setPosition(pos.x - sprite.getWidth() / 2, pos.y - sprite.getHeight() / 2);
-        sprite.draw(batch);
-        font.setColor(Colors.colors[4]);
-        font.draw(batch, (int) altitude + "m", pos.x - 100, pos.y - 40, 200, Align.center, false);
+        state.draw(this, font, batch, camera);
     }
 
     //Move the airplane image at evey render
-    public void step() {
-        //Move airplane
-        position.add(velocity.cpy().scl(Gdx.graphics.getDeltaTime()));
-
-        if(targetHeading != null) {
-            turnToHeading(targetHeading);
-        }
-        else if(targetWaypoint != null) {
-            turnToHeading(targetWaypoint.position.cpy().sub(this.position));
-        }
-
-        //Point airplane in direction of travel
-        sprite.setRotation(velocity.angle());
-    }
-
-    public void removeTarget() {
-        this.targetWaypoint = null;
-        this.targetHeading = null;
+    public void step(float dt) {
+        state.step(this, dt);
     }
 
     public void setTargetWaypoint(Waypoint waypoint) {
-        this.targetWaypoint = waypoint;
-        this.targetHeading = null;
+        if(stateType == StateType.FLYING) {
+            ((AirplaneFlying) state).setTargetWaypoint(waypoint);
+        }
     }
 
     public void setTargetHeading(Vector2 targetHeading){
-        this.targetHeading = targetHeading;
-        this.targetWaypoint = null;
+        if(stateType == StateType.FLYING) {
+            ((AirplaneFlying) state).setTargetHeading(targetHeading);
+        }
     }
 
-    public void turnToHeading(Vector2 targetHeading) {
-        float angle = targetHeading.angle(velocity);
-        if(angle < 0) {
-            velocity.rotate(turnRate * Gdx.graphics.getDeltaTime());
+    public void setTargetRunway(Runway targetRunway, int point) {
+        if(stateType == StateType.FLYING) {
+            ((AirplaneFlying) state).setTargetRunway(targetRunway, point);
+            setTargetAltitude(0);
         }
-        else {
-            velocity.rotate(-turnRate * Gdx.graphics.getDeltaTime());
+    }
+
+    public void setNoTarget() {
+        if(stateType == StateType.FLYING) {
+            ((AirplaneFlying) state).setNoTarget();
         }
-        if(Math.abs(targetHeading.angle(velocity)) < 0.01) {
-            PIScreen.getInstance().ui.setStatus(name + ": turn complete");
-            removeTarget();
+    }
+
+    public void setTargetAltitude(float targetAltitude) {
+        if(stateType == StateType.FLYING) {
+            ((AirplaneFlying) state).targetAltitude = targetAltitude;
         }
     }
 
     public void setSelected(boolean isSelected) {
         this.isSelected = isSelected;
+    }
+
+    public Vector2 getPosition() {
+        if(stateType == StateType.FLYING) {
+            return ((AirplaneFlying) state).position;
+        }
+        else if(stateType == StateType.LANDING) {
+            return ((AirplaneLanding) state).position;
+        }
+        else if(stateType == StateType.TAKINGOFF) {
+            return ((AirplaneTakingOff) state).position;
+        }
+        else {
+            return null;
+        }
+    }
+
+    public float getAltitude() {
+        if(stateType == StateType.FLYING) {
+            return ((AirplaneFlying) state).altitude;
+        }
+        else {
+            return 0.0f;
+        }
+    }
+
+    public Vector2 getVelocity() {
+        if(stateType == StateType.FLYING) {
+            return ((AirplaneFlying) state).velocity;
+        }
+        else if(stateType == StateType.LANDING) {
+            return ((AirplaneLanding) state).velocity;
+        }
+        else if(stateType == StateType.TAKINGOFF) {
+            return ((AirplaneTakingOff) state).velocity;
+        }
+        else {
+            return null;
+        }
+    }
+
+    public AirplaneFlying.TargetType getTargetType() {
+        if(stateType == StateType.FLYING) {
+            return ((AirplaneFlying) state).targetType;
+        }
+        return null;
+    }
+
+    public void transitionToLanding(Runway runway) {
+        state = state.transitionToLanding(runway);
+        stateType = StateType.LANDING;
+    }
+
+    public void transitionToFlying(int altitude) {
+        state = state.transitionToFlying(altitude);
+        stateType = StateType.FLYING;
+    }
+
+    public enum FlightType {
+        ARRIVAL, DEPARTURE, FLYOVER
+    }
+
+    public enum StateType {
+        FLYING, LANDING, TAKINGOFF
     }
 }
