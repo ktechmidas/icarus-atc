@@ -12,4 +12,8 @@ abstract class AirplaneState {
     public AirplaneLanding transitionToLanding(Runway runway) {
         return null;
     }
+
+    public AirplaneFlying transitionToFlying(int altitude) {
+        return null;
+    }
 }

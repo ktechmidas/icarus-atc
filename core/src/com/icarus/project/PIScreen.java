@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import static com.icarus.project.Airplane.FlightType.ARRIVAL;
-import static com.icarus.project.Airplane.StateType.LANDED;
+import static com.icarus.project.Airplane.FlightType.FLYOVER;
 
 public class PIScreen extends Game implements Screen, GestureDetector.GestureListener {
     private Game game;
@@ -83,6 +83,82 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     private float timeElapsed;
     private float airplaneInterval;
 
+    private ArrayList<CollisionAnimation> collisions = new ArrayList();
+    private Random r = new Random();
+
+    private float collisionRadius = toPixels(400); // pixels
+    private float collisionWarningHSep = toPixels(5500); // pixels
+    private float collisionWarningVSep = toPixels(305); // pixels
+    private float collisionWarningVSepCruise = toPixels(610); //pixels
+
+    private float cruiseAlt = 8800; // meters
+
+    class CollisionAnimation {
+        Airplane a;
+        Airplane b;
+        float time;
+        float startWarp;
+        public int stage;
+        Vector3 origin;
+
+        float nextShake;
+
+        public CollisionAnimation(Airplane a, Airplane b) {
+            this.a = a;
+            this.b = b;
+            time = 0.0f;
+            stage = 0;
+            startWarp = warpSpeed;
+            Vector2 o = a.getPosition().cpy().add(b.getPosition()).scl(0.5f); // Temporary origin
+            origin = new Vector3(o.x, o.y, 0.0f);
+        }
+
+        public void step() {
+            float dt = Gdx.graphics.getDeltaTime();
+            time += dt;
+            followingPlane = false;
+            selectedAirplane = null;
+            if(stage == 0) {
+                float alpha = 0.1f * dt;
+                warpSpeed = 0.0f;//(warpSpeed * (1.0f - alpha) + 0.1f * alpha);
+
+                alpha = 0.0075f * dt;
+                zoomCamera(origin, camera.zoom * (1.0f - alpha) + 0.5f * alpha);
+                setCameraPosition(origin);
+
+                if(Math.abs(camera.zoom - 0.5f) < 0.05f) {
+                    stage = 1;
+                    time = 0.0f;
+                    nextShake = 0.0f;
+                }
+            }
+            else if(stage == 1) {
+                airplanes.remove(a);
+                airplanes.remove(b);
+                ui.setStatus(a.name + " collided with " + b.name + "!");
+                stage = 2;
+                time = 0.0f;
+                Gdx.input.vibrate(1000);
+            }
+            else if(stage == 2) {
+                warpSpeed = 1.0f;
+                //screenshake
+                nextShake -= dt;
+                if(nextShake < 0.0f) {
+                    nextShake += r.nextFloat() * 0.05;
+                    setCameraPosition(
+                            origin.cpy().add(
+                                new Vector3(r.nextFloat() - 0.5f, r.nextFloat() - 0.5f, 0.0f)
+                            .scl(10.0f)));
+                }
+                if(time > 2.0) {
+                    stage = 3;
+                }
+            }
+
+        }
+    }
+
     public PIScreen(ProjectIcarus game) {
         this.game = game;
         self = this;
@@ -128,6 +204,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         manager.load("buttons/circle_button.png", Texture.class);
         manager.load("buttons/landing_button.png", Texture.class);
         manager.load("buttons/more_button.png", Texture.class);
+        manager.load("buttons/handoff_button.png", Texture.class);
+        manager.load("buttons/cancel_button.png", Texture.class);
         manager.load("buttons/selection_wheel.png", Texture.class);
         manager.load("buttons/warpup.png", Texture.class);
         manager.load("buttons/warpdown.png", Texture.class);
@@ -189,14 +267,53 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 new Vector3(airport.width, airport.height, 0)
         );
         for(Airplane airplane: airplanes) {
-            if(airplane.stateType == LANDED && airplane.flightType == ARRIVAL
-                    || !airportBoundary.contains(new Vector3(airplane.getPosition(), 0))) {
+            if(airplane.getVelocity().len() < 0.01 && airplane.stateType == Airplane.StateType.LANDING) {
                 toRemove.add(airplane);
+                ui.setStatus(airplane.name + " landed successfully!");
+            }
+            else if(!airportBoundary.contains(new Vector3(airplane.getPosition(), 0))) {
+                toRemove.add(airplane);
+                ui.setStatus(airplane.name + " left the airport improperly!");
+            }
+
+            for(Airplane other: airplanes) {
+                if(other != airplane) {
+                    Vector2 pos1 = airplane.getPosition();
+                    float alt1 = airplane.getAltitude();
+                    Vector2 pos2 = other.getPosition();
+                    float alt2 = other.getAltitude();
+                    if(pos1 != null && pos2 != null) {
+                        if(pos1.dst(pos2) < collisionWarningHSep
+                                && ((Math.abs(alt1 - alt2) < collisionWarningVSep
+                                    && alt1 < cruiseAlt)
+                                || (Math.abs(alt1 - alt2) < collisionWarningVSepCruise
+                                    && alt1 > cruiseAlt))) {
+                            ui.setStatus(airplane.name + " and " + other.name + " are too close!");
+                            Gdx.app.log(TAG, airplane.name + " and " + other.name + " are too close!");
+                        }
+                        if(pos1.dst(pos2) < collisionRadius
+                                && Math.abs(alt1 - alt2) < collisionRadius) { // Collision
+                            collisions.add(new CollisionAnimation(airplane, other));
+                        }
+                    }
+                }
             }
         }
         for(Airplane airplane: toRemove) {
-            ui.setStatus(airplane.name + " removed");
-            airplanes.remove(airplane);
+            if(airplanes.contains(airplane)) {
+                airplanes.remove(airplane);
+            }
+        }
+
+        ArrayList<CollisionAnimation> collisionsToRemove = new ArrayList<CollisionAnimation>();
+        for(CollisionAnimation collision: collisions) {
+            collision.step();
+            if(collision.stage == 3) {
+                collisionsToRemove.add(collision);
+            }
+        }
+        for(CollisionAnimation collision: collisionsToRemove) {
+            collisions.remove(collision);
         }
 
         //draw waypoint triangles
@@ -257,7 +374,6 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             Random r = new Random();
             airplaneInterval = r.nextInt((int) (maxAirplaneInterval - minAirplaneInterval) + 1) + minAirplaneInterval;
             timeElapsed = 0.0f;
-            ui.setStatus("next interval: " + airplaneInterval + " seconds");
             addAirplane();
         }
         else {
@@ -281,7 +397,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 for(Airplane airplane: airplanes) {
                     if(airplane.sprite.getBoundingRectangle().contains(position.x, position.y)) {
                         setSelectedAirplane(airplane);
-                        ui.setStatus("selected " + getSelectedAirplane().name);
+                        ui.setStatus("Selected " + getSelectedAirplane().name);
                         return true;
                     }
                 }
@@ -292,7 +408,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                     Circle circle = new Circle(pos.x, pos.y, Waypoint.waypointSize);
                     if(circle.contains(position.x, position.y)) {
                         selectedAirplane.setTargetWaypoint(waypoint);
-                        ui.setStatus("Selected waypoint " + waypoint.name);
+                        ui.setStatus(selectedAirplane.name + ": targeting waypoint " + waypoint.name);
                         uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
                         followingPlane = true;
                         return true;
@@ -301,7 +417,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 break;
             case SELECT_HEADING:
                 uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
-                ui.showHeadingSelector(false);
+                ui.toggleHeadingSelector(false);
                 break;
             case SELECT_RUNWAY:
                 for(Runway runway: airport.runways) {
@@ -310,7 +426,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                         Circle circle = new Circle(pos.x, pos.y, 20 * Gdx.graphics.getDensity());
                         if(circle.contains(position.x, position.y)) {
                             // Landing constraints
-                            float minDistance = 200; // Minimum distance from end of runway
+                            float minDistance = 100; // Minimum distance from end of runway
                             float headingVariance = 30; // Maximum heading deviation from runway
                             float positionVariance = 30; // Maximum position deviation from runway
                             Vector2 targetRunway = runway.points[1-end].cpy()
@@ -484,63 +600,79 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     }
 
     public void addAirplane() {
-        Random r = new Random();
-
-        // Randomly choose between ARRIVAL and FLYOVER
+        // Randomly choose between ARRIVAL, FLYOVER, and DEPARTURE
         // Also determine altitude and speed based on flight type
         float altitude;
         Airplane.FlightType flightType;
         float speed;
-        int randFlightType = r.nextInt(2);
-        if(randFlightType == 0) {
+        int randFlightType = r.nextInt(10);
+        if(randFlightType < 2) {
             flightType = Airplane.FlightType.FLYOVER;
             altitude = 10000; //meters
             speed = toPixels(250); //subject to change
         }
-        else {
+        else if(randFlightType < 6) {
             flightType = Airplane.FlightType.ARRIVAL;
-            altitude = 5000; //subject to change
+            altitude = 2000; //subject to change
             speed = toPixels(150); //subject to change
+        }
+        else {
+            flightType = Airplane.FlightType.DEPARTURE;
+            altitude = 0;
+            speed = 0.01f;
         }
 
         // Generate a random flight name
         int flightNum = r.nextInt(9999) + 1;
         String flightName = "";
-        for(int i = 0; i < 3; i++) {
-            char c = (char)(r.nextInt(26) + 'A');
+        for (int i = 0; i < 3; i++) {
+            char c = (char) (r.nextInt(26) + 'A');
             flightName += c;
         }
         flightName += flightNum;
 
-        // Generate a random heading
-        int heading = r.nextInt(359);
-        float theta = (float) (heading * Math.PI / 180);
-        Vector2 velocity = new Vector2(1, 0).setLength(speed).rotate(heading);
+        Vector2 position;
+        Vector2 velocity;
 
-        // Calculate vectors from the center to the corners
-        Vector2 center = new Vector2(airport.width / 2, airport.height / 2);
-        Vector2 upperRight = new Vector2(airport.width, airport.height).sub(center);
-        Vector2 upperLeft = new Vector2(0, airport.height).sub(center);
-        Vector2 lowerLeft = new Vector2(0, 0).sub(center);
-        Vector2 lowerRight = new Vector2(airport.width, 0).sub(center);
+        if (flightType == FLYOVER || flightType == ARRIVAL) {
+            // Generate a random heading
+            int heading = r.nextInt(359);
+            float theta = (float) (heading * Math.PI / 180);
+            velocity = new Vector2(1, 0).setLength(speed).rotate(heading);
 
-        // Generate a random position along the edge of the map
-        Vector2 position = new Vector2();
-        if(heading < upperRight.angle() || heading > lowerRight.angle()) {
-            position.add(0, (float) (airport.height / 2 - airport.width / 2 * Math.tan(theta)));
-        }
-        else if(heading < upperLeft.angle()) {
-            position.add((float) (airport.width / 2 - (airport.height / 2) / Math.tan(theta)), 0);
-        }
-        else if(heading < lowerLeft.angle()) {
-            position.add(airport.width,
-                    (float) ((airport.width / 2) * Math.tan(theta) + airport.height / 2)
-            );
+            // Calculate vectors from the center to the corners
+            Vector2 center = new Vector2(airport.width / 2, airport.height / 2);
+            Vector2 upperRight = new Vector2(airport.width, airport.height).sub(center);
+            Vector2 upperLeft = new Vector2(0, airport.height).sub(center);
+            Vector2 lowerLeft = new Vector2(0, 0).sub(center);
+            Vector2 lowerRight = new Vector2(airport.width, 0).sub(center);
+
+            // Generate a random position along the edge of the map
+            position = new Vector2();
+            if (heading < upperRight.angle() || heading > lowerRight.angle()) {
+                position.add(0, (float) (airport.height / 2 - airport.width / 2 * Math.tan(theta)));
+            }
+            else if (heading < upperLeft.angle()) {
+                position.add((float) (airport.width / 2 - (airport.height / 2) / Math.tan(theta)), 0);
+            }
+            else if (heading < lowerLeft.angle()) {
+                position.add(airport.width,
+                        (float) ((airport.width / 2) * Math.tan(theta) + airport.height / 2)
+                );
+            }
+            else {
+                position.add((float) ((airport.height / 2) / Math.tan(theta) + airport.width / 2),
+                        airport.height
+                );
+            }
         }
         else {
-            position.add((float) ((airport.height / 2) / Math.tan(theta) + airport.width / 2),
-                    airport.height
-            );
+            int randRunway = r.nextInt(airport.runways.length);
+            int randEnd = r.nextInt(2);
+            position = airport.runways[randRunway].points[randEnd].cpy();
+            Vector2 heading = airport.runways[randRunway].points[1-randEnd].cpy()
+                    .sub(position).nor();
+            velocity = heading.scl(speed);
         }
 
         // Add a new airplane

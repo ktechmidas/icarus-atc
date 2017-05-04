@@ -26,9 +26,9 @@ class AirplaneFlying extends AirplaneState {
     private int targetRunwayStage;
     public float targetAltitude;
 
-    public float turnRate = 3; //degree per second
+    public float turnRate = 3 * (float) Math.PI / 180.0f; //radians per second
     public float maxVelocity = 250; //meters per second
-    public float altitudeChangeRate = 0.0625f;
+    public float altitudeChangeRate = 12.7f; //meters per second
 
     public TargetType targetType;
 
@@ -76,14 +76,16 @@ class AirplaneFlying extends AirplaneState {
                     targetType = NONE;
                 }
                 break;
+
             case HEADING:
                 if(turnToHeading(targetHeading, turnRate, dt)) {
                     PIScreen.getInstance().ui.setStatus(airplane.name + ": turn complete");
                     targetType = NONE;
                 }
                 break;
+
             case RUNWAY:
-                float radius = velocity.len() / (turnRate * dt);
+                float radius = velocity.len() / turnRate;
                 // Calculate heading of target runway
                 Vector2 target = targetRunway.points[1 - targetRunwayPoint].cpy()
                         .sub(targetRunway.points[targetRunwayPoint]).nor();
@@ -91,23 +93,26 @@ class AirplaneFlying extends AirplaneState {
                 if(targetRunwayStage == 0) {
                     // Calculate target point offset by turning radius
                     Vector2 pos = targetRunway.points[targetRunwayPoint].cpy()
-                            .sub(target.scl(radius));
+                            .sub(target.scl(radius * 2.0f));
+                    if(turnToHeading(pos.sub(position).nor(), turnRate, dt)) {
+                        targetRunwayStage = 1;
+                    }
                     // Heading from airplane to pos
-                    Vector2 line = pos.cpy().sub(position).nor();
-                    if(Math.abs(velocity.cpy().scl(-1).angle(target)) <
-                            Math.abs(line.cpy().scl(-1).angle(target)) + 0.05)
+                    /*Vector2 line = pos.cpy().sub(position).nor();
+                    if(Math.abs(velocity.cpy().angle(target)) <
+                            Math.abs(line.cpy().angle(target)) + 0.05)
                     {
                         targetRunwayStage = 1;
                     }
                     else {
                         float angle = line.angle(velocity);
                         if(angle < 0) {
-                            velocity.rotate(turnRate * dt);
+                            velocity.rotateRad(turnRate * dt);
                         }
                         else {
-                            velocity.rotate(-turnRate * dt);
+                            velocity.rotateRad(-turnRate * dt);
                         }
-                    }
+                    }*/
                 }
                 // If airplane is pointing towards runway line
                 else if(targetRunwayStage == 1) {
@@ -132,10 +137,16 @@ class AirplaneFlying extends AirplaneState {
                         PIScreen.getInstance().ui.setStatus(airplane.name + ": turn complete");
                         targetRunwayStage = 3;
                     }
+
+                    Vector2 targetPoint = targetRunway.points[targetRunwayPoint];
+                    System.out.println(targetPoint.dst(position));
+                    if(targetPoint.dst(position) < 3) {
+                        airplane.transitionToLanding(targetRunway);
+                    }
                 }
                 else {
-                    System.out.println("stage 3");
                     Vector2 targetPoint = targetRunway.points[targetRunwayPoint];
+                    System.out.println(targetPoint.dst(position));
                     if(targetPoint.dst(position) < 3) {
                         airplane.transitionToLanding(targetRunway);
                     }
@@ -150,10 +161,10 @@ class AirplaneFlying extends AirplaneState {
 
         // Change altitude
         if(altitude > targetAltitude && Math.abs(altitude - targetAltitude) > 1) {
-            altitude -= velocity.len() * altitudeChangeRate;
+            altitude -= altitudeChangeRate * dt;
         }
         else if(altitude < targetAltitude && Math.abs(altitude - targetAltitude) > 1) {
-            altitude += velocity.len() * altitudeChangeRate;
+            altitude += altitudeChangeRate * dt;
         }
     }
 
@@ -174,14 +185,18 @@ class AirplaneFlying extends AirplaneState {
         targetType = RUNWAY;
     }
 
+    public void setNoTarget() {
+        targetType = NONE;
+    }
+
     public boolean turnToHeading(Vector2 targetHeading, float turnRate, float dt) {
         float angle = targetHeading.angle(velocity);
         if(angle < 0) {
-            velocity.rotate(turnRate * dt);
+            velocity.rotateRad(Math.min(turnRate * dt, -angle));
         }
         else {
-            velocity.rotate(-turnRate * dt);
+            velocity.rotateRad(Math.max(-turnRate * dt, -angle));
         }
-        return Math.abs(targetHeading.angle(velocity)) < 0.001;
+        return Math.abs(targetHeading.angle(velocity)) < 0.01;
     }
 }
