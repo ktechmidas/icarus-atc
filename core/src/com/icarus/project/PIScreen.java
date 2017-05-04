@@ -85,7 +85,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     private ArrayList<CollisionAnimation> collisions = new ArrayList();
     private Random r = new Random();
 
-    private float collisionRadius = toPixels(100); // pixels
+    private float collisionRadius = toPixels(400); // pixels
     private float collisionWarningHSep = toPixels(5500); // pixels
     private float collisionWarningVSep = toPixels(305); // pixels
     private float collisionWarningVSepCruise = toPixels(610); //pixels
@@ -122,10 +122,10 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 warpSpeed = 0.0f;//(warpSpeed * (1.0f - alpha) + 0.1f * alpha);
 
                 alpha = 0.0075f * dt;
-                zoomCamera(origin, camera.zoom * (1.0f - alpha) + 0.2f * alpha);
+                zoomCamera(origin, camera.zoom * (1.0f - alpha) + 0.5f * alpha);
                 setCameraPosition(origin);
 
-                if(Math.abs(camera.zoom - 0.2f) < 0.05f) {
+                if(Math.abs(camera.zoom - 0.5f) < 0.05f) {
                     stage = 1;
                     time = 0.0f;
                     nextShake = 0.0f;
@@ -137,6 +137,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 ui.setStatus(a.name + " collided with " + b.name + "!");
                 stage = 2;
                 time = 0.0f;
+                Gdx.input.vibrate(1000);
             }
             else if(stage == 2) {
                 warpSpeed = 1.0f;
