@@ -14,7 +14,7 @@ public class AirplaneTakingOff extends AirplaneState {
     private Runway runway;
 
     public float maxVelocity = 250; //meters per second
-    public float accelRate = 0.065f;
+    public float accelRate = 0.1f;
 
     public AirplaneFlying transitionToFlying(int altitude) {
         return new AirplaneFlying(position, velocity, altitude);
