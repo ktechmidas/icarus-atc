@@ -48,6 +48,7 @@ public class MainUi {
     private int buttonSize = (int) (80 * Gdx.graphics.getDensity());
     private int buttonGap = (int) (5 * Gdx.graphics.getDensity());
     public int statusBarHeight = (int) (25 * Gdx.graphics.getDensity());
+    public int buttonBarWidth = (int) buttonSize + 2 * buttonGap;
 
     private Airplane selectedAirplane;
 
@@ -361,10 +362,13 @@ public class MainUi {
         selectedAirplane = PIScreen.getInstance().getSelectedAirplane();
 
         stage.draw();
-        //draw a rectangle for the status bar
         shapes.begin(ShapeRenderer.ShapeType.Filled);
+        // Draw rectangle for the status bar
         shapes.setColor(0, 0, 0, 1);
         shapes.rect(0, 0, Gdx.graphics.getWidth(), statusBarHeight);
+        // Draw rectangle for the button bar
+        shapes.setColor(1, 1, 1, 1);
+        shapes.rect(0, 0, buttonBarWidth, Gdx.graphics.getHeight());
         shapes.end();
 
         batch.begin();

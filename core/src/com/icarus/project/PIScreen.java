@@ -228,14 +228,16 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         utils = new Utils();
         // The maximum zoom level is the smallest dimension compared to the viewer
-        maxZoomOut = Math.min(airport.width / Gdx.graphics.getWidth(),
+        maxZoomOut = Math.min(airport.width / (Gdx.graphics.getWidth() - ui.buttonBarWidth),
                 airport.height / (Gdx.graphics.getHeight() - ui.statusBarHeight)
         );
         maxZoomIn = maxZoomOut / 100;
 
         // Start the app in maximum zoomed out state
         camera.zoom = maxZoomOut;
-        camera.position.set(airport.width/2, (airport.height - ui.statusBarHeight)/2, 0);
+        camera.position.set((airport.width - ui.buttonBarWidth)/2,
+                (airport.height - ui.statusBarHeight)/2, 0
+        );
         camera.update();
 
         selectedAirplane = null;
@@ -559,20 +561,24 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     private void setToBoundary() {
         // Calculates the distance from the edge of the camera to the specified boundary
-        toBoundaryRight = airport.width - camera.position.x - Gdx.graphics.getWidth()/2 * camera.zoom;
-        toBoundaryLeft = -camera.position.x + Gdx.graphics.getWidth()/2 * camera.zoom;
-        toBoundaryTop = airport.height - camera.position.y - Gdx.graphics.getHeight()/2 * camera.zoom;
-        toBoundaryBottom = -camera.position.y + (Gdx.graphics.getHeight()/2 - ui.statusBarHeight) * camera.zoom;
+        toBoundaryRight = airport.width
+                - camera.position.x - Gdx.graphics.getWidth()/2 * camera.zoom;
+        toBoundaryLeft = -camera.position.x
+                + (Gdx.graphics.getWidth()/2 - ui.buttonBarWidth) * camera.zoom;
+        toBoundaryTop = airport.height
+                - camera.position.y - Gdx.graphics.getHeight()/2 * camera.zoom;
+        toBoundaryBottom = -camera.position.y
+                + (Gdx.graphics.getHeight()/2 - ui.statusBarHeight) * camera.zoom;
     }
 
     private void setCameraPosition(Vector3 position) {
         camera.position.set(position);
 
-        Vector2 camMin = new Vector2(camera.viewportWidth,
+        Vector2 camMin = new Vector2(camera.viewportWidth - 2 * ui.buttonBarWidth,
                 camera.viewportHeight - 2 * ui.statusBarHeight
         );
         camMin.scl(camera.zoom / 2);
-        Vector2 camMax = new Vector2(airport.width,
+        Vector2 camMax = new Vector2(airport.width - camera.zoom * ui.buttonBarWidth,
                 airport.height - camera.zoom * ui.statusBarHeight
         );
         camMax.sub(camMin);
