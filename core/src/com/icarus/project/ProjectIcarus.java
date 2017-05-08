@@ -12,22 +12,21 @@ public class ProjectIcarus extends Game {
 
     public ProjectIcarus(){
         game = this;
-
     }
-
 
     public void create() {
         batch = new SpriteBatch();
         font = new BitmapFont();
-        this.setScreen(new PIScreen(this));
+        this.setScreen(new MainMenuScreen(this));
     }
 
     public enum UiState {
-        SELECT_WAYPOINT, SELECT_AIRPLANE, SELECT_HEADING
+        SELECT_WAYPOINT, SELECT_AIRPLANE, SELECT_HEADING, SELECT_RUNWAY, CHANGE_ALTITUDE
     }
 
     public void dispose() {
         batch.dispose();
         font.dispose();
+        screen.dispose();
     }
 }
