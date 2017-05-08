@@ -42,6 +42,8 @@ public class MainUi {
     private ImageButton pauseButton;
     private ImageButton playPauseButton;
     float warpPause = 0;
+    public int points;
+
 
     public static final String TAG = "MainUi";
 
@@ -53,6 +55,7 @@ public class MainUi {
 
     public MainUi(AssetManager assets, BitmapFont font) {
         this.font = font;
+        points = points+0;
 
         shapes = new ShapeRenderer();
         batch = new SpriteBatch();
@@ -374,11 +377,21 @@ public class MainUi {
                 20 * Gdx.graphics.getDensity()
         );
 
-        font.setColor(Colors.colors[4]);
+        //draw the warp speed
+        /*font.setColor(Colors.colors[4]);
         String warp = "x" + (int)(PIScreen.getInstance().warpSpeed);
         layout.setText(font, warp);
         font.draw(batch, warp, 2 * buttonGap + 3 * buttonSize / 4 - layout.width / 2,
-                Gdx.graphics.getHeight() - buttonGap - buttonSize / 4);
+                Gdx.graphics.getHeight() - buttonGap - buttonSize / 4);*/
+
+        //draw points
+        font.setColor(Colors.colors[4]);
+        String point = "Points: " + (int) (PIScreen.getInstance().points);
+        layout.setText(font, point);
+        font.draw(batch, point, 2 * buttonGap + 3 * buttonSize / 4 - layout.width / 2,
+                Gdx.graphics.getHeight() - buttonGap * 2 - buttonSize / 2);
+
+        //String
         batch.end();
 
         //show airplane-specific buttons if an airplane is selected

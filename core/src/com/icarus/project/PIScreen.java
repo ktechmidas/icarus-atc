@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
@@ -22,6 +23,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -31,6 +33,9 @@ import static com.icarus.project.Airplane.FlightType.FLYOVER;
 
 public class PIScreen extends Game implements Screen, GestureDetector.GestureListener {
     private Game game;
+    private BitmapFont font;
+    private GlyphLayout layout;
+
     private Vector2 oldInitialFirstPointer=null, oldInitialSecondPointer=null;
     private float oldScale;
     //Used for drawing waypoints
@@ -46,6 +51,11 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     //Used for drawing airplanes
     private SpriteBatch batch;
     private Utils utils;
+    public int points;
+
+    private int buttonSize = (int) (80 * Gdx.graphics.getDensity());
+    private int buttonGap = (int) (5 * Gdx.graphics.getDensity());
+    public int statusBarHeight = (int) (25 * Gdx.graphics.getDensity());
 
     public MainUi ui;
 
@@ -162,7 +172,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     public PIScreen(ProjectIcarus game) {
         this.game = game;
         self = this;
-
+        points = 0;
         fontSize = 20.0f * Gdx.graphics.getDensity();
         //initialize the AssetManager
         AssetManager manager = new AssetManager();
@@ -270,10 +280,12 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             if(airplane.getVelocity().len() < 0.01 && airplane.stateType == Airplane.StateType.LANDING) {
                 toRemove.add(airplane);
                 ui.setStatus(airplane.name + " landed successfully!");
+                points = points+50;
             }
             else if(!airportBoundary.contains(new Vector3(airplane.getPosition(), 0))) {
                 toRemove.add(airplane);
                 ui.setStatus(airplane.name + " left the airport improperly!");
+                points = points-25;
             }
 
             for(Airplane other: airplanes) {
@@ -290,10 +302,12 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                                     && alt1 > cruiseAlt))) {
                             ui.setStatus(airplane.name + " and " + other.name + " are too close!");
                             Gdx.app.log(TAG, airplane.name + " and " + other.name + " are too close!");
+                            points = points-25;
                         }
                         if(pos1.dst(pos2) < collisionRadius
                                 && Math.abs(alt1 - alt2) < collisionRadius) { // Collision
                             collisions.add(new CollisionAnimation(airplane, other));
+                            points = points-50;
                         }
                     }
                 }
@@ -363,6 +377,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                     200,
                     Align.center, false);
             batch.end();
+
         }
 
         // follow selected airplane
