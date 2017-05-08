@@ -109,7 +109,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             time = 0.0f;
             stage = 0;
             startWarp = warpSpeed;
-            Vector2 o = a.getPosition().cpy().add(b.getPosition()).scl(0.5f); // Temporary origin
+            // Temporary origin
+            Vector2 o = a.state.getPosition().cpy().add(b.state.getPosition()).scl(0.5f);
             origin = new Vector3(o.x, o.y, 0.0f);
         }
 
@@ -267,21 +268,23 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 new Vector3(airport.width, airport.height, 0)
         );
         for(Airplane airplane: airplanes) {
-            if(airplane.getVelocity().len() < 0.01 && airplane.stateType == Airplane.StateType.LANDING) {
+            if(airplane.state.getVelocity().len() < 0.01 &&
+                    airplane.stateType == Airplane.StateType.LANDING)
+            {
                 toRemove.add(airplane);
                 ui.setStatus(airplane.name + " landed successfully!");
             }
-            else if(!airportBoundary.contains(new Vector3(airplane.getPosition(), 0))) {
+            else if(!airportBoundary.contains(new Vector3(airplane.state.getPosition(), 0))) {
                 toRemove.add(airplane);
                 ui.setStatus(airplane.name + " left the airport improperly!");
             }
 
             for(Airplane other: airplanes) {
                 if(other != airplane) {
-                    Vector2 pos1 = airplane.getPosition();
-                    float alt1 = airplane.getAltitude();
-                    Vector2 pos2 = other.getPosition();
-                    float alt2 = other.getAltitude();
+                    Vector2 pos1 = airplane.state.getPosition();
+                    float alt1 = airplane.state.getAltitude();
+                    Vector2 pos2 = other.state.getPosition();
+                    float alt2 = other.state.getAltitude();
                     if(pos1 != null && pos2 != null) {
                         if(pos1.dst(pos2) < collisionWarningHSep
                                 && ((Math.abs(alt1 - alt2) < collisionWarningVSep
@@ -367,7 +370,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
         // follow selected airplane
         if(selectedAirplane != null && followingPlane) {
-            setCameraPosition(new Vector3(selectedAirplane.getPosition(), 0));
+            setCameraPosition(new Vector3(selectedAirplane.state.getPosition(), 0));
         }
 
         if(timeElapsed > airplaneInterval) {
@@ -432,16 +435,16 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                             Vector2 targetRunway = runway.points[1-end].cpy()
                                     .sub(runway.points[end]);
                             // Calculate distance
-                            float distance = Math.abs(selectedAirplane.getPosition().cpy()
+                            float distance = Math.abs(selectedAirplane.state.getPosition().cpy()
                                     .sub(runway.points[end]).len()
                             );
                             // Calculate difference between airplane heading and runway heading
-                            float angleDifference = selectedAirplane.getVelocity()
+                            float angleDifference = selectedAirplane.state.getVelocity()
                                     .angle(targetRunway);
                             // Calculate radial distance of airplane from runway
                             // with respect to the runway's heading
                             Vector2 relativePosition = runway.points[end].cpy()
-                                    .sub(selectedAirplane.getPosition());
+                                    .sub(selectedAirplane.state.getPosition());
                             float positionDifference = relativePosition.angle(targetRunway);
                             if(distance > minDistance
                                     && Math.abs(angleDifference) < headingVariance

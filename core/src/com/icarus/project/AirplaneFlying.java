@@ -14,11 +14,7 @@ import static com.icarus.project.AirplaneFlying.TargetType.NONE;
 import static com.icarus.project.AirplaneFlying.TargetType.RUNWAY;
 import static com.icarus.project.AirplaneFlying.TargetType.WAYPOINT;
 
-class AirplaneFlying extends AirplaneState {
-    public Vector2 position;
-    public Vector2 velocity;
-    public float altitude;
-
+class AirplaneFlying extends AirplaneAltitude {
     private Vector2 targetHeading;
     private Waypoint targetWaypoint;
     private Runway targetRunway;
@@ -37,9 +33,8 @@ class AirplaneFlying extends AirplaneState {
     }
 
     public AirplaneFlying(Vector2 position, Vector2 velocity, float altitude) {
-        this.position = position;
-        this.velocity = velocity;
-        this.altitude = altitude;
+        super(position, velocity, altitude);
+
         targetType = NONE;
         targetAltitude = this.altitude;
     }
@@ -48,26 +43,17 @@ class AirplaneFlying extends AirplaneState {
         return new AirplaneLanding(position, velocity, runway);
     }
 
-    public void draw(Airplane airplane, BitmapFont font, SpriteBatch batch, Camera camera) {
-        Vector3 pos = camera.project(new Vector3(position.x, position.y, 0));
-        airplane.sprite.setColor(Colors.colors[4]);
-        airplane.sprite.setPosition(
-                pos.x - airplane.sprite.getWidth() / 2,
-                pos.y - airplane.sprite.getHeight() / 2);
-        airplane.sprite.draw(batch);
-        font.setColor(Colors.colors[4]);
-        font.draw(batch, (int) altitude + "m",
-                pos.x - 100, // Position left edge of text box
-                pos.y - 26 * Gdx.graphics.getDensity(),
-                200,
-                Align.center,
-                false
-        );
+    public AirplaneFlying transitionToFlying(float altitude) {
+        this.altitude = altitude;
+        return this;
+    }
+
+    public String getLabel() {
+        return (int) altitude + "m";
     }
 
     public void step(Airplane airplane, float dt) {
-        //Move airplane
-        position.add(velocity.cpy().scl(dt));
+        super.step(airplane, dt);
 
         switch(targetType) {
             case WAYPOINT:

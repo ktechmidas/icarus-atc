@@ -93,45 +93,6 @@ class Airplane {
         this.isSelected = isSelected;
     }
 
-    public Vector2 getPosition() {
-        if(stateType == StateType.FLYING) {
-            return ((AirplaneFlying) state).position;
-        }
-        else if(stateType == StateType.LANDING) {
-            return ((AirplaneLanding) state).position;
-        }
-        else if(stateType == StateType.TAKINGOFF) {
-            return ((AirplaneTakingOff) state).position;
-        }
-        else {
-            return null;
-        }
-    }
-
-    public float getAltitude() {
-        if(stateType == StateType.FLYING) {
-            return ((AirplaneFlying) state).altitude;
-        }
-        else {
-            return 0.0f;
-        }
-    }
-
-    public Vector2 getVelocity() {
-        if(stateType == StateType.FLYING) {
-            return ((AirplaneFlying) state).velocity;
-        }
-        else if(stateType == StateType.LANDING) {
-            return ((AirplaneLanding) state).velocity;
-        }
-        else if(stateType == StateType.TAKINGOFF) {
-            return ((AirplaneTakingOff) state).velocity;
-        }
-        else {
-            return null;
-        }
-    }
-
     public AirplaneFlying.TargetType getTargetType() {
         if(stateType == StateType.FLYING) {
             return ((AirplaneFlying) state).targetType;
