@@ -31,7 +31,6 @@ public class MainUi {
     private ImageButton headingButton;
     private ImageButton waypointButton;
     private ImageButton altitudeButton;
-    private ImageButton circleButton;
     private ImageButton headingWheel;
     private ImageButton landingButton;
     private ImageButton takeoffButton;
@@ -216,25 +215,6 @@ public class MainUi {
 
         // Set next button position
         buttonPosition.y -= buttonGap + buttonSize;
-
-        // Initialize circling button
-        Drawable circleDrawable = new TextureRegionDrawable(
-                new TextureRegion((Texture) assets.get("buttons/circle_button.png"))
-        );
-        circleButton = new ImageButton(circleDrawable);
-        circleButton.setSize(buttonSize, buttonSize);
-        circleButton.setPosition(buttonPosition.x, buttonPosition.y);
-        circleButton.addListener(new InputListener(){
-            @Override
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-            @Override
-            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                // Circle airport
-            }
-        });
-        stage.addActor(circleButton);
 
         // Initialize handoff button
         Drawable handoffDrawable = new TextureRegionDrawable(
@@ -505,7 +485,6 @@ public class MainUi {
             }
             else {
                 if (flightType == Airplane.FlightType.ARRIVAL) {
-//                    circleButton.setVisible(true);
                     landingButton.setVisible(true);
                 } else if (flightType == Airplane.FlightType.DEPARTURE
                         || flightType == Airplane.FlightType.FLYOVER) {
@@ -522,7 +501,6 @@ public class MainUi {
         headingButton.setVisible(false);
         waypointButton.setVisible(false);
         altitudeButton.setVisible(false);
-        circleButton.setVisible(false);
         landingButton.setVisible(false);
         takeoffButton.setVisible(false);
         handoffButton.setVisible(false);
