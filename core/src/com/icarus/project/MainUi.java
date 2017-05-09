@@ -46,11 +46,13 @@ public class MainUi {
 
     public static final String TAG = "MainUi";
 
-    public int statusBarHeight = (int) (25 * Gdx.graphics.getDensity());
-    private int buttonGap = (int) (5 * Gdx.graphics.getDensity());
-    private int buttonSize = (Gdx.graphics.getHeight() - 5 * buttonGap - statusBarHeight) / 4;
-    private int warpButtonSize = buttonSize / 2;
-//    public int buttonBarWidth = buttonSize + 2 * buttonGap;
+//    public int statusBarHeight = (int) (25 * Gdx.graphics.getDensity());
+    public int statusBarHeight;
+    private int buttonGap;
+    private int buttonSize;
+    private int warpButtonSize;
+
+    private int textGap = (int) (10 * Gdx.graphics.getDensity());
 
     private Airplane selectedAirplane;
 
@@ -62,6 +64,11 @@ public class MainUi {
         batch = new SpriteBatch();
         stage = new Stage();
         layout = new GlyphLayout();
+
+        statusBarHeight = (int) font.getLineHeight();
+        buttonGap = (int) (5 * Gdx.graphics.getDensity());
+        buttonSize = (Gdx.graphics.getHeight() - 5 * buttonGap - statusBarHeight) / 4;
+        warpButtonSize = buttonSize / 2;
 
         status = "Welcome to Icarus Air Traffic Control";
 
@@ -373,7 +380,7 @@ public class MainUi {
         font.draw(batch,
                 status,
                 Gdx.graphics.getWidth() / 2 - layout.width / 2,
-                15 * Gdx.graphics.getDensity()
+                statusBarHeight / 2
         );
 
         //draw the warp speed
@@ -383,7 +390,7 @@ public class MainUi {
         font.draw(batch,
                 warp,
                 Gdx.graphics.getWidth() - (4 * buttonGap + 3 * warpButtonSize) / 2 - layout.width / 2,
-                15 * Gdx.graphics.getDensity()
+                statusBarHeight / 2
         );
 
         //draw points
@@ -393,10 +400,8 @@ public class MainUi {
         font.draw(batch,
                 point,
                 buttonGap,
-                15 * Gdx.graphics.getDensity()
+                statusBarHeight / 2
         );
-
-        //String
         batch.end();
 
         //show airplane-specific buttons if an airplane is selected
@@ -416,14 +421,20 @@ public class MainUi {
             shapes.setColor(Colors.colors[4]);
             int statusWidth = (int)(200.0 * Gdx.graphics.getDensity());
             shapes.rect(
-                    Gdx.graphics.getWidth() - statusWidth, Gdx.graphics.getHeight() - 100,
-                    statusWidth, 100);
+                    Gdx.graphics.getWidth() - statusWidth,
+                    Gdx.graphics.getHeight() - 5 * font.getLineHeight() / 2,
+                    statusWidth,
+                    5 * font.getLineHeight() / 2
+            );
             shapes.end();
 
             batch.begin();
             font.setColor(Colors.colors[0]);
-            font.draw(batch, selectedAirplane.name,
-                    Gdx.graphics.getWidth() - statusWidth + 10, Gdx.graphics.getHeight() - 20);
+            font.draw(batch,
+                    selectedAirplane.name,
+                    Gdx.graphics.getWidth() - statusWidth + textGap,
+                    Gdx.graphics.getHeight() - font.getLineHeight() / 2
+            );
 
             String type = null;
             if(selectedAirplane.flightType ==
@@ -441,20 +452,25 @@ public class MainUi {
             {
                 type = "Departure";
             }
-            font.draw(batch, type,
-                    Gdx.graphics.getWidth() - statusWidth + 10, Gdx.graphics.getHeight() - 50);
+            font.draw(batch,
+                    type,
+                    Gdx.graphics.getWidth() - statusWidth + textGap,
+                    Gdx.graphics.getHeight() - 3 * font.getLineHeight() / 2
+            );
 
             if(selectedAirplane.stateType == FLYING || selectedAirplane.stateType == LANDING) {
                 String alt = (int) selectedAirplane.getAltitude() + "m";
-                font.draw(batch, alt,
-                        Gdx.graphics.getWidth() - statusWidth / 2 + 10,
-                        Gdx.graphics.getHeight() - 20);
+                font.draw(batch,
+                        alt,
+                        Gdx.graphics.getWidth() - statusWidth / 2,
+                        Gdx.graphics.getHeight() - font.getLineHeight() / 2
+                );
             }
 
             font.draw(batch,
                     (int) PIScreen.toMeters(selectedAirplane.getVelocity().len()) + "m/s",
-                    Gdx.graphics.getWidth() - statusWidth / 2 + 10,
-                    Gdx.graphics.getHeight() - 50
+                    Gdx.graphics.getWidth() - statusWidth / 2,
+                    Gdx.graphics.getHeight() - 3 * font.getLineHeight() / 2
             );
 
             batch.end();
