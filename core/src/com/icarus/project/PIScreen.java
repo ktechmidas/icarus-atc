@@ -401,12 +401,12 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             timeElapsed += dt;
         }
 
-        if(selectedAirplane != null) {
-            cameraHorizontalOffset = ui.buttonBarWidth;
-        }
-        else {
-            cameraHorizontalOffset = 0;
-        }
+//        if(selectedAirplane != null) {
+//            cameraHorizontalOffset = ui.buttonBarWidth;
+//        }
+//        else {
+//            cameraHorizontalOffset = 0;
+//        }
     }
 
     @Override
@@ -433,7 +433,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             case SELECT_WAYPOINT:
                 for(Waypoint waypoint: airport.waypoints) {
                     Vector3 pos = camera.project(new Vector3(waypoint.position, 0));
-                    Circle circle = new Circle(pos.x, pos.y, Waypoint.waypointSize);
+                    Circle circle = new Circle(pos.x, pos.y, 2 * Waypoint.waypointSize);
                     if(circle.contains(position.x, position.y)) {
                         selectedAirplane.setTargetWaypoint(waypoint);
                         ui.setStatus(selectedAirplane.name + ": targeting waypoint " + waypoint.name);
