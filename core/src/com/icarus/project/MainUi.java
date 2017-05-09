@@ -390,8 +390,10 @@ public class MainUi {
         shapes.setColor(0, 0, 0, 1);
         shapes.rect(0, 0, Gdx.graphics.getWidth(), statusBarHeight);
         // Draw rectangle for the button bar
-        shapes.setColor(1, 1, 1, 1);
-        shapes.rect(0, 0, buttonBarWidth, Gdx.graphics.getHeight());
+        if(selectedAirplane != null) {
+            shapes.setColor(1, 1, 1, 1);
+            shapes.rect(0, 0, buttonBarWidth, Gdx.graphics.getHeight());
+        }
         shapes.end();
 
         stage.draw();
@@ -488,6 +490,14 @@ public class MainUi {
     }
 
     public void showAirplaneButtons(Airplane.FlightType flightType){
+        shapes.begin(ShapeRenderer.ShapeType.Filled);
+        // Draw rectangle for the button bar
+        shapes.setColor(1, 1, 1, 1);
+        shapes.rect(0, 0, buttonBarWidth, Gdx.graphics.getHeight());
+        shapes.end();
+
+        stage.draw();
+
         hideAirplaneButtons();
         if(selectedAirplane.stateType == FLYING) {
             if(selectedAirplane.getTargetType() == AirplaneFlying.TargetType.RUNWAY) {
