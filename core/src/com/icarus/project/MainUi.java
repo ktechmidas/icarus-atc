@@ -135,10 +135,6 @@ public class MainUi {
             }
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                //if(PIScreen.getInstance().warpSpeed >= 1.0 ) {
-                //    warpPause = PIScreen.getInstance().warpSpeed;
-                //    PIScreen.getInstance().warpSpeed = 0;
-                //}
                 if(PIScreen.getInstance().warpSpeed == 0) {
                     PIScreen.getInstance().warpSpeed = warpPause;
                     playPauseButton.setVisible(false);
@@ -374,23 +370,31 @@ public class MainUi {
         // Draw status text
         layout.setText(font, status);
         font.setColor(Colors.colors[3]);
-        font.draw(batch, status, Gdx.graphics.getWidth() / 2 - layout.width / 2,
-                20 * Gdx.graphics.getDensity()
+        font.draw(batch,
+                status,
+                Gdx.graphics.getWidth() / 2 - layout.width / 2,
+                15 * Gdx.graphics.getDensity()
         );
 
         //draw the warp speed
-        /*font.setColor(Colors.colors[4]);
+        font.setColor(Colors.colors[4]);
         String warp = "x" + (int)(PIScreen.getInstance().warpSpeed);
         layout.setText(font, warp);
-        font.draw(batch, warp, 2 * buttonGap + 3 * buttonSize / 4 - layout.width / 2,
-                Gdx.graphics.getHeight() - buttonGap - buttonSize / 4);*/
+        font.draw(batch,
+                warp,
+                Gdx.graphics.getWidth() - (4 * buttonGap + 3 * warpButtonSize) / 2 - layout.width / 2,
+                15 * Gdx.graphics.getDensity()
+        );
 
         //draw points
         font.setColor(Colors.colors[4]);
-        String point = "Points: " + (int) (PIScreen.getInstance().points);
+        String point = "Points: " + PIScreen.getInstance().points;
         layout.setText(font, point);
-        font.draw(batch, point, 2 * buttonGap + 3 * buttonSize / 4 - layout.width / 2,
-                Gdx.graphics.getHeight() - buttonGap * 2 - buttonSize / 2);
+        font.draw(batch,
+                point,
+                buttonGap,
+                15 * Gdx.graphics.getDensity()
+        );
 
         //String
         batch.end();
@@ -465,7 +469,6 @@ public class MainUi {
     }
 
     public void showAirplaneButtons(Airplane.FlightType flightType){
-
         hideAirplaneButtons();
         if(selectedAirplane.stateType == FLYING) {
             if(selectedAirplane.getTargetType() == AirplaneFlying.TargetType.RUNWAY) {
