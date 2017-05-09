@@ -68,7 +68,7 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
         stage.addActor(playerBtn1);//adds the button to the stage
         Gdx.input.setInputProcessor(new InputMultiplexer(stage, new GestureDetector(this)));
 
-        //logo = new Texture(Gdx.files.internal("buttons/Icarus_Logo.png"));
+        logo = new Texture(Gdx.files.internal("buttons/Icarus_Logo.png"));
     }
 
     @Override
@@ -81,7 +81,7 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         playerBtn1.draw(batch, 1);
-        //batch.draw(logo,((Gdx.graphics.getWidth() - logo.getWidth())/2) ,(Gdx.graphics.getHeight() - logo.getHeight())/2);
+        batch.draw(logo,((Gdx.graphics.getWidth() - logo.getWidth())/2) ,(Gdx.graphics.getHeight() - logo.getHeight())/2);
         batch.end();
         stage.act();
         stage.draw();
