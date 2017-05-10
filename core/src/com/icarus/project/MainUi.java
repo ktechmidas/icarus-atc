@@ -320,8 +320,9 @@ public class MainUi {
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 selectedAirplane.setNoTarget();
-                selectedAirplane.setTargetAltitude(5000);
-                setStatus("Cancelled landing");
+                // TODO add status message
+//                selectedAirplane.setTargetAltitude(5000);
+//                setStatus("Cancelled landing");
             }
         });
         stage.addActor(cancelButton);
@@ -489,7 +490,8 @@ public class MainUi {
     public void showAirplaneButtons(Airplane.FlightType flightType){
         hideAirplaneButtons();
         if(selectedAirplane.stateType == FLYING) {
-            if(selectedAirplane.getTargetType() == AirplaneFlying.TargetType.RUNWAY) {
+            if(selectedAirplane.getTargetType() == AirplaneFlying.TargetType.RUNWAY
+                    || selectedAirplane.getTargetType() == AirplaneFlying.TargetType.AIRPORT) {
                 cancelButton.setVisible(true);
             }
             else {

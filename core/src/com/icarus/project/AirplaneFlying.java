@@ -157,7 +157,6 @@ class AirplaneFlying extends AirplaneState {
             case AIRPORT:
                 if(turnToHeading(targetAirport.position.cpy().sub(this.position), turnRate, dt)) {
                     PIScreen.getInstance().ui.setStatus(airplane.name + ": turn complete");
-                    targetType = NONE;
                 }
                 break;
             default:

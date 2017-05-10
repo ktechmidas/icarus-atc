@@ -268,6 +268,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
         cameraHorizontalOffset = 0;
 
+        // Test airport, will change later
         otherAirports = new ArrayList<OtherAirport>();
         otherAirports.add(new OtherAirport("testAirport", new Vector2(2000, 2000)));
     }
@@ -286,15 +287,25 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 new Vector3(airport.width, airport.height, 0)
         );
         for(Airplane airplane: airplanes) {
+            // If the plane is stopped on the runway
             if(airplane.getVelocity().len() < 0.01 && airplane.stateType == Airplane.StateType.LANDING) {
                 toRemove.add(airplane);
                 ui.setStatus(airplane.name + " landed successfully!");
-                points = points+50;
+                points += 50;
             }
+            // If the plane has exited the airport
             else if(!airportBoundary.contains(new Vector3(airplane.getPosition(), 0))) {
                 toRemove.add(airplane);
-                ui.setStatus(airplane.name + " left the airport improperly!");
-                points = points-25;
+                // If the plane was handed off to another airport
+                if(airplane.getTargetType() == AirplaneFlying.TargetType.AIRPORT) {
+                    ui.setStatus(airplane.name + " handed off successfully");
+                    points += 25;
+                }
+                // If the plane wasn't handed off
+                else {
+                    ui.setStatus(airplane.name + " left the airport improperly!");
+                    points -= 25;
+                }
             }
 
             for(Airplane other: airplanes) {
