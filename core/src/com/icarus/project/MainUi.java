@@ -380,7 +380,7 @@ public class MainUi {
         font.draw(batch,
                 status,
                 Gdx.graphics.getWidth() / 2 - layout.width / 2,
-                statusBarHeight / 2
+                font.getLineHeight() / 2 + (statusBarHeight - font.getCapHeight()) / 2
         );
 
         //draw the warp speed
@@ -390,7 +390,7 @@ public class MainUi {
         font.draw(batch,
                 warp,
                 Gdx.graphics.getWidth() - (4 * buttonGap + 3 * warpButtonSize) / 2 - layout.width / 2,
-                statusBarHeight / 2
+                font.getLineHeight() / 2 + (statusBarHeight - font.getCapHeight()) / 2
         );
 
         //draw points
@@ -399,8 +399,8 @@ public class MainUi {
         layout.setText(font, point);
         font.draw(batch,
                 point,
-                buttonGap,
-                statusBarHeight / 2
+                textGap,
+                font.getLineHeight() / 2 + (statusBarHeight - font.getCapHeight()) / 2
         );
         batch.end();
 
@@ -462,14 +462,14 @@ public class MainUi {
                 String alt = (int) selectedAirplane.getAltitude() + "m";
                 font.draw(batch,
                         alt,
-                        Gdx.graphics.getWidth() - statusWidth / 2,
+                        Gdx.graphics.getWidth() - (3f / 8f) * statusWidth,
                         Gdx.graphics.getHeight() - font.getLineHeight() / 2
                 );
             }
 
             font.draw(batch,
                     (int) PIScreen.toMeters(selectedAirplane.getVelocity().len()) + "m/s",
-                    Gdx.graphics.getWidth() - statusWidth / 2,
+                    Gdx.graphics.getWidth() - (3f / 8f) * statusWidth,
                     Gdx.graphics.getHeight() - 3 * font.getLineHeight() / 2
             );
 
