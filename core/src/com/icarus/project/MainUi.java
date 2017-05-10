@@ -258,7 +258,9 @@ public class MainUi {
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                setStatus("handoffButton");
+                OtherAirport targetAirport = PIScreen.getInstance().otherAirports.get(0);
+                selectedAirplane.setTargetAirport(targetAirport);
+                setStatus(selectedAirplane.name + " handed off to " + targetAirport.name);
             }
         });
         stage.addActor(handoffButton);

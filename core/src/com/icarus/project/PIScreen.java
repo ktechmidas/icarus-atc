@@ -105,6 +105,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     private int cameraHorizontalOffset;
 
+    public ArrayList<OtherAirport> otherAirports;
+
     class CollisionAnimation {
         Airplane a;
         Airplane b;
@@ -213,9 +215,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         manager.load("buttons/waypoint_button.png", Texture.class);
         manager.load("buttons/heading_button.png", Texture.class);
         manager.load("buttons/takeoff_button.png", Texture.class);
-        manager.load("buttons/circle_button.png", Texture.class);
         manager.load("buttons/landing_button.png", Texture.class);
-        manager.load("buttons/more_button.png", Texture.class);
         manager.load("buttons/handoff_button.png", Texture.class);
         manager.load("buttons/cancel_button.png", Texture.class);
         manager.load("buttons/selection_wheel.png", Texture.class);
@@ -267,6 +267,9 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         warpSpeed = 1.0f;
 
         cameraHorizontalOffset = 0;
+
+        otherAirports = new ArrayList<OtherAirport>();
+        otherAirports.add(new OtherAirport("testAirport", new Vector2(2000, 2000)));
     }
 
     @Override

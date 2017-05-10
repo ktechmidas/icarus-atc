@@ -77,6 +77,13 @@ class Airplane {
         }
     }
 
+    public void setTargetAirport(OtherAirport targetAirport) {
+        if(stateType == StateType.FLYING) {
+            ((AirplaneFlying) state).setTargetAirport(targetAirport);
+            setTargetAltitude(10000);
+        }
+    }
+
     public void setNoTarget() {
         if(stateType == StateType.FLYING) {
             ((AirplaneFlying) state).setNoTarget();

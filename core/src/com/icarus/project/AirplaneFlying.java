@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Align;
 
+import static com.icarus.project.AirplaneFlying.TargetType.AIRPORT;
 import static com.icarus.project.AirplaneFlying.TargetType.HEADING;
 import static com.icarus.project.AirplaneFlying.TargetType.NONE;
 import static com.icarus.project.AirplaneFlying.TargetType.RUNWAY;
@@ -25,6 +26,7 @@ class AirplaneFlying extends AirplaneState {
     private int targetRunwayPoint;
     private int targetRunwayStage;
     public float targetAltitude;
+    public OtherAirport targetAirport;
 
     public float turnRate = 3 * (float) Math.PI / 180.0f; //radians per second
     public float maxVelocity = 250; //meters per second
@@ -33,7 +35,7 @@ class AirplaneFlying extends AirplaneState {
     public TargetType targetType;
 
     public enum TargetType {
-        WAYPOINT, HEADING, RUNWAY, NONE
+        WAYPOINT, HEADING, RUNWAY, AIRPORT, NONE
     }
 
     public AirplaneFlying(Vector2 position, Vector2 velocity, float altitude) {
@@ -152,6 +154,12 @@ class AirplaneFlying extends AirplaneState {
                     }
                 }
                 break;
+            case AIRPORT:
+                if(turnToHeading(targetAirport.position.cpy().sub(this.position), turnRate, dt)) {
+                    PIScreen.getInstance().ui.setStatus(airplane.name + ": turn complete");
+                    targetType = NONE;
+                }
+                break;
             default:
                 break;
         }
@@ -183,6 +191,11 @@ class AirplaneFlying extends AirplaneState {
         this.targetRunwayPoint = point;
         this.targetRunwayStage = 0;
         targetType = RUNWAY;
+    }
+
+    public void setTargetAirport(OtherAirport targetAirport) {
+        this.targetAirport = targetAirport;
+        targetType = AIRPORT;
     }
 
     public void setNoTarget() {
