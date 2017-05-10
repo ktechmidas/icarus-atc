@@ -103,6 +103,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     private float cruiseAlt = 8800; // meters
 
+    private int cameraHorizontalOffset;
+
     class CollisionAnimation {
         Airplane a;
         Airplane b;
@@ -238,14 +240,16 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         utils = new Utils();
         // The maximum zoom level is the smallest dimension compared to the viewer
-        maxZoomOut = Math.min(airport.width / Gdx.graphics.getWidth(),
+        maxZoomOut = Math.min(airport.width / (Gdx.graphics.getWidth() - cameraHorizontalOffset),
                 airport.height / (Gdx.graphics.getHeight() - ui.statusBarHeight)
         );
         maxZoomIn = maxZoomOut / 100;
 
         // Start the app in maximum zoomed out state
         camera.zoom = maxZoomOut;
-        camera.position.set(airport.width/2, (airport.height - ui.statusBarHeight)/2, 0);
+        camera.position.set((airport.width - cameraHorizontalOffset)/2,
+                (airport.height - ui.statusBarHeight)/2, 0
+        );
         camera.update();
 
         selectedAirplane = null;
@@ -261,6 +265,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         Gdx.input.setInputProcessor(new InputMultiplexer(ui.stage, new GestureDetector(this)));
 
         warpSpeed = 1.0f;
+
+        cameraHorizontalOffset = 0;
     }
 
     @Override
@@ -394,6 +400,13 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         else {
             timeElapsed += dt;
         }
+
+//        if(selectedAirplane != null) {
+//            cameraHorizontalOffset = ui.buttonBarWidth;
+//        }
+//        else {
+//            cameraHorizontalOffset = 0;
+//        }
     }
 
     @Override
@@ -420,7 +433,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             case SELECT_WAYPOINT:
                 for(Waypoint waypoint: airport.waypoints) {
                     Vector3 pos = camera.project(new Vector3(waypoint.position, 0));
-                    Circle circle = new Circle(pos.x, pos.y, Waypoint.waypointSize);
+                    Circle circle = new Circle(pos.x, pos.y, 2 * Waypoint.waypointSize);
                     if(circle.contains(position.x, position.y)) {
                         selectedAirplane.setTargetWaypoint(waypoint);
                         ui.setStatus(selectedAirplane.name + ": targeting waypoint " + waypoint.name);
@@ -467,7 +480,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                                 followingPlane = true;
                                 ui.setStatus("Selected runway " + runway.names[end]);
                                 Gdx.app.log(TAG, "Selected runway " + runway.names[end]);
-                                break;
+                                return true;
                             }
                             else {
                                 ui.setStatus(selectedAirplane.name
@@ -574,20 +587,24 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     private void setToBoundary() {
         // Calculates the distance from the edge of the camera to the specified boundary
-        toBoundaryRight = airport.width - camera.position.x - Gdx.graphics.getWidth()/2 * camera.zoom;
-        toBoundaryLeft = -camera.position.x + Gdx.graphics.getWidth()/2 * camera.zoom;
-        toBoundaryTop = airport.height - camera.position.y - Gdx.graphics.getHeight()/2 * camera.zoom;
-        toBoundaryBottom = -camera.position.y + (Gdx.graphics.getHeight()/2 - ui.statusBarHeight) * camera.zoom;
+        toBoundaryRight = airport.width
+                - camera.position.x - Gdx.graphics.getWidth()/2 * camera.zoom;
+        toBoundaryLeft = -camera.position.x
+                + (Gdx.graphics.getWidth()/2 - cameraHorizontalOffset) * camera.zoom;
+        toBoundaryTop = airport.height
+                - camera.position.y - Gdx.graphics.getHeight()/2 * camera.zoom;
+        toBoundaryBottom = -camera.position.y
+                + (Gdx.graphics.getHeight()/2 - ui.statusBarHeight) * camera.zoom;
     }
 
     private void setCameraPosition(Vector3 position) {
         camera.position.set(position);
 
-        Vector2 camMin = new Vector2(camera.viewportWidth,
+        Vector2 camMin = new Vector2(camera.viewportWidth - 2 * cameraHorizontalOffset,
                 camera.viewportHeight - 2 * ui.statusBarHeight
         );
         camMin.scl(camera.zoom / 2);
-        Vector2 camMax = new Vector2(airport.width,
+        Vector2 camMax = new Vector2(airport.width - camera.zoom * cameraHorizontalOffset,
                 airport.height - camera.zoom * ui.statusBarHeight
         );
         camMax.sub(camMin);

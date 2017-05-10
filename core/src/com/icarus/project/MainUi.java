@@ -31,7 +31,6 @@ public class MainUi {
     private ImageButton headingButton;
     private ImageButton waypointButton;
     private ImageButton altitudeButton;
-    private ImageButton circleButton;
     private ImageButton headingWheel;
     private ImageButton landingButton;
     private ImageButton takeoffButton;
@@ -47,9 +46,13 @@ public class MainUi {
 
     public static final String TAG = "MainUi";
 
-    private int buttonSize = (int) (80 * Gdx.graphics.getDensity());
-    private int buttonGap = (int) (5 * Gdx.graphics.getDensity());
-    public int statusBarHeight = (int) (25 * Gdx.graphics.getDensity());
+//    public int statusBarHeight = (int) (25 * Gdx.graphics.getDensity());
+    public int statusBarHeight;
+    private int buttonGap;
+    private int buttonSize;
+    private int warpButtonSize;
+
+    private int textGap = (int) (10 * Gdx.graphics.getDensity());
 
     private Airplane selectedAirplane;
 
@@ -62,7 +65,114 @@ public class MainUi {
         stage = new Stage();
         layout = new GlyphLayout();
 
+        statusBarHeight = (int) font.getLineHeight();
+        buttonGap = (int) (5 * Gdx.graphics.getDensity());
+        buttonSize = (Gdx.graphics.getHeight() - 5 * buttonGap - statusBarHeight) / 4;
+        warpButtonSize = buttonSize / 2;
+
         status = "Welcome to Icarus Air Traffic Control";
+
+        Vector2 buttonPosition = new Vector2(buttonGap,
+                Gdx.graphics.getHeight() - buttonGap - buttonSize
+        );
+
+        Drawable warpDownDrawable = new TextureRegionDrawable(
+                new TextureRegion((Texture) assets.get("buttons/warpdown.png"))
+        );
+        warpDownButton = new ImageButton(warpDownDrawable);
+        warpDownButton.setSize(warpButtonSize, warpButtonSize);
+        warpDownButton.setPosition(Gdx.graphics.getWidth() - 3 * buttonGap - 3 * warpButtonSize,
+                statusBarHeight + buttonGap
+        );
+        warpDownButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                if(PIScreen.getInstance().warpSpeed > 1.0) {
+                    PIScreen.getInstance().warpSpeed *= 0.5;
+                }
+            }
+        });
+        stage.addActor(warpDownButton);
+
+        Drawable pauseDrawable = new TextureRegionDrawable(
+                new TextureRegion((Texture) assets.get("buttons/pause_button.png"))
+        );
+        pauseButton = new ImageButton(pauseDrawable);
+        pauseButton.setSize(warpButtonSize, warpButtonSize);
+        pauseButton.setPosition(Gdx.graphics.getWidth() - 2 * buttonGap - 2 * warpButtonSize,
+                statusBarHeight + buttonGap
+        );
+        pauseButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                if(PIScreen.getInstance().warpSpeed >= 1.0 ) {
+                    warpPause = PIScreen.getInstance().warpSpeed;
+                    PIScreen.getInstance().warpSpeed = 0;
+                    playPauseButton.setVisible(true);
+                    pauseButton.setVisible(false);
+                }
+               /* else if(PIScreen.getInstance().warpSpeed == 0) {
+                   PIScreen.getInstance().warpSpeed = warpPause;
+                }*/
+            }
+        });
+        stage.addActor(pauseButton);
+
+        Drawable playPauseDrawable = new TextureRegionDrawable(
+                new TextureRegion((Texture) assets.get("buttons/play_button_pause.png"))
+        );
+        playPauseButton = new ImageButton(playPauseDrawable);
+        playPauseButton.setSize(buttonSize / 2, buttonSize / 2);
+        playPauseButton.setPosition(Gdx.graphics.getWidth() - 2 * buttonGap - 2 * warpButtonSize,
+                statusBarHeight + buttonGap
+        );
+        playPauseButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                if(PIScreen.getInstance().warpSpeed == 0) {
+                    PIScreen.getInstance().warpSpeed = warpPause;
+                    playPauseButton.setVisible(false);
+                    pauseButton.setVisible(true);
+
+                }
+            }
+        });
+        stage.addActor(playPauseButton);
+        playPauseButton.setVisible(false);
+
+        Drawable warpUpDrawable = new TextureRegionDrawable(
+                new TextureRegion((Texture) assets.get("buttons/warpup.png"))
+        );
+        warpUpButton = new ImageButton(warpUpDrawable);
+        warpUpButton.setSize(warpButtonSize, warpButtonSize);
+        warpUpButton.setPosition(Gdx.graphics.getWidth() - buttonGap - warpButtonSize,
+                statusBarHeight + buttonGap
+        );
+        warpUpButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                PIScreen.getInstance().warpSpeed *= 2.0;
+            }
+        });
+        stage.addActor(warpUpButton);
 
         // Initialize heading selection button
         Drawable headingDrawable = new TextureRegionDrawable(
@@ -70,7 +180,7 @@ public class MainUi {
         );
         headingButton = new ImageButton(headingDrawable);
         headingButton.setSize(buttonSize, buttonSize);
-        headingButton.setPosition(buttonGap, statusBarHeight + buttonGap);
+        headingButton.setPosition(buttonPosition.x, buttonPosition.y);
         headingButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -78,13 +188,13 @@ public class MainUi {
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-//                toggleHeadingSelector(true);
-//                showAirplaneButtons(false);
-//                hideAirplaneButtons();
                 PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_HEADING;
             }
         });
         stage.addActor(headingButton);
+
+        // Set next button position
+        buttonPosition.y -= buttonGap + buttonSize;
 
         // Initialize waypoint selection button
         Drawable waypointDrawable = new TextureRegionDrawable(
@@ -92,7 +202,7 @@ public class MainUi {
         );
         waypointButton = new ImageButton(waypointDrawable);
         waypointButton.setSize(buttonSize, buttonSize);
-        waypointButton.setPosition(2 * buttonGap + buttonSize, statusBarHeight + buttonGap);
+        waypointButton.setPosition(buttonPosition.x, buttonPosition.y);
         waypointButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -107,13 +217,16 @@ public class MainUi {
         });
         stage.addActor(waypointButton);
 
+        // Set next button position
+        buttonPosition.y -= buttonGap + buttonSize;
+
         // Initialize altitude button
         Drawable altitudeDrawable = new TextureRegionDrawable(
                 new TextureRegion((Texture) assets.get("buttons/altitude_button.png"))
         );
         altitudeButton = new ImageButton(altitudeDrawable);
         altitudeButton.setSize(buttonSize, buttonSize);
-        altitudeButton.setPosition(3 * buttonGap + 2 * buttonSize, statusBarHeight + buttonGap);
+        altitudeButton.setPosition(buttonPosition.x, buttonPosition.y);
         altitudeButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -128,24 +241,27 @@ public class MainUi {
         });
         stage.addActor(altitudeButton);
 
-        // Initialize circling button
-        Drawable circleDrawable = new TextureRegionDrawable(
-                new TextureRegion((Texture) assets.get("buttons/circle_button.png"))
+        // Set next button position
+        buttonPosition.y -= buttonGap + buttonSize;
+
+        // Initialize handoff button
+        Drawable handoffDrawable = new TextureRegionDrawable(
+                new TextureRegion((Texture) assets.get("buttons/handoff_button.png"))
         );
-        circleButton = new ImageButton(circleDrawable);
-        circleButton.setSize(buttonSize, buttonSize);
-        circleButton.setPosition(4 * buttonGap + 3 * buttonSize, statusBarHeight + buttonGap);
-        circleButton.addListener(new InputListener(){
+        handoffButton = new ImageButton(handoffDrawable);
+        handoffButton.setSize(buttonSize, buttonSize);
+        handoffButton.setPosition(buttonPosition.x, buttonPosition.y);
+        handoffButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 return true;
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                // Circle airport
+                setStatus("handoffButton");
             }
         });
-        stage.addActor(circleButton);
+        stage.addActor(handoffButton);
 
         // Initialize landing button
         Drawable landingDrawable = new TextureRegionDrawable(
@@ -153,7 +269,7 @@ public class MainUi {
         );
         landingButton = new ImageButton(landingDrawable);
         landingButton.setSize(buttonSize, buttonSize);
-        landingButton.setPosition(5 * buttonGap + 4 * buttonSize, statusBarHeight + buttonGap);
+        landingButton.setPosition(buttonPosition.x, buttonPosition.y);
         landingButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -186,25 +302,6 @@ public class MainUi {
             }
         });
         stage.addActor(takeoffButton);
-
-        // Initialize handoff button
-        Drawable handoffDrawable = new TextureRegionDrawable(
-                new TextureRegion((Texture) assets.get("buttons/handoff_button.png"))
-        );
-        handoffButton = new ImageButton(handoffDrawable);
-        handoffButton.setSize(buttonSize, buttonSize);
-        handoffButton.setPosition(5 * buttonGap + 4 * buttonSize, statusBarHeight + buttonGap);
-        handoffButton.addListener(new InputListener(){
-            @Override
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-            @Override
-            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                setStatus("handoffButton");
-            }
-        });
-        stage.addActor(handoffButton);
 
         // Initialize cancel button
         Drawable cancelDrawable = new TextureRegionDrawable(
@@ -260,102 +357,6 @@ public class MainUi {
         });
         stage.addActor(headingWheel);
 
-        Drawable warpUpDrawable = new TextureRegionDrawable(
-                new TextureRegion((Texture) assets.get("buttons/warpup.png"))
-        );
-        warpUpButton = new ImageButton(warpUpDrawable);
-        warpUpButton.setSize(buttonSize / 2, buttonSize / 2);
-        warpUpButton.setPosition(3 * buttonGap + buttonSize,
-                Gdx.graphics.getHeight() - buttonGap - buttonSize / 2);
-        warpUpButton.addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                PIScreen.getInstance().warpSpeed *= 2.0;
-            }
-        });
-        stage.addActor(warpUpButton);
-
-        Drawable warpDownDrawable = new TextureRegionDrawable(
-                new TextureRegion((Texture) assets.get("buttons/warpdown.png"))
-        );
-        warpDownButton = new ImageButton(warpDownDrawable);
-        warpDownButton.setSize(buttonSize / 2, buttonSize / 2);
-        warpDownButton.setPosition(buttonGap,
-                Gdx.graphics.getHeight() - buttonGap - buttonSize / 2);
-        warpDownButton.addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                if(PIScreen.getInstance().warpSpeed > 1.0) {
-                    PIScreen.getInstance().warpSpeed *= 0.5;
-                }
-            }
-        });
-        stage.addActor(warpDownButton);
-
-        Drawable pauseDrawable = new TextureRegionDrawable(
-                new TextureRegion((Texture) assets.get("buttons/pause_button.png"))
-        );
-        pauseButton = new ImageButton(pauseDrawable);
-        pauseButton.setSize(buttonSize / 2, buttonSize / 2);
-        pauseButton.setPosition(2 * buttonGap + buttonSize / 2, Gdx.graphics.getHeight() - buttonGap - buttonSize / 2);
-        pauseButton.addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                if(PIScreen.getInstance().warpSpeed >= 1.0 ) {
-                    warpPause = PIScreen.getInstance().warpSpeed;
-                    PIScreen.getInstance().warpSpeed = 0;
-                    playPauseButton.setVisible(true);
-                    pauseButton.setVisible(false);
-               }
-               /* else if(PIScreen.getInstance().warpSpeed == 0) {
-                   PIScreen.getInstance().warpSpeed = warpPause;
-                }*/
-            }
-        });
-        stage.addActor(pauseButton);
-
-        Drawable playPauseDrawable = new TextureRegionDrawable(
-                new TextureRegion((Texture) assets.get("buttons/play_button_pause.png"))
-        );
-        playPauseButton = new ImageButton(playPauseDrawable);
-        playPauseButton.setSize(buttonSize / 2, buttonSize / 2);
-        playPauseButton.setPosition(2 * buttonGap + buttonSize / 2, Gdx.graphics.getHeight() - buttonGap - buttonSize / 2);
-        playPauseButton.addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                //if(PIScreen.getInstance().warpSpeed >= 1.0 ) {
-                //    warpPause = PIScreen.getInstance().warpSpeed;
-                //    PIScreen.getInstance().warpSpeed = 0;
-                //}
-                if(PIScreen.getInstance().warpSpeed == 0) {
-                    PIScreen.getInstance().warpSpeed = warpPause;
-                    playPauseButton.setVisible(false);
-                    pauseButton.setVisible(true);
-
-                }
-            }
-        });
-        stage.addActor(playPauseButton);
-        playPauseButton.setVisible(false);
-
         toggleHeadingSelector(false);
         hideAirplaneButtons();
     }
@@ -363,40 +364,52 @@ public class MainUi {
     public void draw() {
         selectedAirplane = PIScreen.getInstance().getSelectedAirplane();
 
-        stage.draw();
-        //draw a rectangle for the status bar
+//        stage.draw();
         shapes.begin(ShapeRenderer.ShapeType.Filled);
+        // Draw rectangle for the status bar
         shapes.setColor(0, 0, 0, 1);
         shapes.rect(0, 0, Gdx.graphics.getWidth(), statusBarHeight);
         shapes.end();
 
+        stage.draw();
+
         batch.begin();
+        // Draw status text
         layout.setText(font, status);
         font.setColor(Colors.colors[3]);
-        font.draw(batch, status, Gdx.graphics.getWidth() / 2 - layout.width / 2,
-                20 * Gdx.graphics.getDensity()
+        font.draw(batch,
+                status,
+                Gdx.graphics.getWidth() / 2 - layout.width / 2,
+                font.getLineHeight() / 2 + (statusBarHeight - font.getCapHeight()) / 2
         );
 
         //draw the warp speed
-        /*font.setColor(Colors.colors[4]);
+        font.setColor(Colors.colors[4]);
         String warp = "x" + (int)(PIScreen.getInstance().warpSpeed);
         layout.setText(font, warp);
-        font.draw(batch, warp, 2 * buttonGap + 3 * buttonSize / 4 - layout.width / 2,
-                Gdx.graphics.getHeight() - buttonGap - buttonSize / 4);*/
+        font.draw(batch,
+                warp,
+                Gdx.graphics.getWidth() - (4 * buttonGap + 3 * warpButtonSize) / 2 - layout.width / 2,
+                font.getLineHeight() / 2 + (statusBarHeight - font.getCapHeight()) / 2
+        );
 
         //draw points
         font.setColor(Colors.colors[4]);
-        String point = "Points: " + (int) (PIScreen.getInstance().points);
+        String point = "Points: " + PIScreen.getInstance().points;
         layout.setText(font, point);
-        font.draw(batch, point, 2 * buttonGap + 3 * buttonSize / 4 - layout.width / 2,
-                Gdx.graphics.getHeight() - buttonGap * 2 - buttonSize / 2);
-
-        //String
+        font.draw(batch,
+                point,
+                textGap,
+                font.getLineHeight() / 2 + (statusBarHeight - font.getCapHeight()) / 2
+        );
         batch.end();
 
         //show airplane-specific buttons if an airplane is selected
         if(PIScreen.getInstance().uiState == ProjectIcarus.UiState.SELECT_HEADING) {
             toggleHeadingSelector(true);
+            hideAirplaneButtons();
+        }
+        else if(PIScreen.getInstance().uiState == ProjectIcarus.UiState.SELECT_WAYPOINT) {
             hideAirplaneButtons();
         }
         else if(selectedAirplane != null) {
@@ -408,14 +421,20 @@ public class MainUi {
             shapes.setColor(Colors.colors[4]);
             int statusWidth = (int)(200.0 * Gdx.graphics.getDensity());
             shapes.rect(
-                    Gdx.graphics.getWidth() - statusWidth, Gdx.graphics.getHeight() - 100,
-                    statusWidth, 100);
+                    Gdx.graphics.getWidth() - statusWidth,
+                    Gdx.graphics.getHeight() - 5 * font.getLineHeight() / 2,
+                    statusWidth,
+                    5 * font.getLineHeight() / 2
+            );
             shapes.end();
 
             batch.begin();
             font.setColor(Colors.colors[0]);
-            font.draw(batch, selectedAirplane.name,
-                    Gdx.graphics.getWidth() - statusWidth + 10, Gdx.graphics.getHeight() - 20);
+            font.draw(batch,
+                    selectedAirplane.name,
+                    Gdx.graphics.getWidth() - statusWidth + textGap,
+                    Gdx.graphics.getHeight() - font.getLineHeight() / 2
+            );
 
             String type = null;
             if(selectedAirplane.flightType ==
@@ -433,20 +452,25 @@ public class MainUi {
             {
                 type = "Departure";
             }
-            font.draw(batch, type,
-                    Gdx.graphics.getWidth() - statusWidth + 10, Gdx.graphics.getHeight() - 50);
+            font.draw(batch,
+                    type,
+                    Gdx.graphics.getWidth() - statusWidth + textGap,
+                    Gdx.graphics.getHeight() - 3 * font.getLineHeight() / 2
+            );
 
             if(selectedAirplane.stateType == FLYING || selectedAirplane.stateType == LANDING) {
                 String alt = (int) selectedAirplane.getAltitude() + "m";
-                font.draw(batch, alt,
-                        Gdx.graphics.getWidth() - statusWidth / 2 + 10,
-                        Gdx.graphics.getHeight() - 20);
+                font.draw(batch,
+                        alt,
+                        Gdx.graphics.getWidth() - (3f / 8f) * statusWidth,
+                        Gdx.graphics.getHeight() - font.getLineHeight() / 2
+                );
             }
 
             font.draw(batch,
                     (int) PIScreen.toMeters(selectedAirplane.getVelocity().len()) + "m/s",
-                    Gdx.graphics.getWidth() - statusWidth / 2 + 10,
-                    Gdx.graphics.getHeight() - 50
+                    Gdx.graphics.getWidth() - (3f / 8f) * statusWidth,
+                    Gdx.graphics.getHeight() - 3 * font.getLineHeight() / 2
             );
 
             batch.end();
@@ -468,7 +492,6 @@ public class MainUi {
             }
             else {
                 if (flightType == Airplane.FlightType.ARRIVAL) {
-                    circleButton.setVisible(true);
                     landingButton.setVisible(true);
                 } else if (flightType == Airplane.FlightType.DEPARTURE
                         || flightType == Airplane.FlightType.FLYOVER) {
@@ -485,7 +508,6 @@ public class MainUi {
         headingButton.setVisible(false);
         waypointButton.setVisible(false);
         altitudeButton.setVisible(false);
-        circleButton.setVisible(false);
         landingButton.setVisible(false);
         takeoffButton.setVisible(false);
         handoffButton.setVisible(false);
