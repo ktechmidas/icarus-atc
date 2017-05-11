@@ -178,6 +178,11 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         self = this;
         points = 0;
         fontSize = 20.0f * Gdx.graphics.getDensity();
+
+        // Test airport, will change later
+        otherAirports = new ArrayList<OtherAirport>();
+        otherAirports.add(new OtherAirport("testAirport", new Vector2(2000, 2000)));
+
         //initialize the AssetManager
         AssetManager manager = new AssetManager();
         FileHandleResolver resolver = new InternalFileHandleResolver();
@@ -223,6 +228,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         manager.load("buttons/warpdown.png", Texture.class);
         manager.load("buttons/pause_button.png", Texture.class);
         manager.load("buttons/play_button_pause.png", Texture.class);
+        manager.load("buttons/airport.png", Texture.class);
 
         manager.finishLoading();
         airport = manager.get(airportFile);
@@ -267,10 +273,6 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         warpSpeed = 1.0f;
 
         cameraHorizontalOffset = 0;
-
-        // Test airport, will change later
-        otherAirports = new ArrayList<OtherAirport>();
-        otherAirports.add(new OtherAirport("testAirport", new Vector2(2000, 2000)));
     }
 
     @Override
@@ -350,6 +352,9 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             collisions.remove(collision);
         }
 
+        if(uiState == ProjectIcarus.UiState.SELECT_AIRPORT) {
+
+        }
         //draw waypoint triangles
         shapes.begin(ShapeRenderer.ShapeType.Filled);
         for(Waypoint waypoint: airport.waypoints) {
@@ -512,6 +517,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
                 ui.setStatus("Set target altitude to: " + altitudeTarget + "m");
                 ((AirplaneFlying) selectedAirplane.state).targetAltitude = altitudeTarget;
+                break;
+            case SELECT_AIRPORT:
                 break;
             default:
                 break;

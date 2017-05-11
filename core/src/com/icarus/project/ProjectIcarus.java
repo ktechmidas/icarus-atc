@@ -22,7 +22,12 @@ public class ProjectIcarus extends Game {
     }
 
     public enum UiState {
-        SELECT_WAYPOINT, SELECT_AIRPLANE, SELECT_HEADING, SELECT_RUNWAY, CHANGE_ALTITUDE
+        SELECT_WAYPOINT,
+        SELECT_AIRPLANE,
+        SELECT_HEADING,
+        SELECT_RUNWAY,
+        CHANGE_ALTITUDE,
+        SELECT_AIRPORT
     }
 
     public void dispose() {

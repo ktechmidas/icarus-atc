@@ -17,6 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 
+import java.util.ArrayList;
+
 import static com.icarus.project.Airplane.StateType.FLYING;
 import static com.icarus.project.Airplane.StateType.LANDING;
 
@@ -40,6 +42,8 @@ public class MainUi {
     private ImageButton warpDownButton;
     private ImageButton pauseButton;
     private ImageButton playPauseButton;
+
+    private ArrayList<ImageButton> airportButtons;
     float warpPause = 0;
     public int points;
 
@@ -258,9 +262,10 @@ public class MainUi {
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                OtherAirport targetAirport = PIScreen.getInstance().otherAirports.get(0);
-                selectedAirplane.setTargetAirport(targetAirport);
-                setStatus(selectedAirplane.name + " handed off to " + targetAirport.name);
+//                OtherAirport targetAirport = PIScreen.getInstance().otherAirports.get(0);
+//                selectedAirplane.setTargetAirport(targetAirport);
+//                setStatus(selectedAirplane.name + " handed off to " + targetAirport.name);
+                PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPORT;
             }
         });
         stage.addActor(handoffButton);
@@ -359,6 +364,29 @@ public class MainUi {
             }
         });
         stage.addActor(headingWheel);
+
+        airportButtons = new ArrayList<ImageButton>();
+        for(OtherAirport otherAirport: PIScreen.getInstance().otherAirports) {
+            final String name = otherAirport.name;
+            Drawable airportDrawable = new TextureRegionDrawable(
+                    new TextureRegion((Texture) assets.get("buttons/airport.png"))
+            );
+            ImageButton airportButton = new ImageButton(airportDrawable);
+            airportButton.setSize(buttonSize, buttonSize);
+            airportButton.setPosition(200, 200); // TODO temporary position
+            airportButton.addListener(new InputListener() {
+                @Override
+                public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                    return true;
+                }
+                @Override
+                public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                    setStatus("Hooray! " + name);
+                }
+            });
+            airportButton.setVisible(false);
+            airportButtons.add(airportButton);
+        }
 
         toggleHeadingSelector(false);
         hideAirplaneButtons();
@@ -516,6 +544,13 @@ public class MainUi {
         takeoffButton.setVisible(false);
         handoffButton.setVisible(false);
         cancelButton.setVisible(false);
+    }
+
+    public void showOtherAirports() {
+        hideAirplaneButtons();
+        for(ImageButton airportButton: airportButtons) {
+            airportButton.setVisible(true);
+        }
     }
 
     public void toggleHeadingSelector(boolean isVisible){
