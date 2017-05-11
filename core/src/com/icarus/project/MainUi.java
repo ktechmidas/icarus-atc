@@ -382,8 +382,10 @@ public class MainUi {
                 @Override
                 public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                     setStatus("Hooray! " + name);
+                    PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
                 }
             });
+            stage.addActor(airportButton);
             airportButton.setVisible(false);
             airportButtons.add(airportButton);
         }
@@ -435,17 +437,21 @@ public class MainUi {
         );
         batch.end();
 
+        toggleOtherAirports(false);
+        toggleHeadingSelector(false);
+        hideAirplaneButtons();
         //show airplane-specific buttons if an airplane is selected
         if(PIScreen.getInstance().uiState == ProjectIcarus.UiState.SELECT_HEADING) {
             toggleHeadingSelector(true);
-            hideAirplaneButtons();
         }
         else if(PIScreen.getInstance().uiState == ProjectIcarus.UiState.SELECT_WAYPOINT) {
             hideAirplaneButtons();
         }
+        else if(PIScreen.getInstance().uiState == ProjectIcarus.UiState.SELECT_AIRPORT) {
+            toggleOtherAirports(true);
+        }
         else if(selectedAirplane != null) {
             showAirplaneButtons(selectedAirplane.flightType);
-            toggleHeadingSelector(false);
 
             //draw a rectangle for airplane status
             shapes.begin(ShapeRenderer.ShapeType.Filled);
@@ -546,10 +552,9 @@ public class MainUi {
         cancelButton.setVisible(false);
     }
 
-    public void showOtherAirports() {
-        hideAirplaneButtons();
+    public void toggleOtherAirports(boolean isVisible) {
         for(ImageButton airportButton: airportButtons) {
-            airportButton.setVisible(true);
+            airportButton.setVisible(isVisible);
         }
     }
 

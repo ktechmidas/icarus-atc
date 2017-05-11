@@ -355,41 +355,43 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         if(uiState == ProjectIcarus.UiState.SELECT_AIRPORT) {
 
         }
-        //draw waypoint triangles
-        shapes.begin(ShapeRenderer.ShapeType.Filled);
-        for(Waypoint waypoint: airport.waypoints) {
-            waypoint.draw(shapes, camera);
-        }
-        shapes.end();
+        else {
+            //draw waypoint triangles
+            shapes.begin(ShapeRenderer.ShapeType.Filled);
+            for(Waypoint waypoint: airport.waypoints) {
+                waypoint.draw(shapes, camera);
+            }
+            shapes.end();
 
-        //draw runways
-        shapes.begin(ShapeRenderer.ShapeType.Filled);
-        for(Runway runway: airport.runways) {
-            runway.draw(shapes, camera);
-        }
-        shapes.end();
+            //draw runways
+            shapes.begin(ShapeRenderer.ShapeType.Filled);
+            for(Runway runway: airport.runways) {
+                runway.draw(shapes, camera);
+            }
+            shapes.end();
 
-        //draw waypoint labels
-        batch.begin();
-        for(Waypoint waypoint: airport.waypoints) {
-            waypoint.drawLabel(labelFont, batch, camera);
-        }
-        batch.end();
+            //draw waypoint labels
+            batch.begin();
+            for(Waypoint waypoint: airport.waypoints) {
+                waypoint.drawLabel(labelFont, batch, camera);
+            }
+            batch.end();
 
-        //draw runway labels
-        batch.begin();
-        for(Runway runway: airport.runways) {
-            runway.drawLabel(labelFont, batch, camera);
-        }
-        batch.end();
+            //draw runway labels
+            batch.begin();
+            for(Runway runway: airport.runways) {
+                runway.drawLabel(labelFont, batch, camera);
+            }
+            batch.end();
 
-        //draw airplanes
-        batch.begin();
-        for(Airplane airplane: airplanes) {
-            airplane.step(dt); //Move airplanes
-            airplane.draw(airplaneFont, batch, camera);
+            //draw airplanes
+            batch.begin();
+            for(Airplane airplane: airplanes) {
+                airplane.step(dt); //Move airplanes
+                airplane.draw(airplaneFont, batch, camera);
+            }
+            batch.end();
         }
-        batch.end();
 
         ui.draw();
 
