@@ -365,15 +365,19 @@ public class MainUi {
         });
         stage.addActor(headingWheel);
 
+        // Create airport buttons
         airportButtons = new ArrayList<ImageButton>();
-        for(OtherAirport otherAirport: PIScreen.getInstance().otherAirports) {
-            final String name = otherAirport.name;
+        for(final OtherAirport otherAirport: PIScreen.getInstance().otherAirports) {
+            float scaleFactor = (Gdx.graphics.getHeight() / 2 - buttonSize / 2)
+                    / (float) PIScreen.getInstance().airportMaxDistance;
+            Vector2 airportPos = otherAirport.position.cpy().scl(scaleFactor)
+                    .add(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
             Drawable airportDrawable = new TextureRegionDrawable(
                     new TextureRegion((Texture) assets.get("buttons/airport.png"))
             );
             ImageButton airportButton = new ImageButton(airportDrawable);
             airportButton.setSize(buttonSize, buttonSize);
-            airportButton.setPosition(200, 200); // TODO temporary position
+            airportButton.setPosition(airportPos.x - buttonSize / 2, airportPos.y - buttonSize / 2);
             airportButton.addListener(new InputListener() {
                 @Override
                 public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -381,8 +385,9 @@ public class MainUi {
                 }
                 @Override
                 public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                    setStatus("Hooray! " + name);
                     PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
+                    setStatus("Selected airport " + otherAirport.name);
+                    selectedAirplane.setTargetAirport(otherAirport);
                 }
             });
             stage.addActor(airportButton);

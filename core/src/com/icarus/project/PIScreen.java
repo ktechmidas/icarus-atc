@@ -105,6 +105,9 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     private int cameraHorizontalOffset;
 
+    public int airportMinDistance = 50000;
+    public int airportMaxDistance = 100000;
+
     public ArrayList<OtherAirport> otherAirports;
 
     class CollisionAnimation {
@@ -179,9 +182,29 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         points = 0;
         fontSize = 20.0f * Gdx.graphics.getDensity();
 
-        // Test airport, will change later
+        // Test airports, will change later
         otherAirports = new ArrayList<OtherAirport>();
-        otherAirports.add(new OtherAirport("testAirport", new Vector2(2000, 2000)));
+        int airports = 5;
+        int minHeading = 0;
+        int minDifference = 20;
+        int sector = 359 / airports;
+        for(int i = 0; i < airports; i++) {
+            // Generate random three-letter airport name
+            String name = "";
+            for (int n = 0; n < 3; n++) {
+                char c = (char) (r.nextInt(26) + 'A');
+                name += c;
+            }
+            // Generate semi-random position
+            int relativeHeading = r.nextInt(sector - minDifference) + minHeading;
+            int distance = r.nextInt(airportMaxDistance - airportMinDistance) + airportMinDistance;
+            Gdx.app.log(TAG, "Airport distance = " + distance);
+            otherAirports.add(new OtherAirport(
+                    name,
+                    new Vector2(1, 0).setAngle(relativeHeading).setLength(distance))
+            );
+            minHeading += sector;
+        }
 
         //initialize the AssetManager
         AssetManager manager = new AssetManager();
