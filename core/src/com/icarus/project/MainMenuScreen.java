@@ -17,10 +17,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.assets.AssetManager;
 
-/**
- * Created by gmcfeeters3345 on 2/14/2017.
- */
-
 public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
     final ProjectIcarus game;
     public Stage stage;
@@ -81,6 +77,7 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         playerBtn1.draw(batch, 1);
+        //batch.draw(logo,((Gdx.graphics.getWidth() - logo.getWidth())/2) ,(Gdx.graphics.getHeight() - logo.getHeight())/2);
         batch.draw(logo,((Gdx.graphics.getWidth() - logo.getWidth())/2) ,(Gdx.graphics.getHeight() - logo.getHeight())/2);
         batch.end();
         stage.act();

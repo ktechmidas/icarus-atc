@@ -3,6 +3,7 @@ package com.icarus.project;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.math.Vector2;
 
 abstract class AirplaneState {
     abstract public void draw(Airplane airplane, BitmapFont font, SpriteBatch batch, Camera camera);
@@ -13,7 +14,19 @@ abstract class AirplaneState {
         return null;
     }
 
-    public AirplaneFlying transitionToFlying(int altitude) {
+    public AirplaneFlying transitionToFlying(float altitude) {
         return null;
+    }
+
+    public Vector2 getPosition() {
+        return null;
+    }
+
+    public Vector2 getVelocity() {
+        return null;
+    }
+    
+    public float getAltitude() {
+        return 0.0f;
     }
 }

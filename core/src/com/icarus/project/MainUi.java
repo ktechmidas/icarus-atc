@@ -44,7 +44,6 @@ public class MainUi {
     float warpPause = 0;
     public int points;
 
-
     public static final String TAG = "MainUi";
 
     private int buttonSize = (int) (80 * Gdx.graphics.getDensity());
@@ -119,7 +118,7 @@ public class MainUi {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 PIScreen.getInstance().uiState = ProjectIcarus.UiState.CHANGE_ALTITUDE;
                 PIScreen.getInstance().altitudeTarget =
-                    PIScreen.getInstance().selectedAirplane.getAltitude();
+                    PIScreen.getInstance().selectedAirplane.state.getAltitude();
                 return true;
             }
             @Override
@@ -349,7 +348,6 @@ public class MainUi {
                     PIScreen.getInstance().warpSpeed = warpPause;
                     playPauseButton.setVisible(false);
                     pauseButton.setVisible(true);
-
                 }
             }
         });
@@ -437,14 +435,14 @@ public class MainUi {
                     Gdx.graphics.getWidth() - statusWidth + 10, Gdx.graphics.getHeight() - 50);
 
             if(selectedAirplane.stateType == FLYING || selectedAirplane.stateType == LANDING) {
-                String alt = (int) selectedAirplane.getAltitude() + "m";
+                String alt = (int) selectedAirplane.state.getAltitude() + "m";
                 font.draw(batch, alt,
                         Gdx.graphics.getWidth() - statusWidth / 2 + 10,
                         Gdx.graphics.getHeight() - 20);
             }
 
             font.draw(batch,
-                    (int) PIScreen.toMeters(selectedAirplane.getVelocity().len()) + "m/s",
+                    (int) PIScreen.toMeters(selectedAirplane.state.getVelocity().len()) + "m/s",
                     Gdx.graphics.getWidth() - statusWidth / 2 + 10,
                     Gdx.graphics.getHeight() - 50
             );
