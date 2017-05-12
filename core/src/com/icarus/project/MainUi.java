@@ -367,8 +367,9 @@ public class MainUi {
 
         // Create airport buttons
         airportButtons = new ArrayList<ImageButton>();
+        int airportButtonSize = buttonSize / 2;
         for(final OtherAirport otherAirport: PIScreen.getInstance().otherAirports) {
-            float scaleFactor = (Gdx.graphics.getHeight() / 2 - buttonSize / 2)
+            float scaleFactor = (Gdx.graphics.getHeight() / 2 - buttonSize - statusBarHeight)
                     / (float) PIScreen.getInstance().airportMaxDistance;
             Vector2 airportPos = otherAirport.position.cpy().scl(scaleFactor)
                     .add(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
@@ -376,8 +377,11 @@ public class MainUi {
                     new TextureRegion((Texture) assets.get("buttons/airport.png"))
             );
             ImageButton airportButton = new ImageButton(airportDrawable);
-            airportButton.setSize(buttonSize, buttonSize);
-            airportButton.setPosition(airportPos.x - buttonSize / 2, airportPos.y - buttonSize / 2);
+            airportButton.setSize(airportButtonSize, airportButtonSize);
+            airportButton.setPosition(
+                    airportPos.x - airportButtonSize / 2,
+                    airportPos.y - airportButtonSize / 2
+            );
             airportButton.addListener(new InputListener() {
                 @Override
                 public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -558,9 +562,21 @@ public class MainUi {
     }
 
     public void toggleOtherAirports(boolean isVisible) {
+        batch.begin();
         for(ImageButton airportButton: airportButtons) {
+            OtherAirport otherAirport = PIScreen.getInstance().otherAirports
+                    .get(airportButtons.indexOf(airportButton));
             airportButton.setVisible(isVisible);
+            if(isVisible) {
+                font.setColor(Colors.colors[4]);
+                font.draw(batch,
+                        otherAirport.name,
+                        airportButton.getX(),
+                        airportButton.getY()
+                );
+            }
         }
+        batch.end();
     }
 
     public void toggleHeadingSelector(boolean isVisible){
