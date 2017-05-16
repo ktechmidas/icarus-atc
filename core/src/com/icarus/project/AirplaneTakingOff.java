@@ -6,9 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-public class AirplaneTakingOff extends AirplaneState {
-    public Vector2 position;
-    public Vector2 velocity;
+public class AirplaneTakingOff extends AirplaneAltitude {
     public Vector2 heading;
 
     private Runway runway;
@@ -16,31 +14,26 @@ public class AirplaneTakingOff extends AirplaneState {
     public float maxVelocity = 250; //meters per second
     public float accelRate = 0.1f;
 
-    public AirplaneFlying transitionToFlying(int altitude) {
+    public AirplaneFlying transitionToFlying(float altitude) {
         return new AirplaneFlying(position, velocity, altitude);
     }
 
     public AirplaneTakingOff(Vector2 position, Vector2 velocity) {
-        this.position = position;
-        this.velocity = velocity;
+        super(position, velocity, 0.0f);
         this.heading = velocity.cpy().nor();
     }
 
-    public void draw(Airplane airplane, BitmapFont font, SpriteBatch batch, Camera camera) {
-        Vector3 pos = camera.project(new Vector3(position.x, position.y, 0));
-        airplane.sprite.setColor(Colors.colors[4]);
-        airplane.sprite.setPosition(
-                pos.x - airplane.sprite.getWidth() / 2,
-                pos.y - airplane.sprite.getHeight() / 2);
-        airplane.sprite.draw(batch);
+    public String getLabel() {
+        return (int) altitude + "m";
+    }
+
+    public Vector2 getHeading() {
+        return heading;
     }
 
     public void step(Airplane airplane, float dt) {
         //Move airplane
-        position.add(velocity.cpy().scl(dt));
-
-        //Point airplane in direction of travel
-        airplane.sprite.setRotation(heading.angle());
+        super.step(airplane, dt);
 
         velocity.add(velocity.cpy().nor().scl(dt * accelRate));
 

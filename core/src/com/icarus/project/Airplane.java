@@ -91,36 +91,9 @@ class Airplane {
     }
 
     public void setTargetAltitude(float targetAltitude) {
+        Gdx.app.log("Airplane", state + ", " + stateType);
         if(stateType == StateType.FLYING) {
             ((AirplaneFlying) state).targetAltitude = targetAltitude;
-        }
-    }
-
-    public void setSelected(boolean isSelected) {
-        this.isSelected = isSelected;
-    }
-
-    public Vector2 getPosition() {
-        if(stateType == StateType.FLYING) {
-            return ((AirplaneFlying) state).position;
-        }
-        else if(stateType == StateType.LANDING) {
-            return ((AirplaneLanding) state).position;
-        }
-        else if(stateType == StateType.TAKINGOFF) {
-            return ((AirplaneTakingOff) state).position;
-        }
-        else {
-            return null;
-        }
-    }
-
-    public float getAltitude() {
-        if(stateType == StateType.FLYING) {
-            return ((AirplaneFlying) state).altitude;
-        }
-        else {
-            return 0.0f;
         }
     }
 
@@ -137,6 +110,14 @@ class Airplane {
         else {
             return null;
         }
+    }
+
+    public enum FlightType {
+        ARRIVAL, DEPARTURE, FLYOVER
+    }
+
+    public enum StateType {
+        FLYING, LANDING, TAKINGOFF
     }
 
     public AirplaneFlying.TargetType getTargetType() {
@@ -156,11 +137,7 @@ class Airplane {
         stateType = StateType.FLYING;
     }
 
-    public enum FlightType {
-        ARRIVAL, DEPARTURE, FLYOVER
-    }
-
-    public enum StateType {
-        FLYING, LANDING, TAKINGOFF
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 }

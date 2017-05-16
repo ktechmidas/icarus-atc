@@ -47,7 +47,6 @@ public class MainUi {
     float warpPause = 0;
     public int points;
 
-
     public static final String TAG = "MainUi";
 
 //    public int statusBarHeight = (int) (25 * Gdx.graphics.getDensity());
@@ -236,7 +235,7 @@ public class MainUi {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 PIScreen.getInstance().uiState = ProjectIcarus.UiState.CHANGE_ALTITUDE;
                 PIScreen.getInstance().altitudeTarget =
-                    PIScreen.getInstance().selectedAirplane.getAltitude();
+                    PIScreen.getInstance().selectedAirplane.state.getAltitude();
                 return true;
             }
             @Override
@@ -505,7 +504,7 @@ public class MainUi {
             );
 
             if(selectedAirplane.stateType == FLYING || selectedAirplane.stateType == LANDING) {
-                String alt = (int) selectedAirplane.getAltitude() + "m";
+                String alt = (int) selectedAirplane.state.getAltitude() + "m";
                 font.draw(batch,
                         alt,
                         Gdx.graphics.getWidth() - (3f / 8f) * statusWidth,
