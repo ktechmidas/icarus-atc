@@ -104,23 +104,6 @@ class Airplane {
         }
     }
 
-    public AirplaneFlying.TargetType getTargetType() {
-        if(stateType == StateType.FLYING) {
-            return ((AirplaneFlying) state).targetType;
-        }
-        return null;
-    }
-
-    public void transitionToLanding(Runway runway) {
-        state = state.transitionToLanding(runway);
-        stateType = StateType.LANDING;
-    }
-
-    public void transitionToFlying(int altitude) {
-        state = state.transitionToFlying(altitude);
-        stateType = StateType.FLYING;
-    }
-
     public enum FlightType {
         ARRIVAL, DEPARTURE, FLYOVER
     }
@@ -146,11 +129,7 @@ class Airplane {
         stateType = StateType.FLYING;
     }
 
-    public enum FlightType {
-        ARRIVAL, DEPARTURE, FLYOVER
-    }
-
-    public enum StateType {
-        FLYING, LANDING, TAKINGOFF
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 }
