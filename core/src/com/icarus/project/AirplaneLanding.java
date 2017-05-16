@@ -15,7 +15,7 @@ class AirplaneLanding extends AirplaneMoving {
     private Runway runway;
 
     public float maxVelocity = 250; //meters per second
-    public float decelRate = 0.065f;
+    public float decelRate = 0.1f;
 
     public AirplaneLanding(Vector2 position, Vector2 velocity, Runway runway) {
         super(position, velocity);
