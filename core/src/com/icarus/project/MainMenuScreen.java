@@ -77,8 +77,12 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         playerBtn1.draw(batch, 1);
-        //batch.draw(logo,((Gdx.graphics.getWidth() - logo.getWidth())/2) ,(Gdx.graphics.getHeight() - logo.getHeight())/2);
-        batch.draw(logo,((Gdx.graphics.getWidth() - logo.getWidth())/2) ,(Gdx.graphics.getHeight() - logo.getHeight())/2);
+        float width = logo.getWidth() * Gdx.graphics.getDensity() / 3.0f;
+        float height = logo.getHeight() * Gdx.graphics.getDensity() / 3.0f;
+        batch.draw(logo,
+                (Gdx.graphics.getWidth() - width)/2,
+                2 * (Gdx.graphics.getHeight() - height)/3,
+                width, height);
         batch.end();
         stage.act();
         stage.draw();
