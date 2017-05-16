@@ -53,6 +53,7 @@ public class MainUi {
     public int statusBarHeight;
     private int buttonGap;
     private int buttonSize;
+    private int airportButtonSize;
     private int warpButtonSize;
 
     private int textGap = (int) (10 * Gdx.graphics.getDensity());
@@ -71,6 +72,7 @@ public class MainUi {
         statusBarHeight = (int) font.getLineHeight();
         buttonGap = (int) (5 * Gdx.graphics.getDensity());
         buttonSize = (Gdx.graphics.getHeight() - 5 * buttonGap - statusBarHeight) / 4;
+        airportButtonSize = (int) ((2f / 3f) * buttonSize);
         warpButtonSize = buttonSize / 2;
 
         status = "Welcome to Icarus Air Traffic Control";
@@ -365,13 +367,16 @@ public class MainUi {
         stage.addActor(headingWheel);
 
         // Create airport buttons
-        airportButtons = new ArrayList<ImageButton>();
-        int airportButtonSize = buttonSize / 2;
+        airportButtons = new ArrayList<>();
         for(final OtherAirport otherAirport: PIScreen.getInstance().otherAirports) {
-            float scaleFactor = (Gdx.graphics.getHeight() / 2 - buttonSize - statusBarHeight)
-                    / (float) PIScreen.getInstance().airportMaxDistance;
+            // Determine scale factor to position airport on screen
+            float scaleFactor = ((Gdx.graphics.getHeight()
+                        - airportButtonSize
+                        - statusBarHeight) / 2 - font.getLineHeight())
+                    / (float) PIScreen.getInstance().farthestAirportDistance;
             Vector2 airportPos = otherAirport.position.cpy().scl(scaleFactor)
                     .add(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
+            // Initialize airport button
             Drawable airportDrawable = new TextureRegionDrawable(
                     new TextureRegion((Texture) assets.get("buttons/airport.png"))
             );
@@ -381,6 +386,7 @@ public class MainUi {
                     airportPos.x - airportButtonSize / 2,
                     airportPos.y - airportButtonSize / 2
             );
+            airportButton.getImage().setColor(Colors.colors[3]); // Same as waypoint color
             airportButton.addListener(new InputListener() {
                 @Override
                 public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -567,11 +573,11 @@ public class MainUi {
                     .get(airportButtons.indexOf(airportButton));
             airportButton.setVisible(isVisible);
             if(isVisible) {
-                font.setColor(Colors.colors[4]);
+                font.setColor(Colors.colors[3]); // Same as waypoint text color
                 font.draw(batch,
                         otherAirport.name,
-                        airportButton.getX(),
-                        airportButton.getY()
+                        airportButton.getX() + (airportButtonSize - 3 * font.getSpaceWidth()) / 2,
+                        airportButton.getY() - textGap
                 );
             }
         }

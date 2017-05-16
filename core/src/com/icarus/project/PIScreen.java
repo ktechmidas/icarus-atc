@@ -93,7 +93,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     private float timeElapsed;
     private float airplaneInterval;
 
-    private ArrayList<CollisionAnimation> collisions = new ArrayList();
+    private ArrayList<CollisionAnimation> collisions = new ArrayList<>();
     private Random r = new Random();
 
     private float collisionRadius = toPixels(400); // pixels
@@ -107,6 +107,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     public int airportMinDistance = 50000;
     public int airportMaxDistance = 100000;
+    public int farthestAirportDistance;
 
     public ArrayList<OtherAirport> otherAirports;
 
@@ -183,11 +184,12 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         fontSize = 20.0f * Gdx.graphics.getDensity();
 
         // Test airports, will change later
-        otherAirports = new ArrayList<OtherAirport>();
+        otherAirports = new ArrayList<>();
         int airports = 5;
         int minHeading = 0;
         int minDifference = 20;
         int sector = 359 / airports;
+        farthestAirportDistance = airportMinDistance;
         for(int i = 0; i < airports; i++) {
             // Generate random three-letter airport name
             String name = "";
@@ -204,6 +206,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                     new Vector2(1, 0).setAngle(relativeHeading).setLength(distance))
             );
             minHeading += sector;
+            farthestAirportDistance = Math.max(farthestAirportDistance, distance);
         }
 
         //initialize the AssetManager
@@ -377,10 +380,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             collisions.remove(collision);
         }
 
-        if(uiState == ProjectIcarus.UiState.SELECT_AIRPORT) {
-
-        }
-        else {
+        if(uiState != ProjectIcarus.UiState.SELECT_AIRPORT) {
             //draw waypoint triangles
             shapes.begin(ShapeRenderer.ShapeType.Filled);
             for(Waypoint waypoint: airport.waypoints) {
