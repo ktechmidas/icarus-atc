@@ -26,7 +26,7 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
     OrthographicCamera camera;
     private BitmapFont font = new BitmapFont();
     private SpriteBatch batch;
-    private ImageButton playerBtn1;
+    private ImageButton playButton;
     private Skin playBtnSkin;
     private ImageButton.ImageButtonStyle playBtnStyle;
     int[] positions = {1240, 150, 235, 500, 600, 500, 975, 500, 440, 200, 785, 200, 1280, 485};
@@ -40,16 +40,17 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
         camera.setToOrtho(false, 800, 480);
         batch = new SpriteBatch();
         playBtnSkin = new Skin();   //create button skin
-        playBtnSkin.add("playerBtn1", new Texture("buttons/play_button.png"));//add the image to the skin
+        playBtnSkin.add("playButton", new Texture("buttons/play_button_pause.png"));//add the image to the skin
         playBtnStyle = new ImageButton.ImageButtonStyle();  //create button style
-        playBtnStyle.imageUp = playBtnSkin.getDrawable("playerBtn1");  //sets the button appearance when it is not pressed
-        playBtnStyle.imageDown = playBtnSkin.getDrawable("playerBtn1");    //sets the button appearance when it is pressed
-        playerBtn1 = new ImageButton(playBtnStyle);    //initializes the ImageButton with the created style as a parameter
-        playerBtn1.setSize(buttonSize, buttonSize); //set button size
-        int width = (int) ((Gdx.graphics.getWidth() - playerBtn1.getWidth())/2); //set button orientation horizontally
-        int height = (int) ((Gdx.graphics.getHeight() - playerBtn1.getHeight())/4); //set button orientation vertically
-        playerBtn1.setBounds(width, height, playerBtn1.getWidth(), playerBtn1.getHeight());  //tells the button where to go
-        playerBtn1.addListener(new InputListener() {//adds listener to check for touch
+        playBtnStyle.imageUp = playBtnSkin.getDrawable("playButton");  //sets the button appearance when it is not pressed
+        playBtnStyle.imageDown = playBtnSkin.getDrawable("playButton");    //sets the button appearance when it is pressed
+        playButton = new ImageButton(playBtnStyle);    //initializes the ImageButton with the created style as a parameter
+        playButton.setSize(buttonSize, buttonSize); //set button size
+        int width = (int) ((Gdx.graphics.getWidth() - playButton.getWidth())/2); //set button orientation horizontally
+        int height = (int) ((Gdx.graphics.getHeight() - playButton.getHeight())/4); //set button orientation vertically
+        playButton.setBounds(width, height, playButton.getWidth(), playButton.getHeight());  //tells the button where to go
+        playButton.addListener(new InputListener() {//adds listener to check for touch
+
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 return true;
@@ -57,11 +58,11 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 game.setScreen(new PIScreen(game));//switch screen to game state
-                playerBtn1.setDisabled(true);
+                playButton.setDisabled(true);
 
             }
         });
-        stage.addActor(playerBtn1);//adds the button to the stage
+        stage.addActor(playButton);//adds the button to the stage
         Gdx.input.setInputProcessor(new InputMultiplexer(stage, new GestureDetector(this)));
 
         logo = new Texture(Gdx.files.internal("buttons/Icarus_Logo.png"));
@@ -76,7 +77,8 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
         Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[2].b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
-        playerBtn1.draw(batch, 1);
+        playButton.setColor(Colors.colors[4]);
+        playButton.draw(batch, 1);
         //batch.draw(logo,((Gdx.graphics.getWidth() - logo.getWidth())/2) ,(Gdx.graphics.getHeight() - logo.getHeight())/2);
         batch.draw(logo,((Gdx.graphics.getWidth() - logo.getWidth())/2) ,(Gdx.graphics.getHeight() - logo.getHeight())/2);
         batch.end();
