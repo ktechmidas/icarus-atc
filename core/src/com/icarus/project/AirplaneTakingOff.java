@@ -14,7 +14,7 @@ public class AirplaneTakingOff extends AirplaneAltitude {
     public float maxVelocity = 250; //meters per second
     public float accelRate = 0.1f;
 
-    public AirplaneFlying transitionToFlying(int altitude) {
+    public AirplaneFlying transitionToFlying(float altitude) {
         return new AirplaneFlying(position, velocity, altitude);
     }
 

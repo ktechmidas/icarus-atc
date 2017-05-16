@@ -63,8 +63,6 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     private float maxZoomIn; // Maximum possible zoomed in distance
     private float maxZoomOut; // Maximum possible zoomed out distance
 
-    private float fontSize;
-
     // Pan boundaries
     private float toBoundaryRight;
     private float toBoundaryLeft;
@@ -82,10 +80,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     public ProjectIcarus.UiState uiState;
 
-    public FreetypeFontLoader.FreeTypeFontLoaderParameter labelFontParams;
-    public FreetypeFontLoader.FreeTypeFontLoaderParameter titleFontParams;
-    public FreetypeFontLoader.FreeTypeFontLoaderParameter airplaneFontParams;
-    
+   
     public float warpSpeed;
 
     private float minAirplaneInterval;
@@ -171,13 +166,13 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         }
     }
 
-    public PIScreen(ProjectIcarus game) {
-        this.game = game;
-        self = this;
+    public static void setupAssetManager(AssetManager manager) {
+        float fontSize = 20.0f * Gdx.graphics.getDensity();
 
-        fontSize = 20.0f * Gdx.graphics.getDensity();
-        //initialize the AssetManager
-        AssetManager manager = new AssetManager();
+        FreetypeFontLoader.FreeTypeFontLoaderParameter labelFontParams;
+        FreetypeFontLoader.FreeTypeFontLoaderParameter titleFontParams;
+        FreetypeFontLoader.FreeTypeFontLoaderParameter airplaneFontParams;
+ 
         FileHandleResolver resolver = new InternalFileHandleResolver();
         manager.setLoader(Airport.class, new AirportLoader(resolver));
         manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
@@ -224,8 +219,18 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         manager.load("buttons/pause_button.png", Texture.class);
         manager.load("buttons/play_button_pause.png", Texture.class);
 
+    }
+
+    public PIScreen(ProjectIcarus game) {
+        this.game = game;
+        self = this;
+
+        //initialize the AssetManager
+
+        AssetManager manager = game.assets;
         manager.finishLoading();
-        airport = manager.get(airportFile);
+
+        airport = manager.get("airports/airport.json");
         labelFont = manager.get("fonts/3270Medium.ttf");
         titleFont = manager.get("fonts/3270Medium_title.ttf");
         airplaneFont = manager.get("fonts/3270Medium_airplane.ttf");
