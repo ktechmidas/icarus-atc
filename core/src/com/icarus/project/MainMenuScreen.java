@@ -40,7 +40,7 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
         camera.setToOrtho(false, 800, 480);
         batch = new SpriteBatch();
         playBtnSkin = new Skin();   //create button skin
-        playBtnSkin.add("playButton", new Texture("buttons/play_button_pause.png"));//add the image to the skin
+        playBtnSkin.add("playButton", new Texture("buttons/play_button.png"));//add the image to the skin
         playBtnStyle = new ImageButton.ImageButtonStyle();  //create button style
         playBtnStyle.imageUp = playBtnSkin.getDrawable("playButton");  //sets the button appearance when it is not pressed
         playBtnStyle.imageDown = playBtnSkin.getDrawable("playButton");    //sets the button appearance when it is pressed
@@ -50,6 +50,7 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
         int height = (int) ((Gdx.graphics.getHeight() - playButton.getHeight())/4); //set button orientation vertically
         playButton.setBounds(width, height, playButton.getWidth(), playButton.getHeight());  //tells the button where to go
         playButton.addListener(new InputListener() {//adds listener to check for touch
+
 
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -79,7 +80,7 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
         Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[2].b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
-
+        playButton.getImage().setColor(Colors.colors[4]);
         playButton.draw(batch, 1);
         float width = logo.getWidth() * Gdx.graphics.getDensity() / 3.0f;
         float height = logo.getHeight() * Gdx.graphics.getDensity() / 3.0f;
