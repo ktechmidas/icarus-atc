@@ -1,5 +1,6 @@
 package com.icarus.project;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -8,14 +9,16 @@ public class ProjectIcarus extends Game {
     public SpriteBatch batch;
     public BitmapFont font;
     public int points;
+    public AssetManager assets;
     private Game game;
-
 
     public ProjectIcarus(){
         game = this;
     }
 
     public void create() {
+        assets = new AssetManager();
+        PIScreen.setupAssetManager(assets);
         batch = new SpriteBatch();
         font = new BitmapFont();
         this.setScreen(new MainMenuScreen(this));

@@ -73,6 +73,8 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
 
     @Override
     public void render(float delta) {
+        game.assets.update();
+
         Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[2].b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
@@ -87,7 +89,6 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
         stage.act();
         stage.draw();
     }
-
 
     @Override
     public void resize(int width, int height) {
