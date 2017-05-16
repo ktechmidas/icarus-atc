@@ -437,7 +437,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             case SELECT_WAYPOINT:
                 for(Waypoint waypoint: airport.waypoints) {
                     Vector3 pos = camera.project(new Vector3(waypoint.position, 0));
-                    Circle circle = new Circle(pos.x, pos.y, 2 * Waypoint.waypointSize);
+                    Circle circle = new Circle(pos.x, pos.y, 4 * Waypoint.waypointSize);
                     if(circle.contains(position.x, position.y)) {
                         selectedAirplane.setTargetWaypoint(waypoint);
                         ui.setStatus(selectedAirplane.name + ": targeting waypoint " + waypoint.name);
@@ -455,7 +455,10 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 for(Runway runway: airport.runways) {
                     for(int end = 0; end < 2; end++) {
                         Vector3 pos = camera.project(new Vector3(runway.points[end], 0));
-                        Circle circle = new Circle(pos.x, pos.y, 20 * Gdx.graphics.getDensity());
+                        Vector2 pos2 = new Vector2(
+                                pos.x + runway.nameOffsets[end].x * Gdx.graphics.getDensity(),
+                                pos.y - runway.nameOffsets[end].y * Gdx.graphics.getDensity());
+                        Circle circle = new Circle(pos2.x, pos2.y, 20 * Gdx.graphics.getDensity());
                         if(circle.contains(position.x, position.y)) {
                             // Landing constraints
                             float minDistance = 100; // Minimum distance from end of runway
