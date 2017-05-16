@@ -63,8 +63,6 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     private float maxZoomIn; // Maximum possible zoomed in distance
     private float maxZoomOut; // Maximum possible zoomed out distance
 
-    private float fontSize;
-
     // Pan boundaries
     private float toBoundaryRight;
     private float toBoundaryLeft;
@@ -82,10 +80,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     public ProjectIcarus.UiState uiState;
 
-    public FreetypeFontLoader.FreeTypeFontLoaderParameter labelFontParams;
-    public FreetypeFontLoader.FreeTypeFontLoaderParameter titleFontParams;
-    public FreetypeFontLoader.FreeTypeFontLoaderParameter airplaneFontParams;
-    
+
     public float warpSpeed;
 
     private float minAirplaneInterval;
@@ -177,40 +172,13 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         }
     }
 
-    public PIScreen(ProjectIcarus game) {
-        this.game = game;
-        self = this;
-        points = 0;
-        fontSize = 20.0f * Gdx.graphics.getDensity();
+    public static void setupAssetManager(AssetManager manager) {
+        float fontSize = 20.0f * Gdx.graphics.getDensity();
 
-        // Test airports, will change later
-        otherAirports = new ArrayList<>();
-        int airports = 5;
-        int minHeading = 0;
-        int minDifference = 20;
-        int sector = 359 / airports;
-        farthestAirportDistance = airportMinDistance;
-        for(int i = 0; i < airports; i++) {
-            // Generate random three-letter airport name
-            String name = "";
-            for (int n = 0; n < 3; n++) {
-                char c = (char) (r.nextInt(26) + 'A');
-                name += c;
-            }
-            // Generate semi-random position
-            int relativeHeading = r.nextInt(sector - minDifference) + minHeading;
-            int distance = r.nextInt(airportMaxDistance - airportMinDistance) + airportMinDistance;
-            Gdx.app.log(TAG, "Airport distance = " + distance);
-            otherAirports.add(new OtherAirport(
-                    name,
-                    new Vector2(1, 0).setAngle(relativeHeading).setLength(distance))
-            );
-            minHeading += sector;
-            farthestAirportDistance = Math.max(farthestAirportDistance, distance);
-        }
+        FreetypeFontLoader.FreeTypeFontLoaderParameter labelFontParams;
+        FreetypeFontLoader.FreeTypeFontLoaderParameter titleFontParams;
+        FreetypeFontLoader.FreeTypeFontLoaderParameter airplaneFontParams;
 
-        //initialize the AssetManager
-        AssetManager manager = new AssetManager();
         FileHandleResolver resolver = new InternalFileHandleResolver();
         manager.setLoader(Airport.class, new AirportLoader(resolver));
         manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
@@ -256,8 +224,19 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         manager.load("buttons/play_button_pause.png", Texture.class);
         manager.load("buttons/airport.png", Texture.class);
 
+    }
+
+    public PIScreen(ProjectIcarus game) {
+        this.game = game;
+        self = this;
+        points = 0;
+
+        //initialize the AssetManager
+
+        AssetManager manager = game.assets;
         manager.finishLoading();
-        airport = manager.get(airportFile);
+
+        airport = manager.get("airports/airport.json");
         labelFont = manager.get("fonts/3270Medium.ttf");
         titleFont = manager.get("fonts/3270Medium_title.ttf");
         airplaneFont = manager.get("fonts/3270Medium_airplane.ttf");
@@ -265,6 +244,32 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
         shapes = new ShapeRenderer();
         batch = new SpriteBatch();
+
+        // Test airports, will change later
+        otherAirports = new ArrayList<>();
+        int airports = 5;
+        int minHeading = 0;
+        int minDifference = 20;
+        int sector = 359 / airports;
+        farthestAirportDistance = airportMinDistance;
+        for(int i = 0; i < airports; i++) {
+            // Generate random three-letter airport name
+            String name = "";
+            for (int n = 0; n < 3; n++) {
+                char c = (char) (r.nextInt(26) + 'A');
+                name += c;
+            }
+            // Generate semi-random position
+            int relativeHeading = r.nextInt(sector - minDifference) + minHeading;
+            int distance = r.nextInt(airportMaxDistance - airportMinDistance) + airportMinDistance;
+            Gdx.app.log(TAG, "Airport distance = " + distance);
+            otherAirports.add(new OtherAirport(
+                    name,
+                    new Vector2(1, 0).setAngle(relativeHeading).setLength(distance))
+            );
+            minHeading += sector;
+            farthestAirportDistance = Math.max(farthestAirportDistance, distance);
+        }
 
         airplanes = new ArrayList<Airplane>();
         ui = new MainUi(manager, labelFont);
