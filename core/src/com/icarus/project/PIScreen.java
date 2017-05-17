@@ -11,7 +11,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
@@ -23,7 +22,6 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -32,79 +30,62 @@ import static com.icarus.project.Airplane.FlightType.ARRIVAL;
 import static com.icarus.project.Airplane.FlightType.FLYOVER;
 
 public class PIScreen extends Game implements Screen, GestureDetector.GestureListener {
-    private Game game;
-    private BitmapFont font;
-    private GlyphLayout layout;
+    // This class
+    public static PIScreen self;
+    public static final String TAG = "PIState";
 
-    private Vector2 oldInitialFirstPointer=null, oldInitialSecondPointer=null;
-    private float oldScale;
-    //Used for drawing waypoints
-    public ShapeRenderer shapes;
-    //The currently loaded Airport
+    // The currently loaded Airport
     private Airport airport;
-    //The airplanes in the current game
-    private ArrayList<Airplane> airplanes;
-    //The font used for labels
-    private BitmapFont labelFont;
-    private BitmapFont titleFont;
-    private BitmapFont airplaneFont;
-    //Used for drawing airplanes
-    private SpriteBatch batch;
-    private Utils utils;
-    public int points;
 
-    private int buttonSize = (int) (80 * Gdx.graphics.getDensity());
-    private int buttonGap = (int) (5 * Gdx.graphics.getDensity());
-    public int statusBarHeight = (int) (25 * Gdx.graphics.getDensity());
+    // Other airports
+    public int farthestAirportDistance;
+    public ArrayList<OtherAirport> otherAirports;
 
+    // UI
     public MainUi ui;
+    public ProjectIcarus.UiState uiState;
+    public ShapeRenderer shapes;
+    private SpriteBatch batch;
+    private BitmapFont labelFont, titleFont, airplaneFont;
 
+    // Camera
     private OrthographicCamera camera;
     private float maxZoomIn; // Maximum possible zoomed in distance
     private float maxZoomOut; // Maximum possible zoomed out distance
-
+    public boolean followingPlane;
+    private Vector2 oldInitialFirstPointer=null, oldInitialSecondPointer=null;
+    private float oldScale;
+    
     // Pan boundaries
     private float toBoundaryRight;
     private float toBoundaryLeft;
     private float toBoundaryTop;
     private float toBoundaryBottom;
 
-    public boolean followingPlane;
-
+    // Airplanes
+    private ArrayList<Airplane> airplanes;
     public Airplane selectedAirplane;
     public float altitudeTarget;
+    private float cruiseAlt = 10000; // meters
 
-    public static final String TAG = "PIState";
-
-    public static PIScreen self;
-
-    public ProjectIcarus.UiState uiState;
-
-
-    public float warpSpeed;
-
+    // Airplane spawning
     private float minAirplaneInterval;
     private float maxAirplaneInterval;
     private float timeElapsed;
     private float airplaneInterval;
 
+    // Collisions
     private ArrayList<CollisionAnimation> collisions = new ArrayList<>();
-    private Random r = new Random();
-
     private float collisionRadius = toPixels(400); // pixels
     private float collisionWarningHSep = toPixels(5500); // pixels
     private float collisionWarningVSep = toPixels(305); // pixels
     private float collisionWarningVSepCruise = toPixels(610); //pixels
 
-    private float cruiseAlt = 8800; // meters
+    public float warpSpeed;
 
-    private int cameraHorizontalOffset;
+    public int points;
 
-    public int airportMinDistance = 50000;
-    public int airportMaxDistance = 100000;
-    public int farthestAirportDistance;
-
-    public ArrayList<OtherAirport> otherAirports;
+    private Random r = new Random();
 
     class CollisionAnimation {
         Airplane a;
@@ -133,8 +114,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             followingPlane = false;
             selectedAirplane = null;
             if(stage == 0) {
-                float alpha = 0.1f * dt;
-                warpSpeed = 0.0f;//(warpSpeed * (1.0f - alpha) + 0.1f * alpha);
+                float alpha;
+                warpSpeed = 0.0f;
 
                 alpha = 0.0075f * dt;
                 zoomCamera(origin, camera.zoom * (1.0f - alpha) + 0.5f * alpha);
@@ -227,7 +208,6 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     }
 
     public PIScreen(ProjectIcarus game) {
-        this.game = game;
         self = this;
         points = 0;
 
@@ -245,7 +225,9 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         shapes = new ShapeRenderer();
         batch = new SpriteBatch();
 
-        // Test airports, will change later
+        // Create 5 other airports
+        int airportMinDistance = 50000;
+        int airportMaxDistance = 100000;
         otherAirports = new ArrayList<>();
         int airports = 5;
         int minHeading = 0;
@@ -271,21 +253,20 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             farthestAirportDistance = Math.max(farthestAirportDistance, distance);
         }
 
-        airplanes = new ArrayList<Airplane>();
+        airplanes = new ArrayList<>();
         ui = new MainUi(manager, labelFont);
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        utils = new Utils();
         // The maximum zoom level is the smallest dimension compared to the viewer
-        maxZoomOut = Math.min(airport.width / (Gdx.graphics.getWidth() - cameraHorizontalOffset),
+        maxZoomOut = Math.min(airport.width / Gdx.graphics.getWidth(),
                 airport.height / (Gdx.graphics.getHeight() - ui.statusBarHeight)
         );
         maxZoomIn = maxZoomOut / 100;
 
         // Start the app in maximum zoomed out state
         camera.zoom = maxZoomOut;
-        camera.position.set((airport.width - cameraHorizontalOffset)/2,
-                (airport.height - ui.statusBarHeight)/2, 0
+        camera.position.set(airport.width / 2,
+                (airport.height - ui.statusBarHeight) / 2, 0
         );
         camera.update();
 
@@ -302,8 +283,6 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         Gdx.input.setInputProcessor(new InputMultiplexer(ui.stage, new GestureDetector(this)));
 
         warpSpeed = 1.0f;
-
-        cameraHorizontalOffset = 0;
     }
 
     @Override
@@ -315,7 +294,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         float dt = Gdx.graphics.getDeltaTime() * warpSpeed;
 
         // Remove landed airplanes from game
-        ArrayList<Airplane> toRemove = new ArrayList<Airplane>();
+        ArrayList<Airplane> toRemove = new ArrayList<>();
         BoundingBox airportBoundary = new BoundingBox(new Vector3(0, 0, 0),
                 new Vector3(airport.width, airport.height, 0)
         );
@@ -357,12 +336,12 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                                     && alt1 > cruiseAlt))) {
                             ui.setStatus(airplane.name + " and " + other.name + " are too close!");
                             Gdx.app.log(TAG, airplane.name + " and " + other.name + " are too close!");
-                            points = points-25;
+                            points -= 25;
                         }
                         if(pos1.dst(pos2) < collisionRadius
                                 && Math.abs(alt1 - alt2) < collisionRadius) { // Collision
                             collisions.add(new CollisionAnimation(airplane, other));
-                            points = points-50;
+                            points -= 50;
                         }
                     }
                 }
@@ -374,7 +353,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             }
         }
 
-        ArrayList<CollisionAnimation> collisionsToRemove = new ArrayList<CollisionAnimation>();
+        ArrayList<CollisionAnimation> collisionsToRemove = new ArrayList<>();
         for(CollisionAnimation collision: collisions) {
             collision.step();
             if(collision.stage == 3) {
@@ -386,36 +365,30 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         }
 
         if(uiState != ProjectIcarus.UiState.SELECT_AIRPORT) {
-            //draw waypoint triangles
+            // Draw waypoint triangles
             shapes.begin(ShapeRenderer.ShapeType.Filled);
             for(Waypoint waypoint: airport.waypoints) {
                 waypoint.draw(shapes, camera);
             }
-            shapes.end();
 
-            //draw runways
-            shapes.begin(ShapeRenderer.ShapeType.Filled);
+            // Draw runways
             for(Runway runway: airport.runways) {
                 runway.draw(shapes, camera);
             }
             shapes.end();
 
-            //draw waypoint labels
+            // Draw waypoint labels
             batch.begin();
             for(Waypoint waypoint: airport.waypoints) {
                 waypoint.drawLabel(labelFont, batch, camera);
             }
-            batch.end();
 
-            //draw runway labels
-            batch.begin();
+            // Draw runway labels
             for(Runway runway: airport.runways) {
                 runway.drawLabel(labelFont, batch, camera);
             }
-            batch.end();
 
-            //draw airplanes
-            batch.begin();
+            // Draw airplanes
             for(Airplane airplane: airplanes) {
                 airplane.step(dt); //Move airplanes
                 airplane.draw(airplaneFont, batch, camera);
@@ -450,13 +423,6 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         else {
             timeElapsed += dt;
         }
-
-//        if(selectedAirplane != null) {
-//            cameraHorizontalOffset = ui.buttonBarWidth;
-//        }
-//        else {
-//            cameraHorizontalOffset = 0;
-//        }
     }
 
     @Override
@@ -464,6 +430,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         shapes.dispose();
         batch.dispose();
         labelFont.dispose();
+        airplaneFont.dispose();
+        titleFont.dispose();
     }
 
     @Override
@@ -643,7 +611,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         toBoundaryRight = airport.width
                 - camera.position.x - Gdx.graphics.getWidth()/2 * camera.zoom;
         toBoundaryLeft = -camera.position.x
-                + (Gdx.graphics.getWidth()/2 - cameraHorizontalOffset) * camera.zoom;
+                + (Gdx.graphics.getWidth()/2) * camera.zoom;
         toBoundaryTop = airport.height
                 - camera.position.y - Gdx.graphics.getHeight()/2 * camera.zoom;
         toBoundaryBottom = -camera.position.y
@@ -653,11 +621,11 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     private void setCameraPosition(Vector3 position) {
         camera.position.set(position);
 
-        Vector2 camMin = new Vector2(camera.viewportWidth - 2 * cameraHorizontalOffset,
+        Vector2 camMin = new Vector2(camera.viewportWidth,
                 camera.viewportHeight - 2 * ui.statusBarHeight
         );
         camMin.scl(camera.zoom / 2);
-        Vector2 camMax = new Vector2(airport.width - camera.zoom * cameraHorizontalOffset,
+        Vector2 camMax = new Vector2(airport.width,
                 airport.height - camera.zoom * ui.statusBarHeight
         );
         camMax.sub(camMin);
@@ -693,7 +661,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         int randFlightType = r.nextInt(10);
         if(randFlightType < 2) {
             flightType = Airplane.FlightType.FLYOVER;
-            altitude = 10000; //meters
+            altitude = cruiseAlt; //meters
             speed = toPixels(250); //subject to change
         }
         else if(randFlightType < 6) {
@@ -770,10 +738,6 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     public static float toPixels(float meters) {
         return meters / 50;
-    }
-
-    public void removeAirplane(Airplane airplane) {
-        airplanes.remove(airplane);
     }
 
     public Airplane getSelectedAirplane(){

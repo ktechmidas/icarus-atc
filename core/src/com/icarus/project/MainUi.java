@@ -45,11 +45,10 @@ public class MainUi {
 
     private ArrayList<ImageButton> airportButtons;
     float warpPause = 0;
-    public int points;
+//    public int points;
 
     public static final String TAG = "MainUi";
 
-//    public int statusBarHeight = (int) (25 * Gdx.graphics.getDensity());
     public int statusBarHeight;
     private int buttonGap;
     private int buttonSize;
@@ -62,7 +61,7 @@ public class MainUi {
 
     public MainUi(AssetManager assets, BitmapFont font) {
         this.font = font;
-        points = points+0;
+//        points = points+0;
 
         shapes = new ShapeRenderer();
         batch = new SpriteBatch();
@@ -413,7 +412,6 @@ public class MainUi {
     public void draw() {
         selectedAirplane = PIScreen.getInstance().getSelectedAirplane();
 
-//        stage.draw();
         shapes.begin(ShapeRenderer.ShapeType.Filled);
         // Draw rectangle for the status bar
         shapes.setColor(0, 0, 0, 1);
@@ -550,7 +548,7 @@ public class MainUi {
         this.status = status;
     }
 
-    public void showAirplaneButtons(Airplane.FlightType flightType){
+    private void showAirplaneButtons(Airplane.FlightType flightType){
         hideAirplaneButtons();
         if(selectedAirplane.stateType == FLYING) {
             if(selectedAirplane.getTargetType() == AirplaneFlying.TargetType.NONE) {
@@ -574,7 +572,7 @@ public class MainUi {
         }
     }
 
-    public void hideAirplaneButtons() {
+    private void hideAirplaneButtons() {
         headingButton.setVisible(false);
         waypointButton.setVisible(false);
         altitudeButton.setVisible(false);
@@ -584,7 +582,7 @@ public class MainUi {
         cancelButton.setVisible(false);
     }
 
-    public void toggleOtherAirports(boolean isVisible) {
+    private void toggleOtherAirports(boolean isVisible) {
         batch.begin();
         for(ImageButton airportButton: airportButtons) {
             OtherAirport otherAirport = PIScreen.getInstance().otherAirports
