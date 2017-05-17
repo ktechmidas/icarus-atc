@@ -552,8 +552,6 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 ui.setStatus("Set target altitude to: " + altitudeTarget + "m");
                 ((AirplaneFlying) selectedAirplane.state).targetAltitude = altitudeTarget;
                 break;
-            case SELECT_AIRPORT:
-                break;
             default:
                 break;
         }

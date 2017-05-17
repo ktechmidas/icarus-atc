@@ -325,10 +325,12 @@ public class MainUi {
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                if(selectedAirplane.getTargetType() == AirplaneFlying.TargetType.RUNWAY) {
+                    setStatus(selectedAirplane.name + ": Aborted landing");
+                    selectedAirplane.setTargetAltitude(2000);
+                }
                 selectedAirplane.setNoTarget();
-                // TODO add status message
-//                selectedAirplane.setTargetAltitude(5000);
-//                setStatus("Cancelled landing");
+                PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
             }
         });
         stage.addActor(cancelButton);
@@ -455,79 +457,89 @@ public class MainUi {
         toggleHeadingSelector(false);
         hideAirplaneButtons();
         //show airplane-specific buttons if an airplane is selected
-        if(PIScreen.getInstance().uiState == ProjectIcarus.UiState.SELECT_HEADING) {
-            toggleHeadingSelector(true);
-        }
-        else if(PIScreen.getInstance().uiState == ProjectIcarus.UiState.SELECT_WAYPOINT) {
-            hideAirplaneButtons();
-        }
-        else if(PIScreen.getInstance().uiState == ProjectIcarus.UiState.SELECT_AIRPORT) {
-            toggleOtherAirports(true);
-        }
-        else if(selectedAirplane != null) {
-            showAirplaneButtons(selectedAirplane.flightType);
+        if(selectedAirplane != null) {
+            switch(PIScreen.getInstance().uiState) {
+                case SELECT_AIRPLANE:
+                    showAirplaneButtons(selectedAirplane.flightType);
 
-            //draw a rectangle for airplane status
-            shapes.begin(ShapeRenderer.ShapeType.Filled);
-            shapes.setColor(Colors.colors[4]);
-            int statusWidth = (int)(200.0 * Gdx.graphics.getDensity());
-            shapes.rect(
-                    Gdx.graphics.getWidth() - statusWidth,
-                    Gdx.graphics.getHeight() - 5 * font.getLineHeight() / 2,
-                    statusWidth,
-                    5 * font.getLineHeight() / 2
-            );
-            shapes.end();
+                    //draw a rectangle for airplane status
+                    shapes.begin(ShapeRenderer.ShapeType.Filled);
+                    shapes.setColor(Colors.colors[4]);
+                    int statusWidth = (int)(200.0 * Gdx.graphics.getDensity());
+                    shapes.rect(
+                            Gdx.graphics.getWidth() - statusWidth,
+                            Gdx.graphics.getHeight() - 5 * font.getLineHeight() / 2,
+                            statusWidth,
+                            5 * font.getLineHeight() / 2
+                    );
+                    shapes.end();
 
-            batch.begin();
-            font.setColor(Colors.colors[0]);
-            font.draw(batch,
-                    selectedAirplane.name,
-                    Gdx.graphics.getWidth() - statusWidth + textGap,
-                    Gdx.graphics.getHeight() - font.getLineHeight() / 2
-            );
+                    batch.begin();
+                    font.setColor(Colors.colors[0]);
+                    font.draw(batch,
+                            selectedAirplane.name,
+                            Gdx.graphics.getWidth() - statusWidth + textGap,
+                            Gdx.graphics.getHeight() - font.getLineHeight() / 2
+                    );
 
-            String type = null;
-            if(selectedAirplane.flightType ==
-                    Airplane.FlightType.ARRIVAL)
-            {
-                type = "Arrival";
+                    String type = null;
+                    if(selectedAirplane.flightType ==
+                            Airplane.FlightType.ARRIVAL)
+                    {
+                        type = "Arrival";
+                    }
+                    else if(selectedAirplane.flightType ==
+                            Airplane.FlightType.FLYOVER)
+                    {
+                        type = "Flyover";
+                    }
+                    else if(selectedAirplane.flightType ==
+                            Airplane.FlightType.DEPARTURE)
+                    {
+                        type = "Departure";
+                    }
+                    font.draw(batch,
+                            type,
+                            Gdx.graphics.getWidth() - statusWidth + textGap,
+                            Gdx.graphics.getHeight() - 3 * font.getLineHeight() / 2
+                    );
+
+                    if(selectedAirplane.stateType == FLYING
+                            || selectedAirplane.stateType == LANDING)
+                    {
+                        String alt = (int) selectedAirplane.state.getAltitude() + "m";
+                        font.draw(batch,
+                                alt,
+                                Gdx.graphics.getWidth() - (3f / 8f) * statusWidth,
+                                Gdx.graphics.getHeight() - font.getLineHeight() / 2
+                        );
+                    }
+
+                    font.draw(batch,
+                            (int) PIScreen.toMeters(selectedAirplane.getVelocity().len()) + "m/s",
+                            Gdx.graphics.getWidth() - (3f / 8f) * statusWidth,
+                            Gdx.graphics.getHeight() - 3 * font.getLineHeight() / 2
+                    );
+
+                    batch.end();
+                    break;
+                case SELECT_AIRPORT:
+                    toggleOtherAirports(true);
+                    cancelButton.setVisible(true);
+                    break;
+                case SELECT_HEADING:
+                    toggleHeadingSelector(true);
+                    cancelButton.setVisible(true);
+                    break;
+                case SELECT_RUNWAY:
+                    cancelButton.setVisible(true);
+                    break;
+                case SELECT_WAYPOINT:
+                    cancelButton.setVisible(true);
+                    break;
+                default:
+                    break;
             }
-            else if(selectedAirplane.flightType ==
-                    Airplane.FlightType.FLYOVER)
-            {
-                type = "Flyover";
-            }
-            else if(selectedAirplane.flightType ==
-                    Airplane.FlightType.DEPARTURE)
-            {
-                type = "Departure";
-            }
-            font.draw(batch,
-                    type,
-                    Gdx.graphics.getWidth() - statusWidth + textGap,
-                    Gdx.graphics.getHeight() - 3 * font.getLineHeight() / 2
-            );
-
-            if(selectedAirplane.stateType == FLYING || selectedAirplane.stateType == LANDING) {
-                String alt = (int) selectedAirplane.state.getAltitude() + "m";
-                font.draw(batch,
-                        alt,
-                        Gdx.graphics.getWidth() - (3f / 8f) * statusWidth,
-                        Gdx.graphics.getHeight() - font.getLineHeight() / 2
-                );
-            }
-
-            font.draw(batch,
-                    (int) PIScreen.toMeters(selectedAirplane.getVelocity().len()) + "m/s",
-                    Gdx.graphics.getWidth() - (3f / 8f) * statusWidth,
-                    Gdx.graphics.getHeight() - 3 * font.getLineHeight() / 2
-            );
-
-            batch.end();
-        }
-        else {
-            hideAirplaneButtons();
         }
     }
 
