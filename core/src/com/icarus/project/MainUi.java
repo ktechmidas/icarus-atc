@@ -263,9 +263,7 @@ public class MainUi {
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-//                OtherAirport targetAirport = PIScreen.getInstance().otherAirports.get(0);
-//                selectedAirplane.setTargetAirport(targetAirport);
-//                setStatus(selectedAirplane.name + " handed off to " + targetAirport.name);
+                selectedAirplane.setTargetAltitude(10000);
                 PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPORT;
             }
         });
@@ -329,7 +327,9 @@ public class MainUi {
                     setStatus(selectedAirplane.name + ": Aborted landing");
                     selectedAirplane.setTargetAltitude(2000);
                 }
-                selectedAirplane.setNoTarget();
+                if(PIScreen.getInstance().uiState != ProjectIcarus.UiState.CHANGE_ALTITUDE) {
+                    selectedAirplane.setNoTarget();
+                }
                 PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
             }
         });
@@ -459,6 +459,9 @@ public class MainUi {
         //show airplane-specific buttons if an airplane is selected
         if(selectedAirplane != null) {
             switch(PIScreen.getInstance().uiState) {
+                case CHANGE_ALTITUDE:
+                    cancelButton.setVisible(true);
+                    break;
                 case SELECT_AIRPLANE:
                     showAirplaneButtons(selectedAirplane.flightType);
 
@@ -550,11 +553,7 @@ public class MainUi {
     public void showAirplaneButtons(Airplane.FlightType flightType){
         hideAirplaneButtons();
         if(selectedAirplane.stateType == FLYING) {
-            if(selectedAirplane.getTargetType() == AirplaneFlying.TargetType.RUNWAY
-                    || selectedAirplane.getTargetType() == AirplaneFlying.TargetType.AIRPORT) {
-                cancelButton.setVisible(true);
-            }
-            else {
+            if(selectedAirplane.getTargetType() == AirplaneFlying.TargetType.NONE) {
                 if (flightType == Airplane.FlightType.ARRIVAL) {
                     landingButton.setVisible(true);
                 } else if (flightType == Airplane.FlightType.DEPARTURE
@@ -564,6 +563,13 @@ public class MainUi {
                 headingButton.setVisible(true);
                 waypointButton.setVisible(true);
                 altitudeButton.setVisible(true);
+            }
+            else {
+                if(selectedAirplane.getTargetType() == AirplaneFlying.TargetType.HEADING
+                        || selectedAirplane.getTargetType() == AirplaneFlying.TargetType.WAYPOINT) {
+                    altitudeButton.setVisible(true);
+                }
+                cancelButton.setVisible(true);
             }
         }
     }
