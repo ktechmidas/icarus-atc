@@ -292,8 +292,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         selectedAirplane = null;
         uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
 
-        minAirplaneInterval = 30; // seconds
-        maxAirplaneInterval = 240; // seconds
+        minAirplaneInterval = 20; // seconds
+        maxAirplaneInterval = 120; // seconds
         timeElapsed = 0.0f;
         airplaneInterval = minAirplaneInterval;
 
