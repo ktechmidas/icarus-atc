@@ -60,14 +60,12 @@ class AirplaneFlying extends AirplaneAltitude {
         switch(targetType) {
             case WAYPOINT:
                 if(turnToHeading(targetWaypoint.position.cpy().sub(this.position), turnRate, dt)) {
-                    PIScreen.getInstance().ui.setStatus(airplane.name + ": turn complete");
                     targetType = NONE;
                 }
                 break;
 
             case HEADING:
                 if(turnToHeading(targetHeading, turnRate, dt)) {
-                    PIScreen.getInstance().ui.setStatus(airplane.name + ": turn complete");
                     targetType = NONE;
                 }
                 break;
