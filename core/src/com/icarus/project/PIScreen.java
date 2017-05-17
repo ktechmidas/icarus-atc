@@ -261,7 +261,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                                     && alt1 > cruiseAlt))) {
                             ui.setStatus(airplane.name + " and " + other.name + " are too close!");
                             Gdx.app.log(TAG, airplane.name + " and " + other.name + " are too close!");
-                            points -= 5 * dt;
+                            points -= 1f * dt;
                         }
                         // If two airplanes have collided
                         if(pos1.dst(pos2) < collisionRadius
