@@ -1,17 +1,9 @@
 package com.icarus.project;
 
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 
 public class AirplaneTakingOff extends AirplaneAltitude {
     public Vector2 heading;
-
-    private Runway runway;
-
-    public float maxVelocity = 250; //meters per second
     public float accelRate = 0.1f;
 
     public AirplaneFlying transitionToFlying(float altitude) {
