@@ -53,10 +53,6 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     private Utils utils;
     public int points;
 
-    private int buttonSize = (int) (80 * Gdx.graphics.getDensity());
-    private int buttonGap = (int) (5 * Gdx.graphics.getDensity());
-    public int statusBarHeight = (int) (25 * Gdx.graphics.getDensity());
-
     public MainUi ui;
 
     private OrthographicCamera camera;
@@ -68,6 +64,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     private float toBoundaryLeft;
     private float toBoundaryTop;
     private float toBoundaryBottom;
+
+    private boolean zoomedOut;
 
     public boolean followingPlane;
 
@@ -230,6 +228,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         this.game = game;
         self = this;
         points = 0;
+
+        zoomedOut = false;
 
         //initialize the AssetManager
 
@@ -450,13 +450,6 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         else {
             timeElapsed += dt;
         }
-
-//        if(selectedAirplane != null) {
-//            cameraHorizontalOffset = ui.buttonBarWidth;
-//        }
-//        else {
-//            cameraHorizontalOffset = 0;
-//        }
     }
 
     @Override
@@ -464,6 +457,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         shapes.dispose();
         batch.dispose();
         labelFont.dispose();
+        airplaneFont.dispose();
+        titleFont.dispose();
     }
 
     @Override
@@ -559,6 +554,24 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         if(selectedAirplane == null){
             ui.setStatus("Deselected airplane");
         }
+        return true;
+    }
+
+    @Override
+    public boolean longPress(float x, float y) {
+        if(zoomedOut) {
+            ui.setStatus("Bye");
+            zoomedOut = false;
+        }
+        else {
+            ui.setStatus("Hi");
+            zoomedOut = true;
+            zoomCamera(new Vector3(airport.width / 2, airport.height / 2, 0),
+                    airport.height / (Gdx.graphics.getHeight() - ui.statusBarHeight)
+            );
+            camera.update();
+        }
+        Gdx.input.vibrate(25);
         return true;
     }
 
@@ -803,11 +816,6 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
-        return false;
-    }
-
-    @Override
-    public boolean longPress(float x, float y) {
         return false;
     }
 
