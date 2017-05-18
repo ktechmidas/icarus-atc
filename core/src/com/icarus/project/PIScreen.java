@@ -69,6 +69,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     public Airplane selectedAirplane;
     public float altitudeTarget;
     private float cruiseAlt = 10000; // meters
+    public float altitudeChangeRate = 12.7f; // meters per second
 
     // Airplane spawning
     private float minAirplaneInterval;
@@ -717,6 +718,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         float distance = Math.abs(selectedAirplane.state.getPosition().cpy()
                 .sub(runway.points[end]).len()
         );
+        float time = distance / selectedAirplane.state.getVelocity().len();
+        float descentRate = selectedAirplane.state.getAltitude() / time; // meters per second
         // Calculate difference between airplane heading and runway heading
         float angleDifference = selectedAirplane.state.getVelocity()
                 .angle(targetRunway);
@@ -725,7 +728,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         Vector2 relativePosition = runway.points[end].cpy()
                 .sub(selectedAirplane.state.getPosition());
         float positionDifference = relativePosition.angle(targetRunway);
-        if(distance > minDistance
+        if(descentRate < altitudeChangeRate
                 && Math.abs(angleDifference) < headingVariance
                 && Math.abs(positionDifference) < positionVariance) {
             // If the airplane is in the correct place

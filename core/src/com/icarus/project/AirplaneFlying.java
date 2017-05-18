@@ -18,7 +18,6 @@ class AirplaneFlying extends AirplaneAltitude {
     public OtherAirport targetAirport;
 
     public float turnRate = 3 * (float) Math.PI / 180.0f; //radians per second
-    public float altitudeChangeRate = 12.7f; //meters per second
 
     public TargetType targetType;
 
@@ -66,8 +65,10 @@ class AirplaneFlying extends AirplaneAltitude {
                 float distance = Math.abs(getPosition().cpy()
                         .sub(targetRunway.points[targetRunwayPoint]).len()
                 );
+                float time = distance / velocity.len();
+                float descentRate = altitude / time; // meters per second
+                targetAltitude = altitude - descentRate;
 
-//                targetAltitude =
                 float radius = velocity.len() / turnRate;
                 // Calculate heading of target runway
                 Vector2 target = targetRunway.points[1 - targetRunwayPoint].cpy()
@@ -149,10 +150,10 @@ class AirplaneFlying extends AirplaneAltitude {
 
         // Change altitude
         if(altitude > targetAltitude && Math.abs(altitude - targetAltitude) > 1) {
-            altitude -= altitudeChangeRate * dt;
+            altitude -= PIScreen.getInstance().altitudeChangeRate * dt;
         }
         else if(altitude < targetAltitude && Math.abs(altitude - targetAltitude) > 1) {
-            altitude += altitudeChangeRate * dt;
+            altitude += PIScreen.getInstance().altitudeChangeRate * dt;
         }
     }
 
