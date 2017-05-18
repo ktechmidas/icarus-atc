@@ -24,6 +24,8 @@ class Airplane {
 
     public StateType stateType;
 
+    public boolean colliding;
+
     public Airplane(
             String name, FlightType flightType, Vector2 position, Vector2 velocity, float altitude)
     {
@@ -37,6 +39,8 @@ class Airplane {
             this.stateType = StateType.QUEUEING;
             this.state = new AirplaneQueueing();
         }
+
+        colliding = false;
 
         sprite = new Sprite(texture);
         sprite.setScale(0.25f * Gdx.graphics.getDensity());

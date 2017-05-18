@@ -78,7 +78,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     // Collisions
     private ArrayList<CollisionAnimation> collisions = new ArrayList<>();
-    private float collisionRadius = toPixels(400); // pixels
+    private float collisionRadius = toPixels(600); // pixels
     private float collisionWarningHSep = toPixels(5500); // pixels
     private float collisionWarningVSep = toPixels(305); // pixels
     private float collisionWarningVSepCruise = toPixels(610); // pixels
@@ -105,6 +105,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             time = 0.0f;
             stage = 0;
             startWarp = warpSpeed;
+            camera.zoom = maxZoomOut;
             // Temporary origin
             Vector2 o = a.state.getPosition().cpy().add(b.state.getPosition()).scl(0.5f);
             origin = new Vector3(o.x, o.y, 0.0f);
@@ -119,25 +120,25 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 float alpha;
                 warpSpeed = 0.0f;
 
-                alpha = 0.0075f * dt;
-                zoomCamera(origin, camera.zoom * (1.0f - alpha) + 0.5f * alpha);
+                alpha = 1.5f * dt;
+                camera.zoom = camera.zoom * (1.0f - alpha) + 0.25f * alpha;
                 setCameraPosition(origin);
 
-                if(Math.abs(camera.zoom - 0.5f) < 0.05f) {
+                if(Math.abs(camera.zoom - 0.25f) < 0.05f) {
+                    Gdx.input.vibrate(2000);
                     stage = 1;
                     time = 0.0f;
                     nextShake = 0.0f;
                 }
             }
-            else if(stage == 1) {
+            else if(stage == 2) {
                 airplanes.remove(a);
                 airplanes.remove(b);
                 ui.setStatus(a.name + " collided with " + b.name + "!");
-                stage = 2;
+                stage = 3;
                 time = 0.0f;
-                Gdx.input.vibrate(1000);
             }
-            else if(stage == 2) {
+            else if(stage == 1) {
                 warpSpeed = 1.0f;
                 // screenshake
                 nextShake -= dt;
@@ -149,7 +150,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                             .scl(10.0f)));
                 }
                 if(time > 2.0) {
-                    stage = 3;
+                    stage = 2;
                 }
             }
         }
@@ -268,7 +269,10 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                         }
                         // If two airplanes have collided
                         if(pos1.dst(pos2) < collisionRadius
-                                && Math.abs(alt1 - alt2) < collisionRadius) { // Collision
+                                && Math.abs(alt1 - alt2) < collisionRadius &&
+                                !airplane.colliding) {
+                            airplane.colliding = true;
+                            other.colliding = true;
                             collisions.add(new CollisionAnimation(airplane, other));
                             points = 0;
                         }
