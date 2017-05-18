@@ -306,7 +306,17 @@ public class MainUi {
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                PIScreen.getInstance().takeOff();
+                if(PIScreen.getInstance().queueingAirplanes.size() > 0) {
+                    setStatus("Please select one end of a runway");
+                    PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_RUNWAY;
+                    PIScreen.getInstance().followingPlane = false;
+                    PIScreen.getInstance().setSelectedAirplane(
+                            PIScreen.getInstance().queueingAirplanes.get(0)
+                    );
+                }
+                else {
+                    setStatus("Queue is empty");
+                }
             }
         });
         stage.addActor(takeoffButton);
@@ -445,12 +455,20 @@ public class MainUi {
         );
 
         //draw points
-        font.setColor(Colors.colors[4]);
         String point = "Points: " + PIScreen.getInstance().points;
         layout.setText(font, point);
         font.draw(batch,
                 point,
                 textGap,
+                font.getLineHeight() / 2 + (statusBarHeight - font.getCapHeight()) / 2
+        );
+
+        // Draw queueingAirplanes size
+        String size = "" + PIScreen.getInstance().queueingAirplanes.size();
+        layout.setText(font, size);
+        font.draw(batch,
+                size,
+                Gdx.graphics.getWidth() - (2 * buttonGap + warpButtonSize) / 2 - layout.width / 2,
                 font.getLineHeight() / 2 + (statusBarHeight - font.getCapHeight()) / 2
         );
         batch.end();

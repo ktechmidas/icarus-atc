@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import static com.icarus.project.Airplane.FlightType.ARRIVAL;
+import static com.icarus.project.Airplane.FlightType.DEPARTURE;
 import static com.icarus.project.Airplane.FlightType.FLYOVER;
 
 public class PIScreen extends Game implements Screen, GestureDetector.GestureListener {
@@ -64,7 +65,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     // Airplanes
     private ArrayList<Airplane> airplanes;
-    private ArrayList<Airplane> queueingAirplanes;
+    public ArrayList<Airplane> queueingAirplanes;
     public Airplane selectedAirplane;
     public float altitudeTarget;
     private float cruiseAlt = 10000; // meters
@@ -409,43 +410,13 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                                 pos.y - runway.nameOffsets[end].y * Gdx.graphics.getDensity());
                         Circle circle = new Circle(pos2.x, pos2.y, 20 * Gdx.graphics.getDensity());
                         if(circle.contains(position.x, position.y)) {
-                            // Landing constraints
-                            float minDistance = 100; // Minimum distance from end of runway
-                            float headingVariance = 30; // Maximum heading deviation from runway
-                            float positionVariance = 30; // Maximum position deviation from runway
-                            Vector2 targetRunway = runway.points[1-end].cpy()
-                                    .sub(runway.points[end]);
-                            // Calculate distance
-                            float distance = Math.abs(selectedAirplane.state.getPosition().cpy()
-                                    .sub(runway.points[end]).len()
-                            );
-                            // Calculate difference between airplane heading and runway heading
-                            float angleDifference = selectedAirplane.state.getVelocity()
-                                    .angle(targetRunway);
-                            // Calculate radial distance of airplane from runway
-                            // with respect to the runway's heading
-                            Vector2 relativePosition = runway.points[end].cpy()
-                                    .sub(selectedAirplane.state.getPosition());
-                            float positionDifference = relativePosition.angle(targetRunway);
-                            if(distance > minDistance
-                                    && Math.abs(angleDifference) < headingVariance
-                                    && Math.abs(positionDifference) < positionVariance) {
-                                // If the airplane is in the correct place
-                                selectedAirplane.setTargetRunway(runway, end);
-                                uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
-                                followingPlane = true;
-                                ui.setStatus("Selected runway " + runway.names[end]);
-                                Gdx.app.log(TAG, "Selected runway " + runway.names[end]);
-                                return true;
+                            if(selectedAirplane.flightType == DEPARTURE) {
+                                takeOff(runway, end);
                             }
                             else {
-                                ui.setStatus(selectedAirplane.name
-                                        + " cannot land at runway "
-                                        + runway.names[end]
-                                );
-                                uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
-                                break;
+                                land(runway, end);
                             }
+                            break;
                         }
                     }
                 }
@@ -620,7 +591,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         manager.load("buttons/airport.png", Texture.class);
     }
 
-    private void setSelectedAirplane(Airplane selectedAirplane){
+    public void setSelectedAirplane(Airplane selectedAirplane){
         // deselect old selectedAirplane if not null
         if(this.selectedAirplane != null){
             this.selectedAirplane.setSelected(false);
@@ -628,7 +599,9 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         this.selectedAirplane = selectedAirplane;
         // select new selectedAirplane if not null
         if(selectedAirplane != null){
-            followingPlane = true;
+            if(selectedAirplane.stateType != Airplane.StateType.QUEUEING) {
+                followingPlane = true;
+            }
             selectedAirplane.setSelected(true);
         }
         else {
@@ -707,12 +680,6 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             airplanes.add(new Airplane(flightName, flightType, position, velocity, altitude));
         }
         else {
-//            int randRunway = r.nextInt(airport.runways.length);
-//            int randEnd = r.nextInt(2);
-//            position = airport.runways[randRunway].points[randEnd].cpy();
-//            Vector2 heading = airport.runways[randRunway].points[1-randEnd].cpy()
-//                    .sub(position).nor();
-//            velocity = heading.scl(speed);
             ui.setStatus(flightName + ": added to queue");
 
             // Add a new airplane
@@ -720,22 +687,60 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         }
     }
 
-    public void takeOff() {
-        if(queueingAirplanes.size() > 0) {
-            float speed = 0.01f;
+    public void takeOff(Runway runway, int end) {
+        float speed = 0.01f;
+        Vector2 position = runway.points[end].cpy();
+        Vector2 heading = runway.points[1-end].cpy().sub(position).nor();
+        Vector2 velocity = heading.scl(speed);
 
-            int randRunway = r.nextInt(airport.runways.length);
-            int randEnd = r.nextInt(2);
-            Vector2 position = airport.runways[randRunway].points[randEnd].cpy();
-            Vector2 heading = airport.runways[randRunway].points[1-randEnd].cpy()
-                    .sub(position).nor();
-            Vector2 velocity = heading.scl(speed);
+        uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
+        followingPlane = true;
+        ui.setStatus(queueingAirplanes.get(0).name + ": taking off");
 
-            queueingAirplanes.get(0).transitionToTakingOff(position, velocity);
-            airplanes.add(queueingAirplanes.get(0));
-            ui.setStatus(queueingAirplanes.get(0).name + ": taking off");
-            queueingAirplanes.remove(0);
+        queueingAirplanes.get(0).transitionToTakingOff(position, velocity);
+        airplanes.add(queueingAirplanes.get(0));
+        queueingAirplanes.remove(0);
+    }
+
+    public void land(Runway runway, int end) {
+        // Landing constraints
+        float minDistance = 100; // Minimum distance from end of runway
+        float headingVariance = 30; // Maximum heading deviation from runway
+        float positionVariance = 30; // Maximum position deviation from runway
+        Vector2 targetRunway = runway.points[1-end].cpy()
+                .sub(runway.points[end]);
+        // Calculate distance
+        float distance = Math.abs(selectedAirplane.state.getPosition().cpy()
+                .sub(runway.points[end]).len()
+        );
+        // Calculate difference between airplane heading and runway heading
+        float angleDifference = selectedAirplane.state.getVelocity()
+                .angle(targetRunway);
+        // Calculate radial distance of airplane from runway
+        // with respect to the runway's heading
+        Vector2 relativePosition = runway.points[end].cpy()
+                .sub(selectedAirplane.state.getPosition());
+        float positionDifference = relativePosition.angle(targetRunway);
+        if(distance > minDistance
+                && Math.abs(angleDifference) < headingVariance
+                && Math.abs(positionDifference) < positionVariance) {
+            // If the airplane is in the correct place
+            selectedAirplane.setTargetRunway(runway, end);
+//            uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
+            followingPlane = true;
+            ui.setStatus("Selected runway " + runway.names[end]);
+            Gdx.app.log(TAG, "Selected runway " + runway.names[end]);
+//            return true;
         }
+        else {
+            ui.setStatus(selectedAirplane.name
+                    + " cannot land at runway "
+                    + runway.names[end]
+            );
+
+//            break;
+        }
+        uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
     }
 
     private void addOtherAirports(int airports) {
