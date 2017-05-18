@@ -34,8 +34,8 @@ class Airplane {
             this.state = new AirplaneFlying(position, velocity, altitude);
         }
         else {
-            this.stateType = StateType.TAKINGOFF;
-            this.state = new AirplaneTakingOff(position, velocity);
+            this.stateType = StateType.QUEUEING;
+            this.state = new AirplaneQueueing();
         }
 
         sprite = new Sprite(texture);
@@ -117,7 +117,7 @@ class Airplane {
     }
 
     public enum StateType {
-        FLYING, LANDING, TAKINGOFF
+        FLYING, LANDING, TAKINGOFF, QUEUEING
     }
 
     public AirplaneFlying.TargetType getTargetType() {
@@ -135,6 +135,11 @@ class Airplane {
     public void transitionToFlying(int altitude) {
         state = state.transitionToFlying(altitude);
         stateType = StateType.FLYING;
+    }
+
+    public void transitionToTakingOff(Vector2 position, Vector2 velocity) {
+        state = state.transitionToTakingOff(position, velocity);
+        stateType = StateType.QUEUEING;
     }
 
     public void setSelected(boolean selected) {

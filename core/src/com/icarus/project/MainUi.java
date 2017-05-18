@@ -295,7 +295,10 @@ public class MainUi {
         );
         takeoffButton = new ImageButton(takeoffDrawable);
         takeoffButton.setSize(buttonSize, buttonSize);
-        takeoffButton.setPosition(5 * buttonGap + 4 * buttonSize, statusBarHeight + buttonGap);
+        takeoffButton.setPosition(Gdx.graphics.getWidth() - buttonSize - buttonGap,
+                statusBarHeight + 2 * buttonGap + warpButtonSize
+
+        );
         takeoffButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -407,6 +410,7 @@ public class MainUi {
 
         toggleHeadingSelector(false);
         hideAirplaneButtons();
+        takeoffButton.setVisible(true);
     }
 
     public void draw() {
@@ -577,7 +581,6 @@ public class MainUi {
         waypointButton.setVisible(false);
         altitudeButton.setVisible(false);
         landingButton.setVisible(false);
-        takeoffButton.setVisible(false);
         handoffButton.setVisible(false);
         cancelButton.setVisible(false);
     }

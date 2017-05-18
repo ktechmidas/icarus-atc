@@ -64,6 +64,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     // Airplanes
     private ArrayList<Airplane> airplanes;
+    private ArrayList<Airplane> queueingAirplanes;
     public Airplane selectedAirplane;
     public float altitudeTarget;
     private float cruiseAlt = 10000; // meters
@@ -178,6 +179,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
         // Airplanes
         airplanes = new ArrayList<>();
+        queueingAirplanes = new ArrayList<>();
         selectedAirplane = null;
         minAirplaneInterval = 20; // seconds
         maxAirplaneInterval = 120; // seconds
@@ -456,10 +458,6 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             default:
                 break;
         }
-
-        if(selectedAirplane == null){
-            ui.setStatus("Deselected airplane");
-        }
         return true;
     }
 
@@ -704,18 +702,33 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                         airport.height
                 );
             }
+
+            // Add a new airplane
+            airplanes.add(new Airplane(flightName, flightType, position, velocity, altitude));
         }
         else {
-            int randRunway = r.nextInt(airport.runways.length);
-            int randEnd = r.nextInt(2);
-            position = airport.runways[randRunway].points[randEnd].cpy();
-            Vector2 heading = airport.runways[randRunway].points[1-randEnd].cpy()
-                    .sub(position).nor();
-            velocity = heading.scl(speed);
-        }
+//            int randRunway = r.nextInt(airport.runways.length);
+//            int randEnd = r.nextInt(2);
+//            position = airport.runways[randRunway].points[randEnd].cpy();
+//            Vector2 heading = airport.runways[randRunway].points[1-randEnd].cpy()
+//                    .sub(position).nor();
+//            velocity = heading.scl(speed);
+            ui.setStatus(flightName + ": added to queue");
 
-        // Add a new airplane
-        airplanes.add(new Airplane(flightName, flightType, position, velocity, altitude));
+            // Add a new airplane
+            queueingAirplanes.add(new Airplane(flightName, flightType, null, null, 0f));
+        }
+    }
+
+    private void takeOff() {
+        float speed = 0.01f;
+
+        int randRunway = r.nextInt(airport.runways.length);
+        int randEnd = r.nextInt(2);
+        Vector2 position = airport.runways[randRunway].points[randEnd].cpy();
+        Vector2 heading = airport.runways[randRunway].points[1-randEnd].cpy()
+                .sub(position).nor();
+        Vector2 velocity = heading.scl(speed);
     }
 
     private void addOtherAirports(int airports) {

@@ -18,6 +18,10 @@ abstract class AirplaneState {
         return null;
     }
 
+    public AirplaneTakingOff transitionToTakingOff(Vector2 position, Vector2 velocity) {
+        return null;
+    }
+
     public Vector2 getPosition() {
         return null;
     }
