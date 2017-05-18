@@ -720,15 +720,22 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         }
     }
 
-    private void takeOff() {
-        float speed = 0.01f;
+    public void takeOff() {
+        if(queueingAirplanes.size() > 0) {
+            float speed = 0.01f;
 
-        int randRunway = r.nextInt(airport.runways.length);
-        int randEnd = r.nextInt(2);
-        Vector2 position = airport.runways[randRunway].points[randEnd].cpy();
-        Vector2 heading = airport.runways[randRunway].points[1-randEnd].cpy()
-                .sub(position).nor();
-        Vector2 velocity = heading.scl(speed);
+            int randRunway = r.nextInt(airport.runways.length);
+            int randEnd = r.nextInt(2);
+            Vector2 position = airport.runways[randRunway].points[randEnd].cpy();
+            Vector2 heading = airport.runways[randRunway].points[1-randEnd].cpy()
+                    .sub(position).nor();
+            Vector2 velocity = heading.scl(speed);
+
+            queueingAirplanes.get(0).transitionToTakingOff(position, velocity);
+            airplanes.add(queueingAirplanes.get(0));
+            ui.setStatus(queueingAirplanes.get(0).name + ": taking off");
+            queueingAirplanes.remove(0);
+        }
     }
 
     private void addOtherAirports(int airports) {

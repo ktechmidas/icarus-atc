@@ -139,7 +139,7 @@ class Airplane {
 
     public void transitionToTakingOff(Vector2 position, Vector2 velocity) {
         state = state.transitionToTakingOff(position, velocity);
-        stateType = StateType.QUEUEING;
+        stateType = StateType.TAKINGOFF;
     }
 
     public void setSelected(boolean selected) {
