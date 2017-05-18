@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class AirplaneTakingOff extends AirplaneAltitude {
     public Vector2 heading;
-    public float accelRate = 0.1f;
+    public float accelRate = 0.12f;
 
     public AirplaneFlying transitionToFlying(float altitude) {
         return new AirplaneFlying(position, velocity, altitude);

@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 class AirplaneLanding extends AirplaneMoving {
     public Vector2 heading;
     private Runway runway;
-    public float decelRate = 0.1f;
+    public float decelRate = 0.12f;
 
     public AirplaneLanding(Vector2 position, Vector2 velocity, Runway runway) {
         super(position, velocity);

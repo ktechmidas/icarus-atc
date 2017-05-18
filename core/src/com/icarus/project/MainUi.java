@@ -45,11 +45,10 @@ public class MainUi {
 
     private ArrayList<ImageButton> airportButtons;
     float warpPause = 0;
-    public int points;
+//    public int points;
 
     public static final String TAG = "MainUi";
 
-//    public int statusBarHeight = (int) (25 * Gdx.graphics.getDensity());
     public int statusBarHeight;
     private int buttonGap;
     private int buttonSize;
@@ -62,7 +61,7 @@ public class MainUi {
 
     public MainUi(AssetManager assets, BitmapFont font) {
         this.font = font;
-        points = points+0;
+//        points = points+0;
 
         shapes = new ShapeRenderer();
         batch = new SpriteBatch();
@@ -296,7 +295,10 @@ public class MainUi {
         );
         takeoffButton = new ImageButton(takeoffDrawable);
         takeoffButton.setSize(buttonSize, buttonSize);
-        takeoffButton.setPosition(5 * buttonGap + 4 * buttonSize, statusBarHeight + buttonGap);
+        takeoffButton.setPosition(Gdx.graphics.getWidth() - buttonSize - buttonGap,
+                statusBarHeight + 2 * buttonGap + warpButtonSize
+
+        );
         takeoffButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -304,7 +306,17 @@ public class MainUi {
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                setStatus("takeoffButton");
+                if(PIScreen.getInstance().queueingAirplanes.size() > 0) {
+                    setStatus("Please select one end of a runway");
+                    PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_RUNWAY;
+                    PIScreen.getInstance().followingPlane = false;
+                    PIScreen.getInstance().setSelectedAirplane(
+                            PIScreen.getInstance().queueingAirplanes.get(0)
+                    );
+                }
+                else {
+                    setStatus("Queue is empty");
+                }
             }
         });
         stage.addActor(takeoffButton);
@@ -408,12 +420,12 @@ public class MainUi {
 
         toggleHeadingSelector(false);
         hideAirplaneButtons();
+        takeoffButton.setVisible(true);
     }
 
     public void draw() {
         selectedAirplane = PIScreen.getInstance().getSelectedAirplane();
 
-//        stage.draw();
         shapes.begin(ShapeRenderer.ShapeType.Filled);
         // Draw rectangle for the status bar
         shapes.setColor(0, 0, 0, 1);
@@ -443,12 +455,20 @@ public class MainUi {
         );
 
         //draw points
-        font.setColor(Colors.colors[4]);
         String point = "Points: " + PIScreen.getInstance().points;
         layout.setText(font, point);
         font.draw(batch,
                 point,
                 textGap,
+                font.getLineHeight() / 2 + (statusBarHeight - font.getCapHeight()) / 2
+        );
+
+        // Draw queueingAirplanes size
+        String size = "" + PIScreen.getInstance().queueingAirplanes.size();
+        layout.setText(font, size);
+        font.draw(batch,
+                size,
+                Gdx.graphics.getWidth() - (2 * buttonGap + warpButtonSize) / 2 - layout.width / 2,
                 font.getLineHeight() / 2 + (statusBarHeight - font.getCapHeight()) / 2
         );
         batch.end();
@@ -550,7 +570,7 @@ public class MainUi {
         this.status = status;
     }
 
-    public void showAirplaneButtons(Airplane.FlightType flightType){
+    private void showAirplaneButtons(Airplane.FlightType flightType){
         hideAirplaneButtons();
         if(selectedAirplane.stateType == FLYING) {
             if(selectedAirplane.getTargetType() == AirplaneFlying.TargetType.NONE) {
@@ -574,17 +594,16 @@ public class MainUi {
         }
     }
 
-    public void hideAirplaneButtons() {
+    private void hideAirplaneButtons() {
         headingButton.setVisible(false);
         waypointButton.setVisible(false);
         altitudeButton.setVisible(false);
         landingButton.setVisible(false);
-        takeoffButton.setVisible(false);
         handoffButton.setVisible(false);
         cancelButton.setVisible(false);
     }
 
-    public void toggleOtherAirports(boolean isVisible) {
+    private void toggleOtherAirports(boolean isVisible) {
         batch.begin();
         for(ImageButton airportButton: airportButtons) {
             OtherAirport otherAirport = PIScreen.getInstance().otherAirports
