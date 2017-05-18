@@ -79,7 +79,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     // Collisions
     private ArrayList<CollisionAnimation> collisions = new ArrayList<>();
-    private float collisionRadius = toPixels(600); // pixels
+    private float collisionRadius = toPixels(150); // pixels
     private float collisionWarningHSep = toPixels(5500); // pixels
     private float collisionWarningVSep = toPixels(305); // pixels
     private float collisionWarningVSepCruise = toPixels(610); // pixels
@@ -709,7 +709,6 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     public void land(Runway runway, int end) {
         // Landing constraints
-        float minDistance = 100; // Minimum distance from end of runway
         float headingVariance = 30; // Maximum heading deviation from runway
         float positionVariance = 30; // Maximum position deviation from runway
         Vector2 targetRunway = runway.points[1-end].cpy()
@@ -733,19 +732,15 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 && Math.abs(positionDifference) < positionVariance) {
             // If the airplane is in the correct place
             selectedAirplane.setTargetRunway(runway, end);
-//            uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
             followingPlane = true;
             ui.setStatus("Selected runway " + runway.names[end]);
             Gdx.app.log(TAG, "Selected runway " + runway.names[end]);
-//            return true;
         }
         else {
             ui.setStatus(selectedAirplane.name
                     + " cannot land at runway "
                     + runway.names[end]
             );
-
-//            break;
         }
         uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
     }

@@ -62,12 +62,13 @@ class AirplaneFlying extends AirplaneAltitude {
                 break;
 
             case RUNWAY:
+                // Descend
                 float distance = Math.abs(getPosition().cpy()
                         .sub(targetRunway.points[targetRunwayPoint]).len()
                 );
                 float time = distance / velocity.len();
                 float descentRate = altitude / time; // meters per second
-                targetAltitude = altitude - descentRate;
+                altitude -= descentRate * dt;
 
                 float radius = velocity.len() / turnRate;
                 // Calculate heading of target runway
@@ -148,12 +149,14 @@ class AirplaneFlying extends AirplaneAltitude {
         //Point airplane in direction of travel
         airplane.sprite.setRotation(velocity.angle());
 
-        // Change altitude
-        if(altitude > targetAltitude && Math.abs(altitude - targetAltitude) > 1) {
-            altitude -= PIScreen.getInstance().altitudeChangeRate * dt;
-        }
-        else if(altitude < targetAltitude && Math.abs(altitude - targetAltitude) > 1) {
-            altitude += PIScreen.getInstance().altitudeChangeRate * dt;
+        if(targetType != RUNWAY) {
+            // Change altitude
+            if(altitude > targetAltitude && Math.abs(altitude - targetAltitude) > 1) {
+                altitude -= PIScreen.getInstance().altitudeChangeRate * dt;
+            }
+            else if(altitude < targetAltitude && Math.abs(altitude - targetAltitude) > 1) {
+                altitude += PIScreen.getInstance().altitudeChangeRate * dt;
+            }
         }
     }
 
