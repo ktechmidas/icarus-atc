@@ -295,7 +295,10 @@ public class MainUi {
         );
         takeoffButton = new ImageButton(takeoffDrawable);
         takeoffButton.setSize(buttonSize, buttonSize);
-        takeoffButton.setPosition(5 * buttonGap + 4 * buttonSize, statusBarHeight + buttonGap);
+        takeoffButton.setPosition(Gdx.graphics.getWidth() - buttonSize - buttonGap,
+                statusBarHeight + 2 * buttonGap + warpButtonSize
+
+        );
         takeoffButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -303,7 +306,17 @@ public class MainUi {
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                setStatus("takeoffButton");
+                if(PIScreen.getInstance().queueingAirplanes.size() > 0) {
+                    setStatus("Please select one end of a runway");
+                    PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_RUNWAY;
+                    PIScreen.getInstance().followingPlane = false;
+                    PIScreen.getInstance().setSelectedAirplane(
+                            PIScreen.getInstance().queueingAirplanes.get(0)
+                    );
+                }
+                else {
+                    setStatus("Queue is empty");
+                }
             }
         });
         stage.addActor(takeoffButton);
@@ -407,6 +420,7 @@ public class MainUi {
 
         toggleHeadingSelector(false);
         hideAirplaneButtons();
+        takeoffButton.setVisible(true);
     }
 
     public void draw() {
@@ -441,12 +455,20 @@ public class MainUi {
         );
 
         //draw points
-        font.setColor(Colors.colors[4]);
         String point = "Points: " + PIScreen.getInstance().points;
         layout.setText(font, point);
         font.draw(batch,
                 point,
                 textGap,
+                font.getLineHeight() / 2 + (statusBarHeight - font.getCapHeight()) / 2
+        );
+
+        // Draw queueingAirplanes size
+        String size = "" + PIScreen.getInstance().queueingAirplanes.size();
+        layout.setText(font, size);
+        font.draw(batch,
+                size,
+                Gdx.graphics.getWidth() - (2 * buttonGap + warpButtonSize) / 2 - layout.width / 2,
                 font.getLineHeight() / 2 + (statusBarHeight - font.getCapHeight()) / 2
         );
         batch.end();
@@ -577,7 +599,6 @@ public class MainUi {
         waypointButton.setVisible(false);
         altitudeButton.setVisible(false);
         landingButton.setVisible(false);
-        takeoffButton.setVisible(false);
         handoffButton.setVisible(false);
         cancelButton.setVisible(false);
     }
