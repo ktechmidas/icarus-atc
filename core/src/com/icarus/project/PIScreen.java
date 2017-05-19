@@ -357,7 +357,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         }
 
         // Generate a new airplane after a random amount of time
-        if(timeElapsed > airplaneInterval / (1 + points / 30) + minAirplaneInterval / 4.0) {
+        if(timeElapsed > airplaneInterval / (1 + points / 50) + minAirplaneInterval / 4.0) {
             Random r = new Random();
             airplaneInterval = r.nextInt((int) (maxAirplaneInterval - minAirplaneInterval) + 1)
                     + minAirplaneInterval;
