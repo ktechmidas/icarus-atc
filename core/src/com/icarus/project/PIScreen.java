@@ -47,7 +47,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     public ProjectIcarus.UiState uiState;
     public ShapeRenderer shapes;
     private SpriteBatch batch;
-    private BitmapFont labelFont, titleFont, airplaneFont;
+    private BitmapFont labelFont, smallLabelFont, titleFont, airplaneFont;
 
     // Camera
     private OrthographicCamera camera;
@@ -107,6 +107,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             time = 0.0f;
             stage = 0;
             startWarp = warpSpeed;
+            zoomedOut = false;
             camera.zoom = maxZoomOut;
             // Temporary origin
             Vector2 o = a.state.getPosition().cpy().add(b.state.getPosition()).scl(0.5f);
@@ -170,6 +171,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
         airport = manager.get("airports/airport.json");
         labelFont = manager.get("fonts/3270Medium.ttf");
+        smallLabelFont = manager.get("fonts/3270Medium_small.ttf");
         titleFont = manager.get("fonts/3270Medium_title.ttf");
         airplaneFont = manager.get("fonts/3270Medium_airplane.ttf");
         Airplane.texture = manager.get("sprites/airplane.png");
@@ -318,15 +320,25 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             }
             shapes.end();
 
-            // Draw waypoint labels
             batch.begin();
+            // Draw waypoint labels
             for(Waypoint waypoint: airport.waypoints) {
-                waypoint.drawLabel(labelFont, batch, camera);
+                if(zoomedOut) {
+                    waypoint.drawLabel(smallLabelFont, batch, camera);
+                }
+                else {
+                    waypoint.drawLabel(labelFont, batch, camera);
+                }
             }
 
             // Draw runway labels
             for(Runway runway: airport.runways) {
-                runway.drawLabel(labelFont, batch, camera);
+                if(zoomedOut) {
+                    runway.drawLabel(smallLabelFont, batch, camera);
+                }
+                else {
+                    runway.drawLabel(labelFont, batch, camera);
+                }
             }
 
             // Draw airplanes
@@ -586,6 +598,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         FreetypeFontLoader.FreeTypeFontLoaderParameter labelFontParams;
         FreetypeFontLoader.FreeTypeFontLoaderParameter titleFontParams;
         FreetypeFontLoader.FreeTypeFontLoaderParameter airplaneFontParams;
+        FreetypeFontLoader.FreeTypeFontLoaderParameter smallLabelFontParams;
 
         FileHandleResolver resolver = new InternalFileHandleResolver();
         manager.setLoader(Airport.class, new AirportLoader(resolver));
@@ -602,6 +615,11 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         labelFontParams.fontFileName = "fonts/3270Medium.ttf";
         labelFontParams.fontParameters.size = Math.round(fontSize);
         manager.load("fonts/3270Medium.ttf", BitmapFont.class, labelFontParams);
+
+        smallLabelFontParams = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+        smallLabelFontParams.fontFileName = "fonts/3270Medium.ttf";
+        smallLabelFontParams.fontParameters.size = Math.round(fontSize * 0.7f);
+        manager.load("fonts/3270Medium_small.ttf", BitmapFont.class, smallLabelFontParams);
 
         titleFontParams = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         titleFontParams.fontFileName = "fonts/3270Medium.ttf";
