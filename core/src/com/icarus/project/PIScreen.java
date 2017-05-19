@@ -352,7 +352,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         ui.draw();
 
         // Follow selected airplane with camera
-        if(selectedAirplane != null && followingPlane) {
+        if(selectedAirplane != null && followingPlane && !zoomedOut) {
             setCameraPosition(new Vector3(selectedAirplane.state.getPosition(), 0));
         }
 
@@ -386,6 +386,11 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 setSelectedAirplane(null);
                 for(Airplane airplane: airplanes) {
                     if(airplane.sprite.getBoundingRectangle().contains(position.x, position.y)) {
+                        if(zoomedOut) {
+                            zoomedOut = false;
+                            camera.zoom = maxZoomOut;
+                            camera.update();
+                        }
                         setSelectedAirplane(airplane);
                         ui.setStatus("Selected " + getSelectedAirplane().name);
                         return true;
@@ -443,62 +448,73 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     @Override
     public boolean longPress(float x, float y) {
         if(zoomedOut) {
-            ui.setStatus("Bye");
             zoomedOut = false;
+            camera.zoom = maxZoomOut;
+            camera.update();
         }
         else {
-            ui.setStatus("Hi");
             zoomedOut = true;
-            zoomCamera(new Vector3(airport.width / 2, airport.height / 2, 0),
-                    airport.height / (Gdx.graphics.getHeight() - ui.statusBarHeight)
+            camera.zoom = airport.height / (Gdx.graphics.getHeight() - ui.statusBarHeight);
+            camera.position.set(airport.width / 2,
+                    (airport.height - ui.statusBarHeight) / 2, 0
             );
             camera.update();
         }
-        Gdx.input.vibrate(25);
+        Gdx.input.vibrate(20);
         return true;
     }
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-        if(uiState == ProjectIcarus.UiState.CHANGE_ALTITUDE) {
-            altitudeTarget -= deltaY * 3;
-            if(altitudeTarget < 0f) {
-                altitudeTarget = 0f;
+        if(!zoomedOut) {
+            if(uiState == ProjectIcarus.UiState.CHANGE_ALTITUDE) {
+                altitudeTarget -= deltaY * 3;
+                if(altitudeTarget < 0f) {
+                    altitudeTarget = 0f;
+                }
             }
+            else {
+                followingPlane = false;
+                setCameraPosition(camera.position.add(
+                        camera.unproject(new Vector3(0, 0, 0))
+                                .add(camera.unproject(new Vector3(deltaX, deltaY, 0)).scl(-1f))
+                ));
+            }
+            return true;
         }
         else {
-            followingPlane = false;
-            setCameraPosition(camera.position.add(
-                    camera.unproject(new Vector3(0, 0, 0))
-                            .add(camera.unproject(new Vector3(deltaX, deltaY, 0)).scl(-1f))
-            ));
+            return false;
         }
-        return true;
     }
 
     @Override
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1,
                          Vector2 pointer2)
     {
-        if (!(initialPointer1.equals(oldInitialFirstPointer)
-                && initialPointer2.equals(oldInitialSecondPointer)))
-        {
-            oldInitialFirstPointer = initialPointer1.cpy();
-            oldInitialSecondPointer = initialPointer2.cpy();
-            oldScale = camera.zoom;
+        if(!zoomedOut) {
+            if (!(initialPointer1.equals(oldInitialFirstPointer)
+                    && initialPointer2.equals(oldInitialSecondPointer)))
+            {
+                oldInitialFirstPointer = initialPointer1.cpy();
+                oldInitialSecondPointer = initialPointer2.cpy();
+                oldScale = camera.zoom;
+            }
+            Vector3 center = new Vector3(
+                    (pointer1.x + initialPointer2.x) / 2,
+                    (pointer2.y + initialPointer1.y) / 2,
+                    0
+            );
+            zoomCamera(center,
+                    oldScale * initialPointer1.dst(initialPointer2) / pointer1.dst(pointer2));
+            return true;
         }
-        Vector3 center = new Vector3(
-                (pointer1.x + initialPointer2.x) / 2,
-                (pointer2.y + initialPointer1.y) / 2,
-                0
-        );
-        zoomCamera(center,
-                oldScale * initialPointer1.dst(initialPointer2) / pointer1.dst(pointer2));
-        return true;
+        else {
+            return false;
+        }
     }
 
     private void zoomCamera(Vector3 origin, float scale) {
-        if(followingPlane) {
+        if(followingPlane && !zoomedOut) {
             camera.zoom = scale;
             camera.zoom = Math.min(maxZoomOut, Math.max(camera.zoom, maxZoomIn));
         }
