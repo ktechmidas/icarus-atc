@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 import static com.icarus.project.Airplane.StateType.FLYING;
 import static com.icarus.project.Airplane.StateType.LANDING;
+import static com.icarus.project.Airplane.StateType.QUEUEING;
 
 public class MainUi {
     private BitmapFont font;
@@ -341,6 +342,9 @@ public class MainUi {
                 }
                 if(PIScreen.getInstance().uiState != ProjectIcarus.UiState.CHANGE_ALTITUDE) {
                     selectedAirplane.setNoTarget();
+                }
+                if(selectedAirplane.stateType == QUEUEING) {
+                    PIScreen.getInstance().setSelectedAirplane(null);
                 }
                 PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
             }
