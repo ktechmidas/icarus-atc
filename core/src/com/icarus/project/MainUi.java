@@ -174,7 +174,9 @@ public class MainUi {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                PIScreen.getInstance().warpSpeed *= 2.0;
+                if(PIScreen.getInstance().warpSpeed < 8) {
+                    PIScreen.getInstance().warpSpeed *= 2.0;
+                }
             }
         });
         stage.addActor(warpUpButton);
