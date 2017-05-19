@@ -313,6 +313,8 @@ public class MainUi {
                     PIScreen.getInstance().setSelectedAirplane(
                             PIScreen.getInstance().queueingAirplanes.get(0)
                     );
+
+                    PIScreen.getInstance().toggleOverview(false);
                 }
                 else {
                     setStatus("Queue is empty");

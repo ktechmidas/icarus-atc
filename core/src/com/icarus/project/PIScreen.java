@@ -459,21 +459,24 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     @Override
     public boolean longPress(float x, float y) {
-        if(zoomedOut) {
-            zoomedOut = false;
-            camera.zoom = maxZoomOut;
-            camera.update();
-        }
-        else {
+        toggleOverview(!zoomedOut);
+        Gdx.input.vibrate(20);
+        return true;
+    }
+
+    public void toggleOverview(boolean show) {
+        if(show) {
             zoomedOut = true;
             camera.zoom = airport.height / (Gdx.graphics.getHeight() - ui.statusBarHeight);
             camera.position.set(airport.width / 2,
                     (airport.height - ui.statusBarHeight) / 2, 0
             );
-            camera.update();
         }
-        Gdx.input.vibrate(20);
-        return true;
+        else {
+            zoomedOut = false;
+            camera.zoom = maxZoomOut;
+        }
+        camera.update();
     }
 
     @Override
