@@ -449,7 +449,6 @@ public class MainUi {
         );
 
         //draw the warp speed
-        font.setColor(Colors.colors[4]);
         String warp = "x" + (int)(PIScreen.getInstance().warpSpeed);
         layout.setText(font, warp);
         font.draw(batch,
