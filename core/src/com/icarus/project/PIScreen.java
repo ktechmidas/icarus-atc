@@ -108,7 +108,10 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             startWarp = warpSpeed;
             camera.zoom = maxZoomOut;
             // Temporary origin
-            Vector2 o = a.state.getPosition().cpy().add(b.state.getPosition()).scl(0.5f);
+            Vector2 o = a.state.getPosition().cpy();//.add(b.state.getPosition()).scl(0.5f);
+            if(b != null) {
+                o.add(b.state.getPosition()).scl(0.5f);
+            }
             origin = new Vector3(o.x, o.y, 0.0f);
         }
 
@@ -134,8 +137,13 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             }
             else if(stage == 2) {
                 airplanes.remove(a);
-                airplanes.remove(b);
-                ui.setStatus(a.name + " collided with " + b.name + "!");
+                if(b != null) {
+                    airplanes.remove(b);
+                    ui.setStatus(a.name + " collided with " + b.name + "!");
+                }
+                else {
+                    ui.setStatus(a.name + ": crashed into ground!");
+                }
                 stage = 3;
                 time = 0.0f;
             }
@@ -250,7 +258,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 }
             }
 
-            // Check for collisions and near misses
+            // Check for collisions and near misses with other planes
             for(Airplane other: airplanes) {
                 if(other != airplane) {
                     Vector2 pos1 = airplane.state.getPosition();
@@ -265,7 +273,6 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                                 || (Math.abs(alt1 - alt2) < collisionWarningVSepCruise
                                     && alt1 > cruiseAlt))) {
                             ui.setStatus(airplane.name + " and " + other.name + " are too close!");
-                            Gdx.app.log(TAG, airplane.name + " and " + other.name + " are too close!");
                             points -= 1f * dt;
                         }
                         // If two airplanes have collided
@@ -279,6 +286,15 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                         }
                     }
                 }
+            }
+
+            // Check for collisions with the ground
+            if(airplane.state.getAltitude() < 1
+                    && airplane.stateType != Airplane.StateType.LANDING
+                    && airplane.stateType != Airplane.StateType.TAKINGOFF) {
+                airplane.colliding = true;
+                collisions.add(new CollisionAnimation(airplane, null));
+                points = 0;
             }
         }
 
