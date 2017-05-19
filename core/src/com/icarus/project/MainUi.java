@@ -479,6 +479,7 @@ public class MainUi {
         toggleOtherAirports(false);
         toggleHeadingSelector(false);
         hideAirplaneButtons();
+        takeoffButton.setVisible(false);
         //show airplane-specific buttons if an airplane is selected
         if(selectedAirplane != null) {
             switch(PIScreen.getInstance().uiState) {
@@ -487,6 +488,7 @@ public class MainUi {
                     break;
                 case SELECT_AIRPLANE:
                     showAirplaneButtons(selectedAirplane.flightType);
+                    takeoffButton.setVisible(true);
 
                     //draw a rectangle for airplane status
                     shapes.begin(ShapeRenderer.ShapeType.Filled);
@@ -566,6 +568,9 @@ public class MainUi {
                 default:
                     break;
             }
+        }
+        else {
+            takeoffButton.setVisible(true);
         }
     }
 

@@ -709,8 +709,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     public void land(Runway runway, int end) {
         // Landing constraints
-        float headingVariance = 30; // Maximum heading deviation from runway
-        float positionVariance = 30; // Maximum position deviation from runway
+        float headingVariance = 20; // Maximum heading deviation from runway
+        float positionVariance = 20; // Maximum position deviation from runway
         Vector2 targetRunway = runway.points[1-end].cpy()
                 .sub(runway.points[end]);
         // Calculate distance
