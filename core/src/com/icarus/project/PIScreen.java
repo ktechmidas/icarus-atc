@@ -69,7 +69,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     public Airplane selectedAirplane;
     public float altitudeTarget;
     private float cruiseAlt = 10000; // meters
-    public float altitudeChangeRate = 14f; // meters per second
+    public float altitudeChangeRate = 20f; // meters per second
 
     // Airplane spawning
     private float minAirplaneInterval;
