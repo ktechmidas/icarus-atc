@@ -220,6 +220,10 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     @Override
     public void render(float delta) {
+        if(points < 0) {
+            points = 0;
+        }
+
         super.render();
 
         // Set background color
@@ -370,7 +374,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         }
 
         // Generate a new airplane after a random amount of time
-        if(timeElapsed > airplaneInterval) {
+        if(timeElapsed > airplaneInterval / (1 + points / 50) + minAirplaneInterval / 4.0) {
             Random r = new Random();
             airplaneInterval = r.nextInt((int) (maxAirplaneInterval - minAirplaneInterval) + 1)
                     + minAirplaneInterval;

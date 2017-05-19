@@ -543,11 +543,13 @@ public class MainUi {
                         );
                     }
 
-                    font.draw(batch,
-                            (int) PIScreen.toMeters(selectedAirplane.getVelocity().len()) + "m/s",
-                            Gdx.graphics.getWidth() - (3f / 8f) * statusWidth,
-                            Gdx.graphics.getHeight() - 3 * font.getLineHeight() / 2
-                    );
+                    if(selectedAirplane.getVelocity() != null) {
+                        font.draw(batch,
+                                (int) PIScreen.toMeters(selectedAirplane.getVelocity().len()) + "m/s",
+                                Gdx.graphics.getWidth() - (3f / 8f) * statusWidth,
+                                Gdx.graphics.getHeight() - 3 * font.getLineHeight() / 2
+                        );
+                    }
 
                     batch.end();
                     break;
