@@ -69,6 +69,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     public Airplane selectedAirplane;
     public float altitudeTarget;
     private float cruiseAlt = 10000; // meters
+    public float altitudeChangeRate = 14f; // meters per second
 
     // Airplane spawning
     private float minAirplaneInterval;
@@ -78,7 +79,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     // Collisions
     private ArrayList<CollisionAnimation> collisions = new ArrayList<>();
-    private float collisionRadius = toPixels(600); // pixels
+    private float collisionRadius = toPixels(150); // pixels
     private float collisionWarningHSep = toPixels(5500); // pixels
     private float collisionWarningVSep = toPixels(305); // pixels
     private float collisionWarningVSepCruise = toPixels(610); // pixels
@@ -107,7 +108,10 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             startWarp = warpSpeed;
             camera.zoom = maxZoomOut;
             // Temporary origin
-            Vector2 o = a.state.getPosition().cpy().add(b.state.getPosition()).scl(0.5f);
+            Vector2 o = a.state.getPosition().cpy();//.add(b.state.getPosition()).scl(0.5f);
+            if(b != null) {
+                o.add(b.state.getPosition()).scl(0.5f);
+            }
             origin = new Vector3(o.x, o.y, 0.0f);
         }
 
@@ -133,8 +137,13 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             }
             else if(stage == 2) {
                 airplanes.remove(a);
-                airplanes.remove(b);
-                ui.setStatus(a.name + " collided with " + b.name + "!");
+                if(b != null) {
+                    airplanes.remove(b);
+                    ui.setStatus(a.name + " collided with " + b.name + "!");
+                }
+                else {
+                    ui.setStatus(a.name + ": crashed into ground!");
+                }
                 stage = 3;
                 time = 0.0f;
             }
@@ -253,7 +262,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 }
             }
 
-            // Check for collisions and near misses
+            // Check for collisions and near misses with other planes
             for(Airplane other: airplanes) {
                 if(other != airplane) {
                     Vector2 pos1 = airplane.state.getPosition();
@@ -268,7 +277,6 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                                 || (Math.abs(alt1 - alt2) < collisionWarningVSepCruise
                                     && alt1 > cruiseAlt))) {
                             ui.setStatus(airplane.name + " and " + other.name + " are too close!");
-                            Gdx.app.log(TAG, airplane.name + " and " + other.name + " are too close!");
                             points -= 1f * dt;
                         }
                         // If two airplanes have collided
@@ -282,6 +290,15 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                         }
                     }
                 }
+            }
+
+            // Check for collisions with the ground
+            if(airplane.state.getAltitude() < 1
+                    && airplane.stateType != Airplane.StateType.LANDING
+                    && airplane.stateType != Airplane.StateType.TAKINGOFF) {
+                airplane.colliding = true;
+                collisions.add(new CollisionAnimation(airplane, null));
+                points = 0;
             }
         }
 
@@ -431,7 +448,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 break;
             case CHANGE_ALTITUDE:
                 uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
-                ui.setStatus("Set target altitude to: " + altitudeTarget + "m");
+                ui.setStatus("Set target altitude to: " + (int) altitudeTarget + "m");
                 ((AirplaneFlying) selectedAirplane.state).targetAltitude = altitudeTarget;
                 break;
             default:
@@ -712,15 +729,16 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     public void land(Runway runway, int end) {
         // Landing constraints
-        float minDistance = 100; // Minimum distance from end of runway
-        float headingVariance = 30; // Maximum heading deviation from runway
-        float positionVariance = 30; // Maximum position deviation from runway
+        float headingVariance = 20; // Maximum heading deviation from runway
+        float positionVariance = 20; // Maximum position deviation from runway
         Vector2 targetRunway = runway.points[1-end].cpy()
                 .sub(runway.points[end]);
         // Calculate distance
         float distance = Math.abs(selectedAirplane.state.getPosition().cpy()
                 .sub(runway.points[end]).len()
         );
+        float time = distance / selectedAirplane.state.getVelocity().len();
+        float descentRate = selectedAirplane.state.getAltitude() / time; // meters per second
         // Calculate difference between airplane heading and runway heading
         float angleDifference = selectedAirplane.state.getVelocity()
                 .angle(targetRunway);
@@ -729,24 +747,20 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         Vector2 relativePosition = runway.points[end].cpy()
                 .sub(selectedAirplane.state.getPosition());
         float positionDifference = relativePosition.angle(targetRunway);
-        if(distance > minDistance
+        if(descentRate < altitudeChangeRate
                 && Math.abs(angleDifference) < headingVariance
                 && Math.abs(positionDifference) < positionVariance) {
             // If the airplane is in the correct place
             selectedAirplane.setTargetRunway(runway, end);
-//            uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
             followingPlane = true;
             ui.setStatus("Selected runway " + runway.names[end]);
             Gdx.app.log(TAG, "Selected runway " + runway.names[end]);
-//            return true;
         }
         else {
             ui.setStatus(selectedAirplane.name
                     + " cannot land at runway "
                     + runway.names[end]
             );
-
-//            break;
         }
         uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
     }

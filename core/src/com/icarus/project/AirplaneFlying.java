@@ -1,13 +1,6 @@
 package com.icarus.project;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.utils.Align;
 
 import static com.icarus.project.AirplaneFlying.TargetType.AIRPORT;
 import static com.icarus.project.AirplaneFlying.TargetType.HEADING;
@@ -25,8 +18,6 @@ class AirplaneFlying extends AirplaneAltitude {
     public OtherAirport targetAirport;
 
     public float turnRate = 3 * (float) Math.PI / 180.0f; //radians per second
-    public float maxVelocity = 250; //meters per second
-    public float altitudeChangeRate = 12.7f; //meters per second
 
     public TargetType targetType;
 
@@ -71,6 +62,14 @@ class AirplaneFlying extends AirplaneAltitude {
                 break;
 
             case RUNWAY:
+                // Descend
+                float distance = Math.abs(getPosition().cpy()
+                        .sub(targetRunway.points[targetRunwayPoint]).len()
+                );
+                float time = distance / velocity.len();
+                float descentRate = altitude / time; // meters per second
+                altitude -= descentRate * dt;
+
                 float radius = velocity.len() / turnRate;
                 // Calculate heading of target runway
                 Vector2 target = targetRunway.points[1 - targetRunwayPoint].cpy()
@@ -150,12 +149,14 @@ class AirplaneFlying extends AirplaneAltitude {
         //Point airplane in direction of travel
         airplane.sprite.setRotation(velocity.angle());
 
-        // Change altitude
-        if(altitude > targetAltitude && Math.abs(altitude - targetAltitude) > 1) {
-            altitude -= altitudeChangeRate * dt;
-        }
-        else if(altitude < targetAltitude && Math.abs(altitude - targetAltitude) > 1) {
-            altitude += altitudeChangeRate * dt;
+        if(targetType != RUNWAY) {
+            // Change altitude
+            if(altitude > targetAltitude && Math.abs(altitude - targetAltitude) > 1) {
+                altitude -= PIScreen.getInstance().altitudeChangeRate * dt;
+            }
+            else if(altitude < targetAltitude && Math.abs(altitude - targetAltitude) > 1) {
+                altitude += PIScreen.getInstance().altitudeChangeRate * dt;
+            }
         }
     }
 

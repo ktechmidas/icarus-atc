@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 import static com.icarus.project.Airplane.StateType.FLYING;
 import static com.icarus.project.Airplane.StateType.LANDING;
+import static com.icarus.project.Airplane.StateType.QUEUEING;
 
 public class MainUi {
     private BitmapFont font;
@@ -342,6 +343,9 @@ public class MainUi {
                 if(PIScreen.getInstance().uiState != ProjectIcarus.UiState.CHANGE_ALTITUDE) {
                     selectedAirplane.setNoTarget();
                 }
+                if(selectedAirplane.stateType == QUEUEING) {
+                    PIScreen.getInstance().setSelectedAirplane(null);
+                }
                 PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
             }
         });
@@ -445,7 +449,6 @@ public class MainUi {
         );
 
         //draw the warp speed
-        font.setColor(Colors.colors[4]);
         String warp = "x" + (int)(PIScreen.getInstance().warpSpeed);
         layout.setText(font, warp);
         font.draw(batch,
@@ -476,6 +479,7 @@ public class MainUi {
         toggleOtherAirports(false);
         toggleHeadingSelector(false);
         hideAirplaneButtons();
+        takeoffButton.setVisible(false);
         //show airplane-specific buttons if an airplane is selected
         if(selectedAirplane != null) {
             switch(PIScreen.getInstance().uiState) {
@@ -484,6 +488,7 @@ public class MainUi {
                     break;
                 case SELECT_AIRPLANE:
                     showAirplaneButtons(selectedAirplane.flightType);
+                    takeoffButton.setVisible(true);
 
                     //draw a rectangle for airplane status
                     shapes.begin(ShapeRenderer.ShapeType.Filled);
@@ -565,6 +570,9 @@ public class MainUi {
                 default:
                     break;
             }
+        }
+        else {
+            takeoffButton.setVisible(true);
         }
     }
 
