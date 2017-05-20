@@ -237,6 +237,9 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         BoundingBox airportBoundary = new BoundingBox(new Vector3(0, 0, 0),
                 new Vector3(airport.width, airport.height, 0)
         );
+        if(queueingAirplanes.size() > 10){
+            points -= 1f * dt;
+        }
         // Check every airplane
         for(Airplane airplane: airplanes) {
             // If the plane is stopped on the runway
@@ -709,6 +712,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
             // Add a new airplane
             queueingAirplanes.add(new Airplane(flightName, flightType, null, null, 0f));
+
         }
     }
 
