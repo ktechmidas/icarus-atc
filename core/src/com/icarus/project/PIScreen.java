@@ -243,7 +243,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 new Vector3(airport.width, airport.height, 0)
         );
         if(queueingAirplanes.size() > 10){
-            points -= 0.2f * dt;
+            points -= 0.1f * dt;
             ui.setStatus("Too many queued airplanes!");
         }
         // Check every airplane
@@ -254,7 +254,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             {
                 toRemove.add(airplane);
                 ui.setStatus(airplane.name + " landed successfully!");
-                points += 50;
+                points += 20;
             }
             // If the plane has exited the airport
             else if(!airportBoundary.contains(new Vector3(airplane.state.getPosition(), 0))) {
@@ -262,12 +262,12 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 // If the plane was handed off to another airport
                 if(airplane.getTargetType() == AirplaneFlying.TargetType.AIRPORT) {
                     ui.setStatus(airplane.name + " handed off successfully");
-                    points += 10;
+                    points += 5;
                 }
                 // If the plane wasn't handed off
                 else {
                     ui.setStatus(airplane.name + " left the airport improperly!");
-                    points -= 10;
+                    points -= 5;
                 }
             }
 
@@ -286,7 +286,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                                 || (Math.abs(alt1 - alt2) < collisionWarningVSepCruise
                                     && alt1 > cruiseAlt))) {
                             ui.setStatus(airplane.name + " and " + other.name + " are too close!");
-                            points -= 1f * dt;
+                            points -= 0.5f * dt;
                         }
                         // If two airplanes have collided
                         if(pos1.dst(pos2) < collisionRadius
@@ -314,6 +314,9 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         // Remove airplanes from game
         for(Airplane airplane: toRemove) {
             if(airplanes.contains(airplane)) {
+                if(airplane == selectedAirplane) {
+                    setSelectedAirplane(null);
+                }
                 airplanes.remove(airplane);
             }
         }
