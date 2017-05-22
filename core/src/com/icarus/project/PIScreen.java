@@ -122,7 +122,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             time += dt;
             followingPlane = false;
             selectedAirplane = null;
-            if(stage == 0) {
+            if(stage == 1) {
                 float alpha;
                 warpSpeed = 0.0f;
 
@@ -132,12 +132,27 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
                 if(Math.abs(camera.zoom - 0.25f) < 0.05f) {
                     Gdx.input.vibrate(2000);
+                    stage = 2;
+                    time = 0.0f;
+                    nextShake = 0.0f;
+                }
+            }
+            if(stage == 0) {
+                float alpha;
+                warpSpeed = 0.0f;
+
+                alpha = 1.5f * dt;
+                zoomCamera(camera.position, camera.zoom * (1.0f - alpha) + maxZoomOut * alpha);
+                alpha *= 5.0;
+                setCameraPosition(camera.position.cpy().scl(1.0f - alpha).add(origin.cpy().scl(alpha)));
+
+                if(Math.abs(camera.zoom - maxZoomOut) < 0.05f) {
                     stage = 1;
                     time = 0.0f;
                     nextShake = 0.0f;
                 }
             }
-            else if(stage == 2) {
+            else if(stage == 3) {
                 airplanes.remove(a);
                 if(b != null) {
                     airplanes.remove(b);
@@ -146,10 +161,10 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 else {
                     ui.setStatus(a.name + ": crashed into ground!");
                 }
-                stage = 3;
+                stage = 4;
                 time = 0.0f;
             }
-            else if(stage == 1) {
+            else if(stage == 2) {
                 warpSpeed = 1.0f;
                 // screenshake
                 nextShake -= dt;
@@ -161,7 +176,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                             .scl(10.0f)));
                 }
                 if(time > 2.0) {
-                    stage = 2;
+                    stage = 3;
                 }
             }
         }
@@ -294,6 +309,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                                 !airplane.colliding) {
                             airplane.colliding = true;
                             other.colliding = true;
+                            System.out.println("Collision!");
                             collisions.add(new CollisionAnimation(airplane, other));
                             points = 0;
                         }
@@ -304,7 +320,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             // Check for collisions with the ground
             if(airplane.state.getAltitude() < 1
                     && airplane.stateType != Airplane.StateType.LANDING
-                    && airplane.stateType != Airplane.StateType.TAKINGOFF) {
+                    && airplane.stateType != Airplane.StateType.TAKINGOFF &&
+                    !airplane.colliding) {
                 airplane.colliding = true;
                 collisions.add(new CollisionAnimation(airplane, null));
                 points = 0;
@@ -325,7 +342,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         ArrayList<CollisionAnimation> collisionsToRemove = new ArrayList<>();
         for(CollisionAnimation collision: collisions) {
             collision.step();
-            if(collision.stage == 3) {
+            if(collision.stage == 4) {
                 collisionsToRemove.add(collision);
             }
         }

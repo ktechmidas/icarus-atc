@@ -492,7 +492,9 @@ public class MainUi {
                     break;
                 case SELECT_AIRPLANE:
                     showAirplaneButtons(selectedAirplane.flightType);
-                    takeoffButton.setVisible(true);
+                    if(PIScreen.getInstance().queueingAirplanes.size() > 0) {
+                        takeoffButton.setVisible(true);
+                    }
 
                     //draw a rectangle for airplane status
                     shapes.begin(ShapeRenderer.ShapeType.Filled);
@@ -576,7 +578,9 @@ public class MainUi {
             }
         }
         else {
-            takeoffButton.setVisible(true);
+            if(PIScreen.getInstance().queueingAirplanes.size() > 0) {
+                takeoffButton.setVisible(true);
+            }
         }
     }
 
