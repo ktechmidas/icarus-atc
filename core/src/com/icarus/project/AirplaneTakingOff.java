@@ -1,18 +1,10 @@
 package com.icarus.project;
 
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 
 public class AirplaneTakingOff extends AirplaneAltitude {
     public Vector2 heading;
-
-    private Runway runway;
-
-    public float maxVelocity = 250; //meters per second
-    public float accelRate = 0.1f;
+    public float accelRate = 0.12f;
 
     public AirplaneFlying transitionToFlying(float altitude) {
         return new AirplaneFlying(position, velocity, altitude);
@@ -38,7 +30,7 @@ public class AirplaneTakingOff extends AirplaneAltitude {
         velocity.add(velocity.cpy().nor().scl(dt * accelRate));
 
         if(PIScreen.toMeters(velocity.len()) > 150) {
-            airplane.transitionToFlying(0);
+            airplane.transitionToFlying(1);
             airplane.setTargetAltitude(10000);
         }
     }

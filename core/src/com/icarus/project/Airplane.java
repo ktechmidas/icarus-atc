@@ -24,6 +24,8 @@ class Airplane {
 
     public StateType stateType;
 
+    public boolean colliding;
+
     public Airplane(
             String name, FlightType flightType, Vector2 position, Vector2 velocity, float altitude)
     {
@@ -34,9 +36,11 @@ class Airplane {
             this.state = new AirplaneFlying(position, velocity, altitude);
         }
         else {
-            this.stateType = StateType.TAKINGOFF;
-            this.state = new AirplaneTakingOff(position, velocity);
+            this.stateType = StateType.QUEUEING;
+            this.state = new AirplaneQueueing();
         }
+
+        colliding = false;
 
         sprite = new Sprite(texture);
         sprite.setScale(0.25f * Gdx.graphics.getDensity());
@@ -117,7 +121,7 @@ class Airplane {
     }
 
     public enum StateType {
-        FLYING, LANDING, TAKINGOFF
+        FLYING, LANDING, TAKINGOFF, QUEUEING
     }
 
     public AirplaneFlying.TargetType getTargetType() {
@@ -135,6 +139,11 @@ class Airplane {
     public void transitionToFlying(int altitude) {
         state = state.transitionToFlying(altitude);
         stateType = StateType.FLYING;
+    }
+
+    public void transitionToTakingOff(Vector2 position, Vector2 velocity) {
+        state = state.transitionToTakingOff(position, velocity);
+        stateType = StateType.TAKINGOFF;
     }
 
     public void setSelected(boolean selected) {

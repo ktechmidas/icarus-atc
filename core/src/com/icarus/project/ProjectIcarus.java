@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class ProjectIcarus extends Game {
     public SpriteBatch batch;
     public BitmapFont font;
-    public int points;
     public AssetManager assets;
     private Game game;
 
