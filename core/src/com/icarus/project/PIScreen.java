@@ -82,12 +82,12 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     private ArrayList<CollisionAnimation> collisions = new ArrayList<>();
     private float collisionRadius = toPixels(150); // pixels
     private float collisionWarningHSep = toPixels(5500); // pixels
-    private float collisionWarningVSep = toPixels(305); // pixels
-    private float collisionWarningVSepCruise = toPixels(610); // pixels
+    private float collisionWarningVSep = 305; // meters
+    private float collisionWarningVSepCruise = 610; // meters
 
     public float warpSpeed;
 
-    public int points;
+    public float points;
 
     private Random r = new Random();
 
@@ -243,7 +243,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 new Vector3(airport.width, airport.height, 0)
         );
         if(queueingAirplanes.size() > 10){
-            points -= 1f * dt;
+            points -= 0.2f * dt;
+            ui.setStatus("Too many queued airplanes!");
         }
         // Check every airplane
         for(Airplane airplane: airplanes) {

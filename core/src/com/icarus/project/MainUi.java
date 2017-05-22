@@ -462,7 +462,7 @@ public class MainUi {
         );
 
         //draw points
-        String point = "Points: " + PIScreen.getInstance().points;
+        String point = "Points: " + (int) PIScreen.getInstance().points;
         layout.setText(font, point);
         font.draw(batch,
                 point,

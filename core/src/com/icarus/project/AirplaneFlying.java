@@ -67,7 +67,7 @@ class AirplaneFlying extends AirplaneAltitude {
                         .sub(targetRunway.points[targetRunwayPoint]).len()
                 );
                 float time = distance / velocity.len();
-                float descentRate = altitude / time; // meters per second
+                float descentRate = (altitude - 1) / time; // meters per second; -1 to avoid crashing
                 altitude -= descentRate * dt;
 
                 float radius = velocity.len() / turnRate;
@@ -82,22 +82,6 @@ class AirplaneFlying extends AirplaneAltitude {
                     if(turnToHeading(pos.sub(position).nor(), turnRate, dt)) {
                         targetRunwayStage = 1;
                     }
-                    // Heading from airplane to pos
-                    /*Vector2 line = pos.cpy().sub(position).nor();
-                    if(Math.abs(velocity.cpy().angle(target)) <
-                            Math.abs(line.cpy().angle(target)) + 0.05)
-                    {
-                        targetRunwayStage = 1;
-                    }
-                    else {
-                        float angle = line.angle(velocity);
-                        if(angle < 0) {
-                            velocity.rotateRad(turnRate * dt);
-                        }
-                        else {
-                            velocity.rotateRad(-turnRate * dt);
-                        }
-                    }*/
                 }
                 // If airplane is pointing towards runway line
                 else if(targetRunwayStage == 1) {
