@@ -184,7 +184,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     public PIScreen(ProjectIcarus game) {
         self = this;
-        points = 50; //TODO change this back to 0!
+        points = 0;
 
         zoomedOut = false;
 
@@ -417,7 +417,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             Random r = new Random();
             airplaneInterval = r.nextInt((int) (maxAirplaneInterval - minAirplaneInterval) + 1)
                     + minAirplaneInterval;
-            airplaneInterval *= Math.exp(-0.01f * points);
+            airplaneInterval *= Math.exp(-0.008f * points);
             timeElapsed = 0.0f;
             addAirplane();
         }
