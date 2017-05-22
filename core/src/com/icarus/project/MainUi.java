@@ -492,7 +492,10 @@ public class MainUi {
                     break;
                 case SELECT_AIRPLANE:
                     showAirplaneButtons(selectedAirplane.flightType);
-                    takeoffButton.setVisible(true);
+                    // Show takeoff button if there is an airplane in the queue
+                    if(PIScreen.getInstance().queueingAirplanes.size() > 0) {
+                        takeoffButton.setVisible(true);
+                    }
 
                     //draw a rectangle for airplane status
                     shapes.begin(ShapeRenderer.ShapeType.Filled);
