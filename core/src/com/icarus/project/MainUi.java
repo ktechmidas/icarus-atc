@@ -462,7 +462,7 @@ public class MainUi {
         );
 
         //draw points
-        String point = "Points: " + (int) PIScreen.getInstance().points;
+        String point = "P: " + (int) PIScreen.getInstance().points;
         layout.setText(font, point);
         font.draw(batch,
                 point,
@@ -579,7 +579,9 @@ public class MainUi {
             }
         }
         else {
-            takeoffButton.setVisible(true);
+            if(PIScreen.getInstance().queueingAirplanes.size() > 0) {
+                takeoffButton.setVisible(true);
+            }
         }
     }
 
