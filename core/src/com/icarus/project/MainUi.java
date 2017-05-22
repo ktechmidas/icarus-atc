@@ -174,7 +174,9 @@ public class MainUi {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                PIScreen.getInstance().warpSpeed *= 2.0;
+                if(PIScreen.getInstance().warpSpeed < 8) {
+                    PIScreen.getInstance().warpSpeed *= 2.0;
+                }
             }
         });
         stage.addActor(warpUpButton);
@@ -431,7 +433,7 @@ public class MainUi {
         );
 
         //draw the warp speed
-        font.setColor(Colors.colors[4]);
+        font.setColor(Colors.colors[3]);
         String warp = "x" + (int)(PIScreen.getInstance().warpSpeed);
         layout.setText(font, warp);
         font.draw(batch,
@@ -441,8 +443,8 @@ public class MainUi {
         );
 
         //draw points
-        font.setColor(Colors.colors[4]);
-        String point = "Points: " + PIScreen.getInstance().points;
+        font.setColor(Colors.colors[3]);
+        String point = "P: " + PIScreen.getInstance().points;
         layout.setText(font, point);
         font.draw(batch,
                 point,
