@@ -137,6 +137,7 @@ class AirplaneFlying extends AirplaneAltitude {
                 }
                 break;
             case AIRPORT:
+                turnToHeading(targetAirport.position.cpy().sub(this.position), turnRate, dt);
                 break;
             default:
                 break;
