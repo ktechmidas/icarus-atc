@@ -174,7 +174,9 @@ public class MainUi {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                PIScreen.getInstance().warpSpeed *= 2.0;
+                if(PIScreen.getInstance().warpSpeed < 8) {
+                    PIScreen.getInstance().warpSpeed *= 2.0;
+                }
             }
         });
         stage.addActor(warpUpButton);
@@ -314,6 +316,8 @@ public class MainUi {
                     PIScreen.getInstance().setSelectedAirplane(
                             PIScreen.getInstance().queueingAirplanes.get(0)
                     );
+
+                    PIScreen.getInstance().toggleOverview(false);
                 }
                 else {
                     setStatus("Queue is empty");
@@ -458,7 +462,7 @@ public class MainUi {
         );
 
         //draw points
-        String point = "Points: " + PIScreen.getInstance().points;
+        String point = "P: " + PIScreen.getInstance().points;
         layout.setText(font, point);
         font.draw(batch,
                 point,

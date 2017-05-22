@@ -47,7 +47,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     public ProjectIcarus.UiState uiState;
     public ShapeRenderer shapes;
     private SpriteBatch batch;
-    private BitmapFont labelFont, titleFont, airplaneFont;
+    private BitmapFont labelFont, smallLabelFont, titleFont, airplaneFont;
 
     // Camera
     private OrthographicCamera camera;
@@ -56,6 +56,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     public boolean followingPlane;
     private Vector2 oldInitialFirstPointer=null, oldInitialSecondPointer=null;
     private float oldScale;
+    private boolean zoomedOut;
 
     // Pan boundaries
     private float toBoundaryRight;
@@ -69,7 +70,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     public Airplane selectedAirplane;
     public float altitudeTarget;
     private float cruiseAlt = 10000; // meters
-    public float altitudeChangeRate = 14f; // meters per second
+    public float altitudeChangeRate = 20f; // meters per second
 
     // Airplane spawning
     private float minAirplaneInterval;
@@ -81,12 +82,12 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     private ArrayList<CollisionAnimation> collisions = new ArrayList<>();
     private float collisionRadius = toPixels(150); // pixels
     private float collisionWarningHSep = toPixels(5500); // pixels
-    private float collisionWarningVSep = toPixels(305); // pixels
-    private float collisionWarningVSepCruise = toPixels(610); // pixels
+    private float collisionWarningVSep = 305; // meters
+    private float collisionWarningVSepCruise = 610; // meters
 
     public float warpSpeed;
 
-    public int points;
+    public float points;
 
     private Random r = new Random();
 
@@ -106,6 +107,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             time = 0.0f;
             stage = 0;
             startWarp = warpSpeed;
+            zoomedOut = false;
+            camera.zoom = maxZoomOut;
             // Temporary origin
             Vector2 o = a.state.getPosition().cpy();//.add(b.state.getPosition()).scl(0.5f);
             if(b != null) {
@@ -183,12 +186,15 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         self = this;
         points = 0;
 
+        zoomedOut = false;
+
         // Initialize the AssetManager
         AssetManager manager = game.assets;
         manager.finishLoading();
 
         airport = manager.get("airports/airport.json");
         labelFont = manager.get("fonts/3270Medium.ttf");
+        smallLabelFont = manager.get("fonts/3270Medium_small.ttf");
         titleFont = manager.get("fonts/3270Medium_title.ttf");
         airplaneFont = manager.get("fonts/3270Medium_airplane.ttf");
         Airplane.texture = manager.get("sprites/airplane.png");
@@ -251,6 +257,10 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         BoundingBox airportBoundary = new BoundingBox(new Vector3(0, 0, 0),
                 new Vector3(airport.width, airport.height, 0)
         );
+        if(queueingAirplanes.size() > 10){
+            points -= 0.1f * dt;
+            ui.setStatus("Too many queued airplanes!");
+        }
         // Check every airplane
         for(Airplane airplane: airplanes) {
             // If the plane is stopped on the runway
@@ -259,7 +269,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             {
                 toRemove.add(airplane);
                 ui.setStatus(airplane.name + " landed successfully!");
-                points += 50;
+                points += 20;
             }
             // If the plane has exited the airport
             else if(!airportBoundary.contains(new Vector3(airplane.state.getPosition(), 0))) {
@@ -267,12 +277,12 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 // If the plane was handed off to another airport
                 if(airplane.getTargetType() == AirplaneFlying.TargetType.AIRPORT) {
                     ui.setStatus(airplane.name + " handed off successfully");
-                    points += 10;
+                    points += 5;
                 }
                 // If the plane wasn't handed off
                 else {
                     ui.setStatus(airplane.name + " left the airport improperly!");
-                    points -= 10;
+                    points -= 5;
                 }
             }
 
@@ -291,7 +301,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                                 || (Math.abs(alt1 - alt2) < collisionWarningVSepCruise
                                     && alt1 > cruiseAlt))) {
                             ui.setStatus(airplane.name + " and " + other.name + " are too close!");
-                            points -= 1f * dt;
+                            points -= 0.5f * dt;
                         }
                         // If two airplanes have collided
                         if(pos1.dst(pos2) < collisionRadius
@@ -321,6 +331,9 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         // Remove airplanes from game
         for(Airplane airplane: toRemove) {
             if(airplanes.contains(airplane)) {
+                if(airplane == selectedAirplane) {
+                    setSelectedAirplane(null);
+                }
                 airplanes.remove(airplane);
             }
         }
@@ -351,15 +364,25 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             }
             shapes.end();
 
-            // Draw waypoint labels
             batch.begin();
+            // Draw waypoint labels
             for(Waypoint waypoint: airport.waypoints) {
-                waypoint.drawLabel(labelFont, batch, camera);
+                if(zoomedOut) {
+                    waypoint.drawLabel(smallLabelFont, batch, camera);
+                }
+                else {
+                    waypoint.drawLabel(labelFont, batch, camera);
+                }
             }
 
             // Draw runway labels
             for(Runway runway: airport.runways) {
-                runway.drawLabel(labelFont, batch, camera);
+                if(zoomedOut) {
+                    runway.drawLabel(smallLabelFont, batch, camera);
+                }
+                else {
+                    runway.drawLabel(labelFont, batch, camera);
+                }
             }
 
             // Draw airplanes
@@ -385,7 +408,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         ui.draw();
 
         // Follow selected airplane with camera
-        if(selectedAirplane != null && followingPlane) {
+        if(selectedAirplane != null && followingPlane && !zoomedOut) {
             setCameraPosition(new Vector3(selectedAirplane.state.getPosition(), 0));
         }
 
@@ -419,6 +442,11 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 setSelectedAirplane(null);
                 for(Airplane airplane: airplanes) {
                     if(airplane.sprite.getBoundingRectangle().contains(position.x, position.y)) {
+                        if(zoomedOut) {
+                            zoomedOut = false;
+                            camera.zoom = maxZoomOut;
+                            camera.update();
+                        }
                         setSelectedAirplane(airplane);
                         ui.setStatus("Selected " + getSelectedAirplane().name);
                         return true;
@@ -474,46 +502,78 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     }
 
     @Override
-    public boolean pan(float x, float y, float deltaX, float deltaY) {
-        if(uiState == ProjectIcarus.UiState.CHANGE_ALTITUDE) {
-            altitudeTarget -= deltaY * 3;
-            if(altitudeTarget < 0f) {
-                altitudeTarget = 0f;
-            }
+    public boolean longPress(float x, float y) {
+        toggleOverview(!zoomedOut);
+        Gdx.input.vibrate(20);
+        return true;
+    }
+
+    public void toggleOverview(boolean show) {
+        if(show) {
+            zoomedOut = true;
+            camera.zoom = airport.height / (Gdx.graphics.getHeight() - ui.statusBarHeight);
+            camera.position.set(airport.width / 2,
+                    (airport.height - ui.statusBarHeight) / 2, 0
+            );
         }
         else {
-            followingPlane = false;
-            setCameraPosition(camera.position.add(
-                    camera.unproject(new Vector3(0, 0, 0))
-                            .add(camera.unproject(new Vector3(deltaX, deltaY, 0)).scl(-1f))
-            ));
+            zoomedOut = false;
+            camera.zoom = maxZoomOut;
         }
-        return true;
+        camera.update();
+    }
+
+    @Override
+    public boolean pan(float x, float y, float deltaX, float deltaY) {
+        if(!zoomedOut) {
+            if(uiState == ProjectIcarus.UiState.CHANGE_ALTITUDE) {
+                altitudeTarget -= deltaY * 3;
+                if(altitudeTarget < 0f) {
+                    altitudeTarget = 0f;
+                }
+            }
+            else {
+                followingPlane = false;
+                setCameraPosition(camera.position.add(
+                        camera.unproject(new Vector3(0, 0, 0))
+                                .add(camera.unproject(new Vector3(deltaX, deltaY, 0)).scl(-1f))
+                ));
+            }
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     @Override
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1,
                          Vector2 pointer2)
     {
-        if (!(initialPointer1.equals(oldInitialFirstPointer)
-                && initialPointer2.equals(oldInitialSecondPointer)))
-        {
-            oldInitialFirstPointer = initialPointer1.cpy();
-            oldInitialSecondPointer = initialPointer2.cpy();
-            oldScale = camera.zoom;
+        if(!zoomedOut) {
+            if (!(initialPointer1.equals(oldInitialFirstPointer)
+                    && initialPointer2.equals(oldInitialSecondPointer)))
+            {
+                oldInitialFirstPointer = initialPointer1.cpy();
+                oldInitialSecondPointer = initialPointer2.cpy();
+                oldScale = camera.zoom;
+            }
+            Vector3 center = new Vector3(
+                    (pointer1.x + initialPointer2.x) / 2,
+                    (pointer2.y + initialPointer1.y) / 2,
+                    0
+            );
+            zoomCamera(center,
+                    oldScale * initialPointer1.dst(initialPointer2) / pointer1.dst(pointer2));
+            return true;
         }
-        Vector3 center = new Vector3(
-                (pointer1.x + initialPointer2.x) / 2,
-                (pointer2.y + initialPointer1.y) / 2,
-                0
-        );
-        zoomCamera(center,
-                oldScale * initialPointer1.dst(initialPointer2) / pointer1.dst(pointer2));
-        return true;
+        else {
+            return false;
+        }
     }
 
     private void zoomCamera(Vector3 origin, float scale) {
-        if(followingPlane) {
+        if(followingPlane && !zoomedOut) {
             camera.zoom = scale;
             camera.zoom = Math.min(maxZoomOut, Math.max(camera.zoom, maxZoomIn));
         }
@@ -585,6 +645,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         FreetypeFontLoader.FreeTypeFontLoaderParameter labelFontParams;
         FreetypeFontLoader.FreeTypeFontLoaderParameter titleFontParams;
         FreetypeFontLoader.FreeTypeFontLoaderParameter airplaneFontParams;
+        FreetypeFontLoader.FreeTypeFontLoaderParameter smallLabelFontParams;
 
         FileHandleResolver resolver = new InternalFileHandleResolver();
         manager.setLoader(Airport.class, new AirportLoader(resolver));
@@ -601,6 +662,11 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         labelFontParams.fontFileName = "fonts/3270Medium.ttf";
         labelFontParams.fontParameters.size = Math.round(fontSize);
         manager.load("fonts/3270Medium.ttf", BitmapFont.class, labelFontParams);
+
+        smallLabelFontParams = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+        smallLabelFontParams.fontFileName = "fonts/3270Medium.ttf";
+        smallLabelFontParams.fontParameters.size = Math.round(fontSize * 0.7f);
+        manager.load("fonts/3270Medium_small.ttf", BitmapFont.class, smallLabelFontParams);
 
         titleFontParams = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         titleFontParams.fontFileName = "fonts/3270Medium.ttf";
@@ -725,6 +791,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
             // Add a new airplane
             queueingAirplanes.add(new Airplane(flightName, flightType, null, null, 0f));
+
         }
     }
 
@@ -844,11 +911,6 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
-        return false;
-    }
-
-    @Override
-    public boolean longPress(float x, float y) {
         return false;
     }
 
