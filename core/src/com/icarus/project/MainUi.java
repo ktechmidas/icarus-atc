@@ -174,7 +174,9 @@ public class MainUi {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                PIScreen.getInstance().warpSpeed *= 2.0;
+                if(PIScreen.getInstance().warpSpeed < 8) {
+                    PIScreen.getInstance().warpSpeed *= 2.0;
+                }
             }
         });
         stage.addActor(warpUpButton);
@@ -451,7 +453,6 @@ public class MainUi {
         );
 
         //draw the warp speed
-        font.setColor(Colors.colors[4]);
         String warp = "x" + (int)(PIScreen.getInstance().warpSpeed);
         layout.setText(font, warp);
         font.draw(batch,
@@ -482,6 +483,7 @@ public class MainUi {
         toggleOtherAirports(false);
         toggleHeadingSelector(false);
         hideAirplaneButtons();
+        takeoffButton.setVisible(false);
         //show airplane-specific buttons if an airplane is selected
         if(selectedAirplane != null) {
             switch(PIScreen.getInstance().uiState) {
@@ -490,6 +492,7 @@ public class MainUi {
                     break;
                 case SELECT_AIRPLANE:
                     showAirplaneButtons(selectedAirplane.flightType);
+                    takeoffButton.setVisible(true);
 
                     //draw a rectangle for airplane status
                     shapes.begin(ShapeRenderer.ShapeType.Filled);
@@ -544,11 +547,13 @@ public class MainUi {
                         );
                     }
 
-                    font.draw(batch,
-                            (int) PIScreen.toMeters(selectedAirplane.getVelocity().len()) + "m/s",
-                            Gdx.graphics.getWidth() - (3f / 8f) * statusWidth,
-                            Gdx.graphics.getHeight() - 3 * font.getLineHeight() / 2
-                    );
+                    if(selectedAirplane.getVelocity() != null) {
+                        font.draw(batch,
+                                (int) PIScreen.toMeters(selectedAirplane.getVelocity().len()) + "m/s",
+                                Gdx.graphics.getWidth() - (3f / 8f) * statusWidth,
+                                Gdx.graphics.getHeight() - 3 * font.getLineHeight() / 2
+                        );
+                    }
 
                     batch.end();
                     break;
@@ -569,6 +574,9 @@ public class MainUi {
                 default:
                     break;
             }
+        }
+        else {
+            takeoffButton.setVisible(true);
         }
     }
 

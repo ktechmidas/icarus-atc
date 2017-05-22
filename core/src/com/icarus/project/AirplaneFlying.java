@@ -119,7 +119,6 @@ class AirplaneFlying extends AirplaneAltitude {
                 // If turn to runway has completed
                 else if(targetRunwayStage == 2) {
                     if(turnToHeading(target, turnRate, dt)) {
-                        PIScreen.getInstance().ui.setStatus(airplane.name + ": turn complete");
                         targetRunwayStage = 3;
                     }
 
@@ -138,9 +137,6 @@ class AirplaneFlying extends AirplaneAltitude {
                 }
                 break;
             case AIRPORT:
-                if(turnToHeading(targetAirport.position.cpy().sub(this.position), turnRate, dt)) {
-                    PIScreen.getInstance().ui.setStatus(airplane.name + ": turn complete");
-                }
                 break;
             default:
                 break;

@@ -30,7 +30,7 @@ public class AirplaneTakingOff extends AirplaneAltitude {
         velocity.add(velocity.cpy().nor().scl(dt * accelRate));
 
         if(PIScreen.toMeters(velocity.len()) > 150) {
-            airplane.transitionToFlying(0);
+            airplane.transitionToFlying(1);
             airplane.setTargetAltitude(10000);
         }
     }

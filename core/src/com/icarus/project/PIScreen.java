@@ -70,7 +70,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     public Airplane selectedAirplane;
     public float altitudeTarget;
     private float cruiseAlt = 10000; // meters
-    public float altitudeChangeRate = 14f; // meters per second
+    public float altitudeChangeRate = 20f; // meters per second
 
     // Airplane spawning
     private float minAirplaneInterval;
@@ -110,7 +110,10 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             zoomedOut = false;
             camera.zoom = maxZoomOut;
             // Temporary origin
-            Vector2 o = a.state.getPosition().cpy().add(b.state.getPosition()).scl(0.5f);
+            Vector2 o = a.state.getPosition().cpy();//.add(b.state.getPosition()).scl(0.5f);
+            if(b != null) {
+                o.add(b.state.getPosition()).scl(0.5f);
+            }
             origin = new Vector3(o.x, o.y, 0.0f);
         }
 
@@ -136,8 +139,13 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
             }
             else if(stage == 2) {
                 airplanes.remove(a);
-                airplanes.remove(b);
-                ui.setStatus(a.name + " collided with " + b.name + "!");
+                if(b != null) {
+                    airplanes.remove(b);
+                    ui.setStatus(a.name + " collided with " + b.name + "!");
+                }
+                else {
+                    ui.setStatus(a.name + ": crashed into ground!");
+                }
                 stage = 3;
                 time = 0.0f;
             }
@@ -217,6 +225,10 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     @Override
     public void render(float delta) {
+        if(points < 0) {
+            points = 0;
+        }
+
         super.render();
 
         // Set background color
@@ -230,6 +242,9 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         BoundingBox airportBoundary = new BoundingBox(new Vector3(0, 0, 0),
                 new Vector3(airport.width, airport.height, 0)
         );
+        if(queueingAirplanes.size() > 10){
+            points -= 1f * dt;
+        }
         // Check every airplane
         for(Airplane airplane: airplanes) {
             // If the plane is stopped on the runway
@@ -255,7 +270,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 }
             }
 
-            // Check for collisions and near misses
+            // Check for collisions and near misses with other planes
             for(Airplane other: airplanes) {
                 if(other != airplane) {
                     Vector2 pos1 = airplane.state.getPosition();
@@ -270,7 +285,6 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                                 || (Math.abs(alt1 - alt2) < collisionWarningVSepCruise
                                     && alt1 > cruiseAlt))) {
                             ui.setStatus(airplane.name + " and " + other.name + " are too close!");
-                            Gdx.app.log(TAG, airplane.name + " and " + other.name + " are too close!");
                             points -= 1f * dt;
                         }
                         // If two airplanes have collided
@@ -284,6 +298,15 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                         }
                     }
                 }
+            }
+
+            // Check for collisions with the ground
+            if(airplane.state.getAltitude() < 1
+                    && airplane.stateType != Airplane.StateType.LANDING
+                    && airplane.stateType != Airplane.StateType.TAKINGOFF) {
+                airplane.colliding = true;
+                collisions.add(new CollisionAnimation(airplane, null));
+                points = 0;
             }
         }
 
@@ -369,7 +392,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         }
 
         // Generate a new airplane after a random amount of time
-        if(timeElapsed > airplaneInterval) {
+        if(timeElapsed > airplaneInterval / (1 + points / 50) + minAirplaneInterval / 4.0) {
             Random r = new Random();
             airplaneInterval = r.nextInt((int) (maxAirplaneInterval - minAirplaneInterval) + 1)
                     + minAirplaneInterval;
@@ -448,7 +471,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
                 break;
             case CHANGE_ALTITUDE:
                 uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
-                ui.setStatus("Set target altitude to: " + altitudeTarget + "m");
+                ui.setStatus("Set target altitude to: " + (int) altitudeTarget + "m");
                 ((AirplaneFlying) selectedAirplane.state).targetAltitude = altitudeTarget;
                 break;
             default:
@@ -747,6 +770,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
             // Add a new airplane
             queueingAirplanes.add(new Airplane(flightName, flightType, null, null, 0f));
+
         }
     }
 
@@ -767,8 +791,8 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
 
     public void land(Runway runway, int end) {
         // Landing constraints
-        float headingVariance = 30; // Maximum heading deviation from runway
-        float positionVariance = 30; // Maximum position deviation from runway
+        float headingVariance = 20; // Maximum heading deviation from runway
+        float positionVariance = 20; // Maximum position deviation from runway
         Vector2 targetRunway = runway.points[1-end].cpy()
                 .sub(runway.points[end]);
         // Calculate distance
