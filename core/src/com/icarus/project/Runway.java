@@ -81,7 +81,7 @@ class Runway {
         Vector3 pos0 = camera.project(new Vector3(points[0].x, points[0].y, 0f));
         Vector3 pos1 = camera.project(new Vector3(points[1].x, points[1].y, 0f));
         shapes.setColor(Colors.colors[3]);
-        shapes.rectLine(pos0.x, pos0.y, pos1.x, pos1.y, 8f);
+        shapes.rectLine(pos0.x, pos0.y, pos1.x, pos1.y, 3f * Gdx.graphics.getDensity());
     }
 
     ///Draws the label for the runway.
