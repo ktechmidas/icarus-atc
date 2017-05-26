@@ -18,70 +18,72 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.assets.AssetManager;
 
 public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
-    final ProjectIcarus game;
-    public Stage stage;
-    int width = 0;
-    int height = 0;
-    AssetManager menuManager = new AssetManager();
-    OrthographicCamera camera;
+    private final ProjectIcarus game;
+    private Stage stage;
+    private AssetManager menuManager = new AssetManager();
     private BitmapFont font = new BitmapFont();
     private SpriteBatch batch;
     private ImageButton playButton;
-    private Skin playBtnSkin;
-    private ImageButton.ImageButtonStyle playBtnStyle;
-    int[] positions = {1240, 150, 235, 500, 600, 500, 975, 500, 440, 200, 785, 200, 1280, 485};
-    private int buttonSize = (int) (100 * Gdx.graphics.getDensity());
     private Texture logo;
 
     public MainMenuScreen(final ProjectIcarus game) {
         this.game = game;
         stage = new Stage();
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 480);
         batch = new SpriteBatch();
-        playBtnSkin = new Skin();   //create button skin
-        playBtnSkin.add("playButton", new Texture("buttons/play_button.png"));//add the image to the skin
-        playBtnStyle = new ImageButton.ImageButtonStyle();  //create button style
-        playBtnStyle.imageUp = playBtnSkin.getDrawable("playButton");  //sets the button appearance when it is not pressed
-        playBtnStyle.imageDown = playBtnSkin.getDrawable("playButton");    //sets the button appearance when it is pressed
-        playButton = new ImageButton(playBtnStyle);    //initializes the ImageButton with the created style as a parameter
-        playButton.setSize(buttonSize, buttonSize); //set button size
-        int width = (int) ((Gdx.graphics.getWidth() - playButton.getWidth())/2); //set button orientation horizontally
-        int height = (int) ((Gdx.graphics.getHeight() - playButton.getHeight())/4); //set button orientation vertically
-        playButton.setBounds(width, height, playButton.getWidth(), playButton.getHeight());  //tells the button where to go
-        playButton.addListener(new InputListener() {//adds listener to check for touch
 
+        OrthographicCamera camera = new OrthographicCamera();
+        camera.setToOrtho(false, 800, 480);
 
+        // Button skin
+        Skin playButtonSkin = new Skin();
+        playButtonSkin.add("playButton", new Texture("buttons/play_button.png"));
+
+        // Create button style
+        ImageButton.ImageButtonStyle playButtonStyle = new ImageButton.ImageButtonStyle();
+        playButtonStyle.imageUp = playButtonSkin.getDrawable("playButton"); // Unpressed
+        playButtonStyle.imageDown = playButtonSkin.getDrawable("playButton"); // Pressed
+
+        // Play button
+        playButton = new ImageButton(playButtonStyle);
+        int buttonSize = (int) (100 * Gdx.graphics.getDensity());
+        playButton.setSize(buttonSize, buttonSize);
+        int width = (int) ((Gdx.graphics.getWidth() - playButton.getWidth())/2);
+        int height = (int) ((Gdx.graphics.getHeight() - playButton.getHeight())/4);
+        playButton.setBounds(width, height, playButton.getWidth(), playButton.getHeight());
+        playButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 return true;
             }
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                game.setScreen(new PlayScreen(game));//switch screen to game state
+                game.setScreen(new PlayScreen(game)); // Switch screen to game state
                 playButton.setDisabled(true);
 
             }
         });
-        stage.addActor(playButton);//adds the button to the stage
-        Gdx.input.setInputProcessor(new InputMultiplexer(stage, new GestureDetector(this)));
+        stage.addActor(playButton);
 
+        // Game logo
         logo = new Texture(Gdx.files.internal("buttons/Icarus_Logo.png"));
-    }
 
-    @Override
-    public void show() {
+        Gdx.input.setInputProcessor(new InputMultiplexer(stage, new GestureDetector(this)));
     }
 
     @Override
     public void render(float delta) {
         game.assets.update();
 
-        Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[2].b, 1);
+        // Set background color
+        Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[1].b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         batch.begin();
+        // Draw play button
         playButton.getImage().setColor(Colors.colors[4]);
         playButton.draw(batch, 1);
+
+        // Draw logo
         float width = logo.getWidth() * Gdx.graphics.getDensity() / 3.0f;
         float height = logo.getHeight() * Gdx.graphics.getDensity() / 3.0f;
         batch.draw(logo,
@@ -89,8 +91,22 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
                 2 * (Gdx.graphics.getHeight() - height)/3,
                 width, height);
         batch.end();
+
         stage.act();
         stage.draw();
+    }
+
+    @Override
+    public void dispose() {
+        batch.dispose();
+        font.dispose();
+        menuManager.dispose();
+        stage.dispose();
+        game.dispose();
+    }
+
+    @Override
+    public void show() {
     }
 
     @Override
@@ -113,20 +129,8 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
 
     }
 
-
-    @Override
-    public void dispose() {
-        batch.dispose();
-        font.dispose();
-        menuManager.dispose();
-        stage.dispose();
-        game.dispose();
-    }
-
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
-
-
         return false;
     }
 
