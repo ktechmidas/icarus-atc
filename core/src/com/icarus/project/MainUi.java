@@ -31,30 +31,17 @@ public class MainUi {
     private SpriteBatch batch;
     public Stage stage;
 
-    private ImageButton headingButton;
-    private ImageButton waypointButton;
-    private ImageButton altitudeButton;
-    private ImageButton headingWheel;
-    private ImageButton landingButton;
-    private ImageButton takeoffButton;
-    private ImageButton handoffButton;
-    private ImageButton cancelButton;
-    private ImageButton warpUpButton;
-    private ImageButton warpDownButton;
-    private ImageButton pauseButton;
-    private ImageButton playPauseButton;
+    private ImageButton headingButton, waypointButton, altitudeButton, landingButton, handoffButton;
+    private ImageButton headingWheel, takeoffButton, cancelButton;
+    private ImageButton warpUpButton, warpDownButton, pauseButton, playPauseButton;
 
     private ArrayList<ImageButton> airportButtons;
-    float warpPause = 0;
-//    public int points;
+    private float warpPause = 0;
 
-    public static final String TAG = "MainUi";
+    public static final String TAG = "MainUi"; // For log messages
 
     public int statusBarHeight;
-    private int buttonGap;
-    private int buttonSize;
-    private int airportButtonSize;
-    private int warpButtonSize;
+    private int buttonGap, buttonSize, airportButtonSize, warpButtonSize;
 
     private int textGap = (int) (10 * Gdx.graphics.getDensity());
 
@@ -62,7 +49,6 @@ public class MainUi {
 
     public MainUi(AssetManager assets, BitmapFont font) {
         this.font = font;
-//        points = points+0;
 
         shapes = new ShapeRenderer();
         batch = new SpriteBatch();

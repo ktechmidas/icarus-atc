@@ -43,9 +43,9 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     public ArrayList<OtherAirport> otherAirports;
 
     // UI
-    public MainUi ui;
+    private MainUi ui;
     public ProjectIcarus.UiState uiState;
-    public ShapeRenderer shapes;
+    private ShapeRenderer shapes;
     private SpriteBatch batch;
     private BitmapFont labelFont, smallLabelFont, titleFont, airplaneFont;
 
@@ -59,24 +59,17 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
     private boolean zoomedOut;
 
     // Pan boundaries
-    private float toBoundaryRight;
-    private float toBoundaryLeft;
-    private float toBoundaryTop;
-    private float toBoundaryBottom;
+    private float toBoundaryRight, toBoundaryLeft, toBoundaryTop, toBoundaryBottom;
 
     // Airplanes
-    private ArrayList<Airplane> airplanes;
-    public ArrayList<Airplane> queueingAirplanes;
+    public ArrayList<Airplane> airplanes, queueingAirplanes;
     public Airplane selectedAirplane;
     public float altitudeTarget;
     private float cruiseAlt = 10000; // meters
     public float altitudeChangeRate = 20f; // meters per second
 
     // Airplane spawning
-    private float minAirplaneInterval;
-    private float maxAirplaneInterval;
-    private float timeElapsed;
-    private float airplaneInterval;
+    private float minAirplaneInterval, maxAirplaneInterval, timeElapsed, airplaneInterval;
 
     // Collisions
     private ArrayList<CollisionAnimation> collisions = new ArrayList<>();
@@ -247,7 +240,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         super.render();
 
         // Set background color
-        Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[2].b, 1);
+        Gdx.gl.glClearColor(Colors.colors[0].r, Colors.colors[0].g, Colors.colors[1].b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // Time elapsed this frame, taking time warp into account
@@ -717,7 +710,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         }
     }
 
-    public void addAirplane() {
+    private void addAirplane() {
         // Randomly choose between ARRIVAL, FLYOVER, and DEPARTURE
         // Also determine altitude and speed based on flight type
         float altitude;
@@ -796,7 +789,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         }
     }
 
-    public void takeOff(Runway runway, int end) {
+    private void takeOff(Runway runway, int end) {
         float speed = 0.01f;
         Vector2 position = runway.points[end].cpy();
         Vector2 heading = runway.points[1-end].cpy().sub(position).nor();
@@ -811,7 +804,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         queueingAirplanes.remove(0);
     }
 
-    public void land(Runway runway, int end) {
+    private void land(Runway runway, int end) {
         // Landing constraints
         float headingVariance = 20; // Maximum heading deviation from runway
         float positionVariance = 20; // Maximum position deviation from runway
