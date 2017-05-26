@@ -17,7 +17,7 @@ public class ProjectIcarus extends Game {
 
     public void create() {
         assets = new AssetManager();
-        PIScreen.setupAssetManager(assets);
+        PlayScreen.setupAssetManager(assets);
         batch = new SpriteBatch();
         font = new BitmapFont();
         this.setScreen(new MainMenuScreen(this));

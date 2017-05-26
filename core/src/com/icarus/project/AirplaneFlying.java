@@ -133,10 +133,10 @@ class AirplaneFlying extends AirplaneAltitude {
         if(targetType != RUNWAY) {
             // Change altitude
             if(altitude > targetAltitude && Math.abs(altitude - targetAltitude) > 1) {
-                altitude -= PIScreen.getInstance().altitudeChangeRate * dt;
+                altitude -= PlayScreen.getInstance().altitudeChangeRate * dt;
             }
             else if(altitude < targetAltitude && Math.abs(altitude - targetAltitude) > 1) {
-                altitude += PIScreen.getInstance().altitudeChangeRate * dt;
+                altitude += PlayScreen.getInstance().altitudeChangeRate * dt;
             }
         }
     }

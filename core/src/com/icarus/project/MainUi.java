@@ -83,8 +83,8 @@ public class MainUi {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                if(PIScreen.getInstance().warpSpeed > 1.0) {
-                    PIScreen.getInstance().warpSpeed *= 0.5;
+                if(PlayScreen.getInstance().warpSpeed > 1.0) {
+                    PlayScreen.getInstance().warpSpeed *= 0.5;
                 }
             }
         });
@@ -105,14 +105,14 @@ public class MainUi {
             }
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                if(PIScreen.getInstance().warpSpeed >= 1.0 ) {
-                    warpPause = PIScreen.getInstance().warpSpeed;
-                    PIScreen.getInstance().warpSpeed = 0;
+                if(PlayScreen.getInstance().warpSpeed >= 1.0 ) {
+                    warpPause = PlayScreen.getInstance().warpSpeed;
+                    PlayScreen.getInstance().warpSpeed = 0;
                     playPauseButton.setVisible(true);
                     pauseButton.setVisible(false);
                 }
-               /* else if(PIScreen.getInstance().warpSpeed == 0) {
-                   PIScreen.getInstance().warpSpeed = warpPause;
+               /* else if(PlayScreen.getInstance().warpSpeed == 0) {
+                   PlayScreen.getInstance().warpSpeed = warpPause;
                 }*/
             }
         });
@@ -133,8 +133,8 @@ public class MainUi {
             }
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                if(PIScreen.getInstance().warpSpeed == 0) {
-                    PIScreen.getInstance().warpSpeed = warpPause;
+                if(PlayScreen.getInstance().warpSpeed == 0) {
+                    PlayScreen.getInstance().warpSpeed = warpPause;
                     playPauseButton.setVisible(false);
                     pauseButton.setVisible(true);
 
@@ -160,8 +160,8 @@ public class MainUi {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                if(PIScreen.getInstance().warpSpeed < 8) {
-                    PIScreen.getInstance().warpSpeed *= 2.0;
+                if(PlayScreen.getInstance().warpSpeed < 8) {
+                    PlayScreen.getInstance().warpSpeed *= 2.0;
                 }
             }
         });
@@ -181,7 +181,7 @@ public class MainUi {
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_HEADING;
+                PlayScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_HEADING;
             }
         });
         stage.addActor(headingButton);
@@ -204,8 +204,8 @@ public class MainUi {
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 setStatus("Select a target waypoint");
-                PIScreen.getInstance().followingPlane = false;
-                PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_WAYPOINT;
+                PlayScreen.getInstance().followingPlane = false;
+                PlayScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_WAYPOINT;
             }
         });
         stage.addActor(waypointButton);
@@ -223,9 +223,9 @@ public class MainUi {
         altitudeButton.addListener(new InputListener(){
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                PIScreen.getInstance().uiState = ProjectIcarus.UiState.CHANGE_ALTITUDE;
-                PIScreen.getInstance().altitudeTarget =
-                    PIScreen.getInstance().selectedAirplane.state.getAltitude();
+                PlayScreen.getInstance().uiState = ProjectIcarus.UiState.CHANGE_ALTITUDE;
+                PlayScreen.getInstance().altitudeTarget =
+                    PlayScreen.getInstance().selectedAirplane.state.getAltitude();
                 return true;
             }
             @Override
@@ -252,7 +252,7 @@ public class MainUi {
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 selectedAirplane.setTargetAltitude(10000);
-                PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPORT;
+                PlayScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPORT;
             }
         });
         stage.addActor(handoffButton);
@@ -272,8 +272,8 @@ public class MainUi {
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 setStatus("Please select one end of a runway");
-                PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_RUNWAY;
-                PIScreen.getInstance().followingPlane = false;
+                PlayScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_RUNWAY;
+                PlayScreen.getInstance().followingPlane = false;
             }
         });
         stage.addActor(landingButton);
@@ -295,15 +295,15 @@ public class MainUi {
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                if(PIScreen.getInstance().queueingAirplanes.size() > 0) {
+                if(PlayScreen.getInstance().queueingAirplanes.size() > 0) {
                     setStatus("Please select one end of a runway");
-                    PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_RUNWAY;
-                    PIScreen.getInstance().followingPlane = false;
-                    PIScreen.getInstance().setSelectedAirplane(
-                            PIScreen.getInstance().queueingAirplanes.get(0)
+                    PlayScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_RUNWAY;
+                    PlayScreen.getInstance().followingPlane = false;
+                    PlayScreen.getInstance().setSelectedAirplane(
+                            PlayScreen.getInstance().queueingAirplanes.get(0)
                     );
 
-                    PIScreen.getInstance().toggleOverview(false);
+                    PlayScreen.getInstance().toggleOverview(false);
                 }
                 else {
                     setStatus("Queue is empty");
@@ -330,13 +330,13 @@ public class MainUi {
                     setStatus(selectedAirplane.name + ": Aborted landing");
                     selectedAirplane.setTargetAltitude(2000);
                 }
-                if(PIScreen.getInstance().uiState != ProjectIcarus.UiState.CHANGE_ALTITUDE) {
+                if(PlayScreen.getInstance().uiState != ProjectIcarus.UiState.CHANGE_ALTITUDE) {
                     selectedAirplane.setNoTarget();
                 }
                 if(selectedAirplane.stateType == QUEUEING) {
-                    PIScreen.getInstance().setSelectedAirplane(null);
+                    PlayScreen.getInstance().setSelectedAirplane(null);
                 }
-                PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
+                PlayScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
             }
         });
         stage.addActor(cancelButton);
@@ -365,7 +365,7 @@ public class MainUi {
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 Vector2 heading = new Vector2(x, y).sub(headingWheel.getWidth()/2, headingWheel.getHeight()/2);
                 toggleHeadingSelector(false);
-                PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
+                PlayScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
                 setStatus(selectedAirplane.name + ": turning to "
                         + (int) heading.cpy().rotate(-90).angle() + "°"
                 );
@@ -376,12 +376,12 @@ public class MainUi {
 
         // Create airport buttons
         airportButtons = new ArrayList<>();
-        for(final OtherAirport otherAirport: PIScreen.getInstance().otherAirports) {
+        for(final OtherAirport otherAirport: PlayScreen.getInstance().otherAirports) {
             // Determine scale factor to position airport on screen
             float scaleFactor = ((Gdx.graphics.getHeight()
                         - airportButtonSize
                         - statusBarHeight) / 2 - font.getLineHeight())
-                    / (float) PIScreen.getInstance().farthestAirportDistance;
+                    / (float) PlayScreen.getInstance().farthestAirportDistance;
             Vector2 airportPos = otherAirport.position.cpy().scl(scaleFactor)
                     .add(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
             // Initialize airport button
@@ -402,7 +402,7 @@ public class MainUi {
                 }
                 @Override
                 public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                    PIScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
+                    PlayScreen.getInstance().uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
                     setStatus("Selected airport " + otherAirport.name);
                     selectedAirplane.setTargetAirport(otherAirport);
                 }
@@ -418,7 +418,7 @@ public class MainUi {
     }
 
     public void draw() {
-        selectedAirplane = PIScreen.getInstance().getSelectedAirplane();
+        selectedAirplane = PlayScreen.getInstance().getSelectedAirplane();
 
         shapes.begin(ShapeRenderer.ShapeType.Filled);
         // Draw rectangle for the status bar
@@ -439,7 +439,7 @@ public class MainUi {
         );
 
         //draw the warp speed
-        String warp = "x" + (int)(PIScreen.getInstance().warpSpeed);
+        String warp = "x" + (int)(PlayScreen.getInstance().warpSpeed);
         layout.setText(font, warp);
         font.draw(batch,
                 warp,
@@ -448,7 +448,7 @@ public class MainUi {
         );
 
         //draw points
-        String point = "P: " + (int) PIScreen.getInstance().points;
+        String point = "P: " + (int) PlayScreen.getInstance().points;
         layout.setText(font, point);
         font.draw(batch,
                 point,
@@ -457,7 +457,7 @@ public class MainUi {
         );
 
         // Draw queueingAirplanes size
-        String size = "" + PIScreen.getInstance().queueingAirplanes.size();
+        String size = "" + PlayScreen.getInstance().queueingAirplanes.size();
         layout.setText(font, size);
         font.draw(batch,
                 size,
@@ -472,14 +472,14 @@ public class MainUi {
         takeoffButton.setVisible(false);
         //show airplane-specific buttons if an airplane is selected
         if(selectedAirplane != null) {
-            switch(PIScreen.getInstance().uiState) {
+            switch(PlayScreen.getInstance().uiState) {
                 case CHANGE_ALTITUDE:
                     cancelButton.setVisible(true);
                     break;
                 case SELECT_AIRPLANE:
                     showAirplaneButtons(selectedAirplane.flightType);
                     // Show takeoff button if there is an airplane in the queue
-                    if(PIScreen.getInstance().queueingAirplanes.size() > 0) {
+                    if(PlayScreen.getInstance().queueingAirplanes.size() > 0) {
                         takeoffButton.setVisible(true);
                     }
 
@@ -538,7 +538,7 @@ public class MainUi {
 
                     if(selectedAirplane.getVelocity() != null) {
                         font.draw(batch,
-                                (int) PIScreen.toMeters(selectedAirplane.getVelocity().len()) + "m/s",
+                                (int) PlayScreen.toMeters(selectedAirplane.getVelocity().len()) + "m/s",
                                 Gdx.graphics.getWidth() - (3f / 8f) * statusWidth,
                                 Gdx.graphics.getHeight() - 3 * font.getLineHeight() / 2
                         );
@@ -565,7 +565,7 @@ public class MainUi {
             }
         }
         else {
-            if(PIScreen.getInstance().queueingAirplanes.size() > 0) {
+            if(PlayScreen.getInstance().queueingAirplanes.size() > 0) {
                 takeoffButton.setVisible(true);
             }
         }
@@ -611,7 +611,7 @@ public class MainUi {
     private void toggleOtherAirports(boolean isVisible) {
         batch.begin();
         for(ImageButton airportButton: airportButtons) {
-            OtherAirport otherAirport = PIScreen.getInstance().otherAirports
+            OtherAirport otherAirport = PlayScreen.getInstance().otherAirports
                     .get(airportButtons.indexOf(airportButton));
             airportButton.setVisible(isVisible);
             if(isVisible) {

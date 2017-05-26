@@ -30,9 +30,9 @@ import static com.icarus.project.Airplane.FlightType.ARRIVAL;
 import static com.icarus.project.Airplane.FlightType.DEPARTURE;
 import static com.icarus.project.Airplane.FlightType.FLYOVER;
 
-public class PIScreen extends Game implements Screen, GestureDetector.GestureListener {
+public class PlayScreen extends Game implements Screen, GestureDetector.GestureListener {
     // This class
-    public static PIScreen self;
+    public static PlayScreen self;
     public static final String TAG = "PIState";
 
     // The currently loaded Airport
@@ -175,7 +175,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         }
     }
 
-    public PIScreen(ProjectIcarus game) {
+    public PlayScreen(ProjectIcarus game) {
         self = this;
         points = 0;
 
@@ -882,7 +882,7 @@ public class PIScreen extends Game implements Screen, GestureDetector.GestureLis
         return this.selectedAirplane;
     }
 
-    public static PIScreen getInstance() {
+    public static PlayScreen getInstance() {
         return self;
     }
 
