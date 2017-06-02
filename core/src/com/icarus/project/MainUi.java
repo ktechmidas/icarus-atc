@@ -61,7 +61,12 @@ public class MainUi {
         airportButtonSize = (int) ((2f / 3f) * buttonSize);
         warpButtonSize = buttonSize / 2;
 
-        status = "Welcome to Icarus Air Traffic Control";
+//        if(PlayScreen.isTutorial) {
+//            status = "Welcome to the Icarus ATC Tutorial";
+//        }
+//        else {
+//            status = "Welcome to Icarus Air Traffic Control";
+//        }
 
         Vector2 buttonPosition = new Vector2(buttonGap,
                 Gdx.graphics.getHeight() - buttonGap - buttonSize

@@ -35,6 +35,12 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
     public static PlayScreen self;
     public static final String TAG = "PIState";
 
+    // Is this a tutorial game?
+    public static boolean isTutorial = true;
+    public int tutorialIndex;
+    public float tutorialTimer;
+    public int tutorialMessagePause = 5; // seconds
+
     // The currently loaded Airport
     private Airport airport;
 
@@ -179,6 +185,9 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
         self = this;
         points = 0;
 
+        tutorialIndex = 0;
+        tutorialTimer = 0;
+
         zoomedOut = false;
 
         // Initialize the AssetManager
@@ -209,7 +218,6 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
         maxAirplaneInterval = 120; // seconds
         timeElapsed = 0.0f;
         airplaneInterval = minAirplaneInterval;
-        addAirplane();
 
         // Camera
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -229,6 +237,14 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
         Gdx.input.setInputProcessor(new InputMultiplexer(ui.stage, new GestureDetector(this)));
 
         warpSpeed = 1.0f;
+
+        if(isTutorial) {
+            ui.setStatus(tutorialStrings[tutorialIndex]);
+        }
+        else {
+            ui.setStatus("Welcome to Icarus Air Traffic Control");
+            addAirplane();
+        }
     }
 
     @Override
@@ -245,6 +261,15 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
 
         // Time elapsed this frame, taking time warp into account
         float dt = Gdx.graphics.getDeltaTime() * warpSpeed;
+
+        if(isTutorial) {
+            tutorialTimer += Gdx.graphics.getDeltaTime();
+            ui.setStatus(tutorialStrings[tutorialIndex]);
+            if(tutorialTimer > tutorialMessagePause && tutorialIndex < tutorialStrings.length - 1) {
+                tutorialIndex++;
+                tutorialTimer = 0;
+            }
+        }
 
         ArrayList<Airplane> toRemove = new ArrayList<>();
         BoundingBox airportBoundary = new BoundingBox(new Vector3(0, 0, 0),
@@ -869,6 +894,46 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
             farthestAirportDistance = Math.max(farthestAirportDistance, distance);
         }
     }
+
+    public static String tutorialStrings[] = new String[]{
+            "Welcome to the Icarus ATC Tutorial.",
+            "This is the map screen. You can pan and zoom.",
+            // Wait few seconds
+            "Press and hold to see an overview.",
+            // Wait until they do that
+            // Arrival appears on screen
+            "This is an arrival. It needs to land at a runway.",
+            // Wait a few seconds
+            "Tap the airplane to see commands.",
+            "Press the top button on the left.",
+            "Drag your finger around the circle to 90 degrees.",
+            "Wait until the plane passes EWOK.",
+            "Use the buttons on the right to speed up time.",
+            "Now, press the second button on the left.",
+            "Tap waypoint FLCN.",
+            "Press the third button on the left.",
+            "Drag down to 1000m. Tap when finished.",
+            "Now target waypoint EMPR.",
+            "Press the bottom button on the left.",
+            "Tap runway 14.",
+            "Good job! The plane will land by itself.",
+            // Warp up here, then warp down after the landing
+            "Press the button on the right.",
+            "Tap the plane TUT0002",
+            "This is a flyover.",
+            "Press the bottom button on the left.",
+            "Tap an airport to handoff the plane.",
+            "Good job! You're all done with this one.",
+            "Press the button that just appeared.",
+            "Select any runway.",
+            "This is a departure. It also must be handed off.",
+            "But first, wait for it to take off.",
+            // Departure takes off
+            "Select the airplane.",
+            "Press the handoff button.",
+            "Again, tap any airport.",
+            "Good job! You're ready to play!"
+    };
 
     public static float toMeters(float pixels) {
         return 50 * pixels;
