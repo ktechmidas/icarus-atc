@@ -902,32 +902,66 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
     public void tutorialRender(float dt) {
         switch(tutorialState) {
             case WELCOME:
-                if(tutorialIndex > 2) {
-                    tutorialState = TutorialState.ARRIVAL;
+                if(tutorialTimer < 5) {
+                    ui.setStatus("Welcome to the Icarus ATC Tutorial.");
                 }
+                else if(tutorialTimer < 10) {
+                    ui.setStatus("This is the map screen. You can pan and zoom.");
+                }
+                else {
+                    if(!zoomedOut) {
+                        ui.setStatus("Press and hold to see an overview.");
+                    }
+                    else {
+                        ui.setStatus("This is an arrival. It needs to land at a runway.");
+                        airplanes.add(
+                                new Airplane(
+                                        "TUT0001",
+                                        Airplane.FlightType.ARRIVAL,
+                                        new Vector2(0, 80),
+                                        new Vector2(toPixels(arrivalSpeed), 0),
+                                        arrivalSpeed
+                                )
+                        );
+                        tutorialState = TutorialState.ARRIVAL;
+                        tutorialTimer = 0;
+                    }
+
+                }
+//                if(tutorialIndex > 2) {
+//                    tutorialState = TutorialState.ARRIVAL;
+//                }
                 break;
             case ARRIVAL:
-                if(airplanes.size() == 0) {
-                    airplanes.add(
-                            new Airplane(
-                                    "TUT0001",
-                                    Airplane.FlightType.ARRIVAL,
-                                    new Vector2(0, 80),
-                                    new Vector2(toPixels(arrivalSpeed), 0),
-                                    arrivalSpeed
-                            )
-                    );
+                if(tutorialTimer < tutorialMessagePause) {
+                    tutorialIndex = 0;
+                    ui.setStatus("This is an arrival. It needs to land at a runway.");
                 }
+                else if(selectedAirplane == null) {
+                    ui.setStatus("Tap the airplane to see commands.");
+                }
+                else if(tutorialIndex == 0) {
+                    if(uiState == ProjectIcarus.UiState.SELECT_AIRPLANE) {
+                        ui.setStatus("Press the top button on the left.");
+                    }
+                    else if(uiState == ProjectIcarus.UiState.SELECT_HEADING) {
+                        ui.setStatus("Drag your finger around the circle to 90 degrees.");
+                    }
+                }
+                break;
+            case FLYOVER:
+                break;
+            case DEPARTURE:
                 break;
             default:
                 break;
         }
         tutorialTimer += Gdx.graphics.getDeltaTime();
-        ui.setStatus(tutorialStrings[tutorialIndex]);
-        if(tutorialTimer > tutorialMessagePause && tutorialIndex < tutorialStrings.length - 1) {
-            tutorialIndex++;
-            tutorialTimer = 0;
-        }
+//        ui.setStatus(tutorialStrings[tutorialIndex]);
+//        if(tutorialTimer > tutorialMessagePause && tutorialIndex < tutorialStrings.length - 1) {
+//            tutorialIndex++;
+//            tutorialTimer = 0;
+//        }
     }
 
     public static String tutorialStrings[] = new String[]{
