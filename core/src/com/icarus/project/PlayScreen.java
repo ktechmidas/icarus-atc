@@ -37,6 +37,7 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
 
     // Is this a tutorial game?
     public final boolean isTutorial;
+    public TutorialState tutorialState;
     public int tutorialIndex;
     public float tutorialTimer;
     public int tutorialMessagePause = 5; // seconds
@@ -72,7 +73,10 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
     public Airplane selectedAirplane;
     public float altitudeTarget;
     private float cruiseAlt = 10000; // meters
+    private float arrivalAlt = 2000; // meters
     public float altitudeChangeRate = 20f; // meters per second
+    private float cruiseSpeed = 250; // meters per second
+    private float arrivalSpeed = 150; // meters per second
 
     // Airplane spawning
     private float minAirplaneInterval, maxAirplaneInterval, timeElapsed, airplaneInterval;
@@ -185,7 +189,9 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
         self = this;
         points = 0;
 
+        // If this is a tutorial
         this.isTutorial = isTutorial;
+        tutorialState = TutorialState.WELCOME;
         tutorialIndex = 0;
         tutorialTimer = 0;
 
@@ -264,12 +270,7 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
         float dt = Gdx.graphics.getDeltaTime() * warpSpeed;
 
         if(isTutorial) {
-            tutorialTimer += Gdx.graphics.getDeltaTime();
-            ui.setStatus(tutorialStrings[tutorialIndex]);
-            if(tutorialTimer > tutorialMessagePause && tutorialIndex < tutorialStrings.length - 1) {
-                tutorialIndex++;
-                tutorialTimer = 0;
-            }
+            tutorialRender(dt);
         }
 
         ArrayList<Airplane> toRemove = new ArrayList<>();
@@ -431,17 +432,19 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
             setCameraPosition(new Vector3(selectedAirplane.state.getPosition(), 0));
         }
 
-        // Generate a new airplane after a random amount of time
-        if(timeElapsed > airplaneInterval) {// / (1 + points / 50) + minAirplaneInterval / 4.0) {
-            Random r = new Random();
-            airplaneInterval = r.nextInt((int) (maxAirplaneInterval - minAirplaneInterval) + 1)
-                    + minAirplaneInterval;
-            airplaneInterval *= Math.exp(-0.008f * points);
-            timeElapsed = 0.0f;
-            addAirplane();
-        }
-        else {
-            timeElapsed += dt;
+        if(!isTutorial) {
+            // Generate a new airplane after a random amount of time
+            if(timeElapsed > airplaneInterval) {
+                Random r = new Random();
+                airplaneInterval = r.nextInt((int) (maxAirplaneInterval - minAirplaneInterval) + 1)
+                        + minAirplaneInterval;
+                airplaneInterval *= Math.exp(-0.008f * points);
+                timeElapsed = 0.0f;
+                addAirplane();
+            }
+            else {
+                timeElapsed += dt;
+            }
         }
     }
 
@@ -746,12 +749,12 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
         if(randFlightType < 2) {
             flightType = Airplane.FlightType.FLYOVER;
             altitude = cruiseAlt; // Meters
-            speed = toPixels(250);
+            speed = toPixels(cruiseSpeed);
         }
         else if(randFlightType < 6) {
             flightType = Airplane.FlightType.ARRIVAL;
-            altitude = 2000;
-            speed = toPixels(150);
+            altitude = arrivalAlt;
+            speed = toPixels(arrivalSpeed);
         }
         else {
             flightType = Airplane.FlightType.DEPARTURE;
@@ -896,6 +899,37 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
         }
     }
 
+    public void tutorialRender(float dt) {
+        switch(tutorialState) {
+            case WELCOME:
+                if(tutorialIndex > 2) {
+                    tutorialState = TutorialState.ARRIVAL;
+                }
+                break;
+            case ARRIVAL:
+                if(airplanes.size() == 0) {
+                    airplanes.add(
+                            new Airplane(
+                                    "TUT0001",
+                                    Airplane.FlightType.ARRIVAL,
+                                    new Vector2(0, 30),
+                                    new Vector2(arrivalSpeed, 0),
+                                    arrivalSpeed
+                            )
+                    );
+                }
+                break;
+            default:
+                break;
+        }
+        tutorialTimer += Gdx.graphics.getDeltaTime();
+        ui.setStatus(tutorialStrings[tutorialIndex]);
+        if(tutorialTimer > tutorialMessagePause && tutorialIndex < tutorialStrings.length - 1) {
+            tutorialIndex++;
+            tutorialTimer = 0;
+        }
+    }
+
     public static String tutorialStrings[] = new String[]{
             "Welcome to the Icarus ATC Tutorial.",
             "This is the map screen. You can pan and zoom.",
@@ -935,6 +969,13 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
             "Again, tap any airport.",
             "Good job! You're ready to play!"
     };
+
+    public enum TutorialState {
+        WELCOME,
+        ARRIVAL,
+        FLYOVER,
+        DEPARTURE
+    }
 
     public static float toMeters(float pixels) {
         return 50 * pixels;
