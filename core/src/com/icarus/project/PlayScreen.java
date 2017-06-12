@@ -912,8 +912,8 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                             new Airplane(
                                     "TUT0001",
                                     Airplane.FlightType.ARRIVAL,
-                                    new Vector2(0, 30),
-                                    new Vector2(arrivalSpeed, 0),
+                                    new Vector2(0, 80),
+                                    new Vector2(toPixels(arrivalSpeed), 0),
                                     arrivalSpeed
                             )
                     );
