@@ -24,6 +24,7 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
     private BitmapFont font = new BitmapFont();
     private SpriteBatch batch;
     private ImageButton playButton;
+    private ImageButton tutorialButton;
     private Texture logo;
 
     public MainMenuScreen(final ProjectIcarus game) {
@@ -35,21 +36,27 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
         camera.setToOrtho(false, 800, 480);
 
         // Button skin
-        Skin playButtonSkin = new Skin();
-        playButtonSkin.add("playButton", new Texture("buttons/play_button.png"));
+        Skin buttonSkin = new Skin();
+        buttonSkin.add("playButton", new Texture("buttons/play_button.png"));
+        buttonSkin.add("tutorialButton", new Texture("buttons/tutorial_button.png"));
 
         // Create button style
         ImageButton.ImageButtonStyle playButtonStyle = new ImageButton.ImageButtonStyle();
-        playButtonStyle.imageUp = playButtonSkin.getDrawable("playButton"); // Unpressed
-        playButtonStyle.imageDown = playButtonSkin.getDrawable("playButton"); // Pressed
+        playButtonStyle.imageUp = buttonSkin.getDrawable("playButton"); // Unpressed
+        playButtonStyle.imageDown = buttonSkin.getDrawable("playButton"); // Pressed
+
+        ImageButton.ImageButtonStyle tutorialButtonStyle = new ImageButton.ImageButtonStyle();
+        tutorialButtonStyle.imageUp = buttonSkin.getDrawable("tutorialButton"); // Unpressed
+        tutorialButtonStyle.imageDown = buttonSkin.getDrawable("tutorialButton"); // Pressed
+
+        int buttonSize = (int) (100 * Gdx.graphics.getDensity());
 
         // Play button
         playButton = new ImageButton(playButtonStyle);
-        int buttonSize = (int) (100 * Gdx.graphics.getDensity());
         playButton.setSize(buttonSize, buttonSize);
-        int width = (int) ((Gdx.graphics.getWidth() - playButton.getWidth())/2);
-        int height = (int) ((Gdx.graphics.getHeight() - playButton.getHeight())/4);
-        playButton.setBounds(width, height, playButton.getWidth(), playButton.getHeight());
+        int x = (int) (Gdx.graphics.getWidth() / 3f - buttonSize / 2f);
+        int y = (int) (Gdx.graphics.getHeight() / 4f - buttonSize / 2f);
+        playButton.setBounds(x, y, playButton.getWidth(), playButton.getHeight());
         playButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -59,10 +66,29 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 game.setScreen(new PlayScreen(game)); // Switch screen to game state
                 playButton.setDisabled(true);
-
+                tutorialButton.setDisabled(true);
             }
         });
         stage.addActor(playButton);
+
+        // Tutorial button
+        tutorialButton = new ImageButton(tutorialButtonStyle);
+        tutorialButton.setSize(buttonSize, buttonSize);
+        x = (int) (2 * (x + buttonSize / 2f) - buttonSize / 2f);
+        tutorialButton.setBounds(x, y, buttonSize, buttonSize);
+        tutorialButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                game.setScreen(new PlayScreen(game)); // Switch screen to tutorial state
+                playButton.setDisabled(true);
+                tutorialButton.setDisabled(true);
+            }
+        });
+        stage.addActor(tutorialButton);
 
         // Game logo
         logo = new Texture(Gdx.files.internal("buttons/Icarus_Logo.png"));
@@ -82,6 +108,10 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
         // Draw play button
         playButton.getImage().setColor(Colors.colors[4]);
         playButton.draw(batch, 1);
+
+        // Draw tutorial button
+        tutorialButton.getImage().setColor(Colors.colors[4]);
+        tutorialButton.draw(batch, 1);
 
         // Draw logo
         float width = logo.getWidth() * Gdx.graphics.getDensity() / 3.0f;
