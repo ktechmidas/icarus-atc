@@ -36,7 +36,7 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
     public static final String TAG = "PIState";
 
     // Is this a tutorial game?
-    public static boolean isTutorial = true;
+    public final boolean isTutorial;
     public int tutorialIndex;
     public float tutorialTimer;
     public int tutorialMessagePause = 5; // seconds
@@ -181,10 +181,11 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
         }
     }
 
-    public PlayScreen(ProjectIcarus game) {
+    public PlayScreen(ProjectIcarus game, boolean isTutorial) {
         self = this;
         points = 0;
 
+        this.isTutorial = isTutorial;
         tutorialIndex = 0;
         tutorialTimer = 0;
 
