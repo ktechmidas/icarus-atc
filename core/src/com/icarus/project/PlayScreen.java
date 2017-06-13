@@ -1015,11 +1015,13 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                     else if(uiState == ProjectIcarus.UiState.CHANGE_ALTITUDE) {
                         ui.setStatus("Drag down to 1000m. Tap when finished.");
                     }
-                    else if(airplanePos < flcnPos) {
+                    else if(airplanePos < flcnPos - 200) {
                         ui.setStatus("Wait until it nears FLCN.");
                     }
                     else {
+                        warpSpeed = 1.0f;
                         tutorialStage = 4;
+                        tutorialTimer = 0;
                     }
                 }
                 else if(tutorialStage == 4) {
@@ -1038,11 +1040,13 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                             if(runway.names[end].equals("14")) {
                                 tutorialRunway = runway;
                                 tutorialEnd = end;
-                                break;
                             }
                         }
                     }
-                    if(!canLand(tutorialRunway, tutorialEnd)) {
+                    if(!canLand(tutorialRunway, tutorialEnd)
+                            && tutorialAirplane.getTargetType()
+                                    == AirplaneFlying.TargetType.WAYPOINT
+                            ) {
                         ui.setStatus("Wait for the airplane to line up.");
                     }
                     else if(uiState == ProjectIcarus.UiState.SELECT_AIRPLANE) {
