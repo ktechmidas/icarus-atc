@@ -24,6 +24,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 import static com.icarus.project.Airplane.FlightType.ARRIVAL;
@@ -834,6 +835,23 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
     }
 
     private void land(Runway runway, int end) {
+        if(canLand(runway, end)) {
+            // If the airplane is in the correct place
+            selectedAirplane.setTargetRunway(runway, end);
+            followingPlane = true;
+            ui.setStatus("Selected runway " + runway.names[end]);
+            Gdx.app.log(TAG, "Selected runway " + runway.names[end]);
+        }
+        else {
+            ui.setStatus(selectedAirplane.name
+                    + " cannot land at runway "
+                    + runway.names[end]
+            );
+        }
+        uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
+    }
+
+    private boolean canLand(Runway runway, int end) {
         // Landing constraints
         float headingVariance = 20; // Maximum heading deviation from runway
         float positionVariance = 20; // Maximum position deviation from runway
@@ -853,22 +871,9 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
         Vector2 relativePosition = runway.points[end].cpy()
                 .sub(selectedAirplane.state.getPosition());
         float positionDifference = relativePosition.angle(targetRunway);
-        if(descentRate < altitudeChangeRate
+        return (descentRate < altitudeChangeRate
                 && Math.abs(angleDifference) < headingVariance
-                && Math.abs(positionDifference) < positionVariance) {
-            // If the airplane is in the correct place
-            selectedAirplane.setTargetRunway(runway, end);
-            followingPlane = true;
-            ui.setStatus("Selected runway " + runway.names[end]);
-            Gdx.app.log(TAG, "Selected runway " + runway.names[end]);
-        }
-        else {
-            ui.setStatus(selectedAirplane.name
-                    + " cannot land at runway "
-                    + runway.names[end]
-            );
-        }
-        uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
+                && Math.abs(positionDifference) < positionVariance);
     }
 
     private void addOtherAirports(int airports) {
@@ -925,6 +930,7 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                         );
                         tutorialState = TutorialState.ARRIVAL;
                         tutorialTimer = 0;
+                        tutorialIndex = 0;
                     }
 
                 }
@@ -933,19 +939,105 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
 //                }
                 break;
             case ARRIVAL:
-                if(tutorialTimer < tutorialMessagePause) {
-                    tutorialIndex = 0;
-                    ui.setStatus("This is an arrival. It needs to land at a runway.");
-                }
-                else if(selectedAirplane == null) {
-                    ui.setStatus("Tap the airplane to see commands.");
-                }
-                else if(tutorialIndex == 0) {
-                    if(uiState == ProjectIcarus.UiState.SELECT_AIRPLANE) {
+                if(tutorialIndex == 0) {
+                    if(tutorialTimer < tutorialMessagePause) {
+                        ui.setStatus("This is an arrival. It needs to land at a runway.");
+                    }
+                    else if(selectedAirplane == null) {
+                        ui.setStatus("Tap the airplane to see commands.");
+                    }
+                    else if(uiState == ProjectIcarus.UiState.SELECT_AIRPLANE) {
                         ui.setStatus("Press the top button on the left.");
                     }
-                    else if(uiState == ProjectIcarus.UiState.SELECT_HEADING) {
+                    else {
+                        tutorialIndex = 1;
+                        tutorialTimer = 0;
+                    }
+                }
+                else if(tutorialIndex == 1) {
+                    if(uiState == ProjectIcarus.UiState.SELECT_HEADING){
                         ui.setStatus("Drag your finger around the circle to 90 degrees.");
+                    }
+                    else {
+                        tutorialIndex = 2;
+                        tutorialTimer = 0;
+                    }
+                }
+                else if(tutorialIndex == 2) {
+                    float ewokPos = 0;
+                    for(Waypoint waypoint: airport.waypoints) {
+                        if(waypoint.name.equals("EWOK")) {
+                            ewokPos = camera.project(new Vector3(waypoint.position.x,
+                                    waypoint.position.y, 0
+                            )).x;
+                        }
+                    }
+                    if(tutorialTimer < tutorialMessagePause) {
+                        ui.setStatus("Wait until the plane passes EWOK.");
+                    }
+                    else if(selectedAirplane.state.getPosition().x < ewokPos) {
+                        ui.setStatus("Use the buttons on the right to speed up time.");
+                        Gdx.app.log(TAG, selectedAirplane.state.getPosition().x + ", " + ewokPos);
+                    }
+                    else {
+                        ui.setStatus("Now, press the second button on the left.");
+                        tutorialIndex = 2;
+                    }
+                }
+                else if(tutorialIndex == 3) {
+                    float flcnPos = 0;
+                    for(Waypoint waypoint: airport.waypoints) {
+                        if(waypoint.name.equals("EWOK")) {
+                            flcnPos = camera.project(new Vector3(waypoint.position.x,
+                                    waypoint.position.y, 0
+                            )).x;
+                        }
+                    }
+                    if(uiState == ProjectIcarus.UiState.SELECT_WAYPOINT) {
+                        ui.setStatus("Tap waypoint FLCN.");
+                    }
+                    else if(selectedAirplane.getTargetType() == AirplaneFlying.TargetType.WAYPOINT
+                            && selectedAirplane.state.getAltitude() >= arrivalAlt
+                            && uiState == ProjectIcarus.UiState.SELECT_AIRPLANE) {
+                        ui.setStatus("Press the third button on the left.");
+                    }
+                    else if(uiState == ProjectIcarus.UiState.CHANGE_ALTITUDE) {
+                        ui.setStatus("Drag down to 1000m. Tap when finished.");
+                    }
+                    else if(selectedAirplane.state.getPosition().x < flcnPos) {
+                        ui.setStatus("Wait until it nears FLCN.");
+                    }
+                    else {
+                        tutorialIndex = 3;
+                    }
+                }
+                else if(tutorialIndex == 4) {
+                    if(uiState == ProjectIcarus.UiState.SELECT_AIRPLANE) {
+                        ui.setStatus("Now target waypoint EMPR.");
+                    }
+                    else {
+                        tutorialIndex = 4;
+                    }
+                }
+                else if(tutorialIndex == 5) {
+                    if(!canLand(airport.runways[0], 0)) {
+                        ui.setStatus("Wait for the airplane to line up.");
+                    }
+                    else if(uiState == ProjectIcarus.UiState.SELECT_AIRPLANE) {
+                        ui.setStatus("Press the bottom button on the left.");
+                    }
+                    else {
+                        ui.setStatus("Tap runway 14.");
+                        tutorialIndex = 5;
+                    }
+                }
+                else if(tutorialIndex == 6) {
+                    if(selectedAirplane.stateType == Airplane.StateType.FLYING) {
+                        ui.setStatus("Good job! The plane will land by itself.");
+                    }
+                    else {
+                        tutorialState = TutorialState.FLYOVER;
+                        tutorialTimer = 0;
                     }
                 }
                 break;
@@ -965,24 +1057,24 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
     }
 
     public static String tutorialStrings[] = new String[]{
-            "Welcome to the Icarus ATC Tutorial.",
-            "This is the map screen. You can pan and zoom.",
-            // Wait few seconds
-            "Press and hold to see an overview.",
-            // Wait until they do that
-            // Arrival appears on screen
-            "This is an arrival. It needs to land at a runway.",
-            // Wait a few seconds
-            "Tap the airplane to see commands.",
-            "Press the top button on the left.",
-            "Drag your finger around the circle to 90 degrees.",
-            "Wait until the plane passes EWOK.",
-            "Use the buttons on the right to speed up time.",
-            "Now, press the second button on the left.",
-            "Tap waypoint FLCN.",
-            "Press the third button on the left.",
-            "Drag down to 1000m. Tap when finished.",
-            "Now target waypoint EMPR.",
+//            "Welcome to the Icarus ATC Tutorial.",
+//            "This is the map screen. You can pan and zoom.",
+//            // Wait few seconds
+//            "Press and hold to see an overview.",
+//            // Wait until they do that
+//            // Arrival appears on screen
+//            "This is an arrival. It needs to land at a runway.",
+//            // Wait a few seconds
+//            "Tap the airplane to see commands.",
+//            "Press the top button on the left.",
+//            "Drag your finger around the circle to 90 degrees.",
+//            "Wait until the plane passes EWOK.",
+//            "Use the buttons on the right to speed up time.",
+//            "Now, press the second button on the left.",
+//            "Tap waypoint FLCN.",
+//            "Press the third button on the left.",
+//            "Drag down to 1000m. Tap when finished.",
+//            "Now target waypoint EMPR.",
             "Press the bottom button on the left.",
             "Tap runway 14.",
             "Good job! The plane will land by itself.",
