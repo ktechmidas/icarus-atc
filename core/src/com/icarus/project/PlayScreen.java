@@ -24,7 +24,6 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 import static com.icarus.project.Airplane.FlightType.ARRIVAL;
@@ -39,9 +38,10 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
     // Is this a tutorial game?
     public final boolean isTutorial;
     public TutorialState tutorialState;
-    public int tutorialIndex;
+    public int tutorialStage;
     public float tutorialTimer;
-    public int tutorialMessagePause = 5; // seconds
+    public int tutorialMessagePause = 4; // seconds
+    public Airplane tutorialAirplane;
 
     // The currently loaded Airport
     private Airport airport;
@@ -193,7 +193,7 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
         // If this is a tutorial
         this.isTutorial = isTutorial;
         tutorialState = TutorialState.WELCOME;
-        tutorialIndex = 0;
+        tutorialStage = 0;
         tutorialTimer = 0;
 
         zoomedOut = false;
@@ -247,7 +247,7 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
         warpSpeed = 1.0f;
 
         if(isTutorial) {
-            ui.setStatus(tutorialStrings[tutorialIndex]);
+            ui.setStatus(tutorialStrings[tutorialStage]);
         }
         else {
             ui.setStatus("Welcome to Icarus Air Traffic Control");
@@ -925,21 +925,18 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                                         Airplane.FlightType.ARRIVAL,
                                         new Vector2(0, 80),
                                         new Vector2(toPixels(arrivalSpeed), 0),
-                                        arrivalSpeed
+                                        arrivalAlt
                                 )
                         );
                         tutorialState = TutorialState.ARRIVAL;
                         tutorialTimer = 0;
-                        tutorialIndex = 0;
+                        tutorialStage = 0;
                     }
 
                 }
-//                if(tutorialIndex > 2) {
-//                    tutorialState = TutorialState.ARRIVAL;
-//                }
                 break;
             case ARRIVAL:
-                if(tutorialIndex == 0) {
+                if(tutorialStage == 0) {
                     if(tutorialTimer < tutorialMessagePause) {
                         ui.setStatus("This is an arrival. It needs to land at a runway.");
                     }
@@ -948,22 +945,23 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                     }
                     else if(uiState == ProjectIcarus.UiState.SELECT_AIRPLANE) {
                         ui.setStatus("Press the top button on the left.");
+                        tutorialAirplane = selectedAirplane;
                     }
                     else {
-                        tutorialIndex = 1;
+                        tutorialStage = 1;
                         tutorialTimer = 0;
                     }
                 }
-                else if(tutorialIndex == 1) {
+                else if(tutorialStage == 1) {
                     if(uiState == ProjectIcarus.UiState.SELECT_HEADING){
                         ui.setStatus("Drag your finger around the circle to 90 degrees.");
                     }
                     else {
-                        tutorialIndex = 2;
+                        tutorialStage = 2;
                         tutorialTimer = 0;
                     }
                 }
-                else if(tutorialIndex == 2) {
+                else if(tutorialStage == 2) {
                     float ewokPos = 0;
                     for(Waypoint waypoint: airport.waypoints) {
                         if(waypoint.name.equals("EWOK")) {
@@ -972,55 +970,79 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                             )).x;
                         }
                     }
+                    float airplanePos = camera.project(new Vector3(
+                            tutorialAirplane.state.getPosition().x,
+                            tutorialAirplane.state.getPosition().y,
+                            0
+                    )).x;
                     if(tutorialTimer < tutorialMessagePause) {
                         ui.setStatus("Wait until the plane passes EWOK.");
                     }
-                    else if(selectedAirplane.state.getPosition().x < ewokPos) {
+                    else if(airplanePos < ewokPos) {
                         ui.setStatus("Use the buttons on the right to speed up time.");
-                        Gdx.app.log(TAG, selectedAirplane.state.getPosition().x + ", " + ewokPos);
+                        Gdx.app.log(TAG, airplanePos + ", " + ewokPos);
+                    }
+                    else if(uiState == ProjectIcarus.UiState.SELECT_AIRPLANE){
+                        warpSpeed = 1.0f;
+                        ui.setStatus("Now, press the second button on the left.");
                     }
                     else {
-                        ui.setStatus("Now, press the second button on the left.");
-                        tutorialIndex = 2;
+                        tutorialStage = 3;
+                        tutorialTimer = 0;
                     }
                 }
-                else if(tutorialIndex == 3) {
+                else if(tutorialStage == 3) {
                     float flcnPos = 0;
                     for(Waypoint waypoint: airport.waypoints) {
-                        if(waypoint.name.equals("EWOK")) {
+                        if(waypoint.name.equals("FLCN")) {
                             flcnPos = camera.project(new Vector3(waypoint.position.x,
                                     waypoint.position.y, 0
                             )).x;
                         }
                     }
+                    float airplanePos = camera.project(new Vector3(
+                            tutorialAirplane.state.getPosition().x,
+                            tutorialAirplane.state.getPosition().y,
+                            0
+                    )).x;
                     if(uiState == ProjectIcarus.UiState.SELECT_WAYPOINT) {
                         ui.setStatus("Tap waypoint FLCN.");
                     }
-                    else if(selectedAirplane.getTargetType() == AirplaneFlying.TargetType.WAYPOINT
-                            && selectedAirplane.state.getAltitude() >= arrivalAlt
+                    else if(tutorialAirplane.state.getAltitude() > arrivalAlt - 1
                             && uiState == ProjectIcarus.UiState.SELECT_AIRPLANE) {
                         ui.setStatus("Press the third button on the left.");
                     }
                     else if(uiState == ProjectIcarus.UiState.CHANGE_ALTITUDE) {
                         ui.setStatus("Drag down to 1000m. Tap when finished.");
                     }
-                    else if(selectedAirplane.state.getPosition().x < flcnPos) {
+                    else if(airplanePos < flcnPos) {
                         ui.setStatus("Wait until it nears FLCN.");
                     }
                     else {
-                        tutorialIndex = 3;
+                        tutorialStage = 4;
                     }
                 }
-                else if(tutorialIndex == 4) {
+                else if(tutorialStage == 4) {
                     if(uiState == ProjectIcarus.UiState.SELECT_AIRPLANE) {
                         ui.setStatus("Now target waypoint EMPR.");
                     }
                     else {
-                        tutorialIndex = 4;
+                        tutorialStage = 5;
                     }
                 }
-                else if(tutorialIndex == 5) {
-                    if(!canLand(airport.runways[0], 0)) {
+                else if(tutorialStage == 5) {
+                    Runway tutorialRunway = airport.runways[0];
+                    int tutorialEnd = 0;
+                    for(Runway runway: airport.runways) {
+                        for(int end = 0; end < 2; end++) {
+                            if(runway.names[end].equals("14")) {
+                                tutorialRunway = runway;
+                                tutorialEnd = end;
+                                break;
+                            }
+                        }
+                    }
+                    if(!canLand(tutorialRunway, tutorialEnd)) {
                         ui.setStatus("Wait for the airplane to line up.");
                     }
                     else if(uiState == ProjectIcarus.UiState.SELECT_AIRPLANE) {
@@ -1028,11 +1050,11 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                     }
                     else {
                         ui.setStatus("Tap runway 14.");
-                        tutorialIndex = 5;
+                        tutorialStage = 6;
                     }
                 }
-                else if(tutorialIndex == 6) {
-                    if(selectedAirplane.stateType == Airplane.StateType.FLYING) {
+                else if(tutorialStage == 6) {
+                    if(tutorialAirplane.stateType == Airplane.StateType.FLYING) {
                         ui.setStatus("Good job! The plane will land by itself.");
                     }
                     else {
@@ -1049,9 +1071,9 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                 break;
         }
         tutorialTimer += Gdx.graphics.getDeltaTime();
-//        ui.setStatus(tutorialStrings[tutorialIndex]);
-//        if(tutorialTimer > tutorialMessagePause && tutorialIndex < tutorialStrings.length - 1) {
-//            tutorialIndex++;
+//        ui.setStatus(tutorialStrings[tutorialStage]);
+//        if(tutorialTimer > tutorialMessagePause && tutorialStage < tutorialStrings.length - 1) {
+//            tutorialStage++;
 //            tutorialTimer = 0;
 //        }
     }
