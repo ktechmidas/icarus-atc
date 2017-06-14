@@ -422,6 +422,16 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                         Align.center, false
                 );
             }
+
+            if(uiState == ProjectIcarus.UiState.SELECT_HEADING) {
+                titleFont.setColor(Colors.colors[4]);
+                titleFont.draw(batch, ui.headingWheelString,
+                        (float) Gdx.graphics.getWidth() / 2 - 0.5f * titleFont.getSpaceWidth(),
+                        (float) (Gdx.graphics.getHeight() - ui.statusBarHeight) / 2 + 100,// - titleFont.getCapHeight() / 2,
+                        200,
+                        Align.center, false
+                );
+            }
             batch.end();
         }
 

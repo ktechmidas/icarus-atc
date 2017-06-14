@@ -35,6 +35,8 @@ public class MainUi {
     private ImageButton headingWheel, takeoffButton, cancelButton;
     private ImageButton warpUpButton, warpDownButton, pauseButton, playPauseButton;
 
+    public String headingWheelString = "";
+
     private ArrayList<ImageButton> airportButtons;
     private float warpPause = 0;
 
@@ -60,13 +62,6 @@ public class MainUi {
         buttonSize = (Gdx.graphics.getHeight() - 5 * buttonGap - statusBarHeight) / 4;
         airportButtonSize = (int) ((2f / 3f) * buttonSize);
         warpButtonSize = buttonSize / 2;
-
-//        if(PlayScreen.isTutorial) {
-//            status = "Welcome to the Icarus ATC Tutorial";
-//        }
-//        else {
-//            status = "Welcome to Icarus Air Traffic Control";
-//        }
 
         Vector2 buttonPosition = new Vector2(buttonGap,
                 Gdx.graphics.getHeight() - buttonGap - buttonSize
@@ -116,9 +111,6 @@ public class MainUi {
                     playPauseButton.setVisible(true);
                     pauseButton.setVisible(false);
                 }
-               /* else if(PlayScreen.getInstance().warpSpeed == 0) {
-                   PlayScreen.getInstance().warpSpeed = warpPause;
-                }*/
             }
         });
         stage.addActor(pauseButton);
@@ -347,14 +339,16 @@ public class MainUi {
         stage.addActor(cancelButton);
 
         // Initialize heading selection wheel
-        Drawable headingWheelDrawable = new TextureRegionDrawable(
+        final Drawable headingWheelDrawable = new TextureRegionDrawable(
                 new TextureRegion((Texture) assets.get("buttons/selection_wheel.png"))
         );
         headingWheel = new ImageButton(headingWheelDrawable);
-        int wheelSize = Gdx.graphics.getHeight() - statusBarHeight;
+        int wheelSize = (int) (0.9f * (Gdx.graphics.getHeight() - statusBarHeight));
         headingWheel.setSize(wheelSize, wheelSize);
-        headingWheel.setPosition(Gdx.graphics.getWidth()/2 - headingWheel.getWidth()/2,
-                                 statusBarHeight
+        headingWheel.setPosition(
+                Gdx.graphics.getWidth()/2 - headingWheel.getWidth()/2,
+                (Gdx.graphics.getHeight() - statusBarHeight)/2 - headingWheel.getHeight()/2
+                        + statusBarHeight
         );
         headingWheel.addListener(new DragListener(){
             @Override
@@ -364,7 +358,8 @@ public class MainUi {
             @Override
             public void touchDragged (InputEvent event, float x, float y, int pointer) {
                 Vector2 heading = new Vector2(x, y).sub(headingWheel.getWidth()/2, headingWheel.getHeight()/2);
-                setStatus((int) heading.cpy().rotate(-90).angle() + "°");
+                headingWheelString = (int) heading.cpy().rotate(-90).angle() + "°";
+//                setStatus((int) heading.cpy().rotate(-90).angle() + "°");
             }
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
