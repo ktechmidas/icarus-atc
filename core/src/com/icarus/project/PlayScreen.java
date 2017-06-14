@@ -1013,7 +1013,7 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                         ui.setStatus("Press the third button on the left.");
                     }
                     else if(uiState == ProjectIcarus.UiState.CHANGE_ALTITUDE) {
-                        ui.setStatus("Drag down to 1000m. Tap when finished.");
+                        ui.setStatus("Drag down to 1500m. Tap when finished.");
                     }
                     else if(airplanePos < flcnPos - 200) {
                         ui.setStatus("Wait until it nears FLCN.");
@@ -1044,22 +1044,29 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                         }
                     }
                     if(!canLand(tutorialRunway, tutorialEnd)
-                            && tutorialAirplane.getTargetType()
+                            || tutorialAirplane.getTargetType()
                                     == AirplaneFlying.TargetType.WAYPOINT
                             ) {
                         ui.setStatus("Wait for the airplane to line up.");
                     }
-                    else if(uiState == ProjectIcarus.UiState.SELECT_AIRPLANE) {
+                    else if(uiState == ProjectIcarus.UiState.SELECT_AIRPLANE
+                            && tutorialAirplane.getTargetType()
+                                    != AirplaneFlying.TargetType.RUNWAY
+                            ) {
                         ui.setStatus("Press the bottom button on the left.");
                     }
-                    else {
+                    else if(uiState == ProjectIcarus.UiState.SELECT_RUNWAY){
                         ui.setStatus("Tap runway 14.");
+                    }
+                    else {
                         tutorialStage = 6;
+                        tutorialTimer = 0;
                     }
                 }
                 else if(tutorialStage == 6) {
                     if(tutorialAirplane.stateType == Airplane.StateType.FLYING) {
                         ui.setStatus("Good job! The plane will land by itself.");
+                        warpSpeed = 8.0f;
                     }
                     else {
                         tutorialState = TutorialState.FLYOVER;
