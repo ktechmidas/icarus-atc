@@ -923,12 +923,13 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                                 new Airplane(
                                         "TUT0001",
                                         Airplane.FlightType.ARRIVAL,
-                                        new Vector2(0, 80),
-                                        new Vector2(toPixels(arrivalSpeed), 0),
+                                        new Vector2(0, 60),
+                                        new Vector2(1, 0.8f).nor().scl(toPixels(arrivalSpeed)),
                                         arrivalAlt
                                 )
                         );
                         tutorialState = TutorialState.ARRIVAL;
+//                        tutorialState = TutorialState.FLYOVER;
                         tutorialTimer = 0;
                         tutorialStage = 0;
                     }
@@ -1069,12 +1070,72 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                         warpSpeed = 8.0f;
                     }
                     else {
+                        warpSpeed = 1.0f;
+                        airplanes.add(
+                                new Airplane(
+                                        "TUT0002",
+                                        Airplane.FlightType.FLYOVER,
+                                        new Vector2(airport.width, airport.height / 2),
+                                        new Vector2(-1, 0).nor().scl(toPixels(arrivalSpeed)),
+                                        cruiseAlt
+                                )
+                        );
                         tutorialState = TutorialState.FLYOVER;
                         tutorialTimer = 0;
+                        tutorialStage = 0;
+                        selectedAirplane = null;
                     }
                 }
                 break;
             case FLYOVER:
+                if(tutorialStage == 0) {
+                    if(selectedAirplane == null) {
+                        ui.setStatus("Tap the plane TUT0002");
+                    }
+                    else {
+                        tutorialTimer = 0;
+                        tutorialStage = 1;
+                    }
+                }
+                else if(tutorialStage == 1) {
+                    if(tutorialTimer < tutorialMessagePause) {
+                        ui.setStatus("This is a flyover.");
+                    }
+                    else if(uiState == ProjectIcarus.UiState.SELECT_AIRPLANE) {
+                        ui.setStatus("Press the bottom button on the left.");
+                    }
+                    else {
+                        tutorialStage = 2;
+                        tutorialTimer = 0;
+                    }
+                }
+                else if(tutorialStage == 2) {
+                    if(uiState == ProjectIcarus.UiState.SELECT_AIRPORT) {
+                        if(tutorialTimer < tutorialMessagePause) {
+                            ui.setStatus("Tap an airport to hand off the plane.");
+                        }
+                        else {
+                            ui.setStatus("It doesn't matter which one.");
+                        }
+                    }
+                    else {
+                        tutorialStage = 3;
+                        tutorialTimer = 0;
+                    }
+                }
+                else if(tutorialStage == 3) {
+                    if(tutorialTimer < tutorialMessagePause) {
+                        ui.setStatus("Good job! You're all done with this one.");
+                    }
+                    else {
+                        warpSpeed = 1.0f;
+                        queueingAirplanes.add(new Airplane("TUT0003", DEPARTURE, null, null, 0f));
+                        tutorialState = TutorialState.DEPARTURE;
+                        tutorialTimer = 0;
+                        tutorialStage = 0;
+                        selectedAirplane = null;
+                    }
+                }
                 break;
             case DEPARTURE:
                 break;
@@ -1108,15 +1169,14 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
 //            "Press the third button on the left.",
 //            "Drag down to 1000m. Tap when finished.",
 //            "Now target waypoint EMPR.",
-            "Press the bottom button on the left.",
-            "Tap runway 14.",
-            "Good job! The plane will land by itself.",
-            // Warp up here, then warp down after the landing
-            "Press the button on the right.",
-            "Tap the plane TUT0002",
-            "This is a flyover.",
-            "Press the bottom button on the left.",
-            "Tap an airport to handoff the plane.",
+//            "Press the bottom button on the left.",
+//            "Tap runway 14.",
+//            "Good job! The plane will land by itself.",
+//             // Warp up here, then warp down after the landing
+//            "Tap the plane TUT0002",
+//            "This is a flyover.",
+//            "Press the bottom button on the left.",
+//            "Tap an airport to handoff the plane.",
             "Good job! You're all done with this one.",
             "Press the button that just appeared.",
             "Select any runway.",
