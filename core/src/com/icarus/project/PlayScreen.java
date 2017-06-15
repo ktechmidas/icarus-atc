@@ -320,7 +320,9 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                                     && alt1 < cruiseAlt)
                                 || (Math.abs(alt1 - alt2) < collisionWarningVSepCruise
                                     && alt1 > cruiseAlt))) {
-                            ui.setStatus(airplane.name + " and " + other.name + " are too close!");
+                            if(!isTutorial) {
+                                ui.setStatus(airplane.name + " and " + other.name + " are too close!");
+                            }
                             points -= 0.5f * dt;
                         }
                         // If two airplanes have collided
@@ -844,7 +846,7 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
     }
 
     private void land(Runway runway, int end) {
-        if(canLand(runway, end)) {
+        if(canLand(selectedAirplane, runway, end)) {
             // If the airplane is in the correct place
             selectedAirplane.setTargetRunway(runway, end);
             followingPlane = true;
@@ -860,25 +862,25 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
         uiState = ProjectIcarus.UiState.SELECT_AIRPLANE;
     }
 
-    private boolean canLand(Runway runway, int end) {
+    private boolean canLand(Airplane airplane, Runway runway, int end) {
         // Landing constraints
         float headingVariance = 20; // Maximum heading deviation from runway
         float positionVariance = 20; // Maximum position deviation from runway
         Vector2 targetRunway = runway.points[1-end].cpy()
                 .sub(runway.points[end]);
         // Calculate distance
-        float distance = Math.abs(selectedAirplane.state.getPosition().cpy()
+        float distance = Math.abs(airplane.state.getPosition().cpy()
                 .sub(runway.points[end]).len()
         );
-        float time = distance / selectedAirplane.state.getVelocity().len();
-        float descentRate = selectedAirplane.state.getAltitude() / time; // meters per second
+        float time = distance / airplane.state.getVelocity().len();
+        float descentRate = airplane.state.getAltitude() / time; // meters per second
         // Calculate difference between airplane heading and runway heading
-        float angleDifference = selectedAirplane.state.getVelocity()
+        float angleDifference = airplane.state.getVelocity()
                 .angle(targetRunway);
         // Calculate radial distance of airplane from runway
         // with respect to the runway's heading
         Vector2 relativePosition = runway.points[end].cpy()
-                .sub(selectedAirplane.state.getPosition());
+                .sub(airplane.state.getPosition());
         float positionDifference = relativePosition.angle(targetRunway);
         return (descentRate < altitudeChangeRate
                 && Math.abs(angleDifference) < headingVariance
@@ -1052,7 +1054,7 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                             }
                         }
                     }
-                    if(!canLand(tutorialRunway, tutorialEnd)
+                    if(!canLand(tutorialAirplane, tutorialRunway, tutorialEnd)
                             || tutorialAirplane.getTargetType()
                                     == AirplaneFlying.TargetType.WAYPOINT
                             ) {
