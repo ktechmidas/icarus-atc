@@ -34,6 +34,7 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
     // This class
     public static PlayScreen self;
     public static final String TAG = "PIState";
+    private final ProjectIcarus game;
 
     // Is this a tutorial game?
     public final boolean isTutorial;
@@ -189,6 +190,7 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
     public PlayScreen(ProjectIcarus game, boolean isTutorial) {
         self = this;
         points = 0;
+        this.game = game;
 
         // If this is a tutorial
         this.isTutorial = isTutorial;
@@ -1178,7 +1180,16 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                         ui.setStatus("Again, tap any airport.");
                     }
                     else {
+                        tutorialStage++;
+                        tutorialTimer = 0;
+                    }
+                }
+                else if(tutorialStage == 3) {
+                    if(tutorialTimer < tutorialMessagePause) {
                         ui.setStatus("Good job! You're ready to play!");
+                    }
+                    else {
+                        game.setScreen(new MainMenuScreen(game));
                     }
                 }
                 
@@ -1187,51 +1198,7 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                 break;
         }
         tutorialTimer += Gdx.graphics.getDeltaTime();
-//        ui.setStatus(tutorialStrings[tutorialStage]);
-//        if(tutorialTimer > tutorialMessagePause && tutorialStage < tutorialStrings.length - 1) {
-//            tutorialStage++;
-//            tutorialTimer = 0;
-//        }
     }
-
-    public static String tutorialStrings[] = new String[]{
-//            "Welcome to the Icarus ATC Tutorial.",
-//            "This is the map screen. You can pan and zoom.",
-            // Wait few seconds
-//            "Press and hold to see an overview.",
-            // Wait until they do that
-            // Arrival appears on screen
-//            "This is an arrival. It needs to land at a runway.",
-            // Wait a few seconds
-//            "Tap the airplane to see commands.",
-//            "Press the top button on the left.",
-//            "Drag your finger around the circle to 90 degrees.",
-//            "Wait until the plane passes EWOK.",
-//            "Use the buttons on the right to speed up time.",
-//            "Now, press the second button on the left.",
-//            "Tap waypoint FLCN.",
-//            "Press the third button on the left.",
-//            "Drag down to 1000m. Tap when finished.",
-//            "Now target waypoint EMPR.",
-//            "Press the bottom button on the left.",
-//            "Tap runway 14.",
-//            "Good job! The plane will land by itself.",
-             // Warp up here, then warp down after the landing
-//            "Tap the plane TUT0002",
-//            "This is a flyover.",
-//            "Press the bottom button on the left.",
-//            "Tap an airport to handoff the plane.",
-//            "Good job! You're all done with this one.",
-//            "Press the button that just appeared.",
-//            "Select any runway.",
-//            "This is a departure. It also must be handed off.",
-//            "But first, wait for it to take off.",
-            // Departure takes off
-//            "Select the airplane.",
-//            "Press the handoff button.",
-//            "Again, tap any airport.",
-//            "Good job! You're ready to play!"
-    };
 
     public enum TutorialState {
         WELCOME,

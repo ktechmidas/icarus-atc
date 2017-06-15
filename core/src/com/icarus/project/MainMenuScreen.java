@@ -65,8 +65,8 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 game.setScreen(new PlayScreen(game, false)); // Switch to play screen
-                playButton.setDisabled(true);
-                tutorialButton.setDisabled(true);
+//                playButton.setDisabled(true);
+//                tutorialButton.setDisabled(true);
             }
         });
         stage.addActor(playButton);
@@ -84,8 +84,8 @@ public class MainMenuScreen implements Screen, GestureDetector.GestureListener {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 game.setScreen(new PlayScreen(game, true)); // Switch to tutorial mode
-                playButton.setDisabled(true);
-                tutorialButton.setDisabled(true);
+//                playButton.setDisabled(true);
+//                tutorialButton.setDisabled(true);
             }
         });
         stage.addActor(tutorialButton);
