@@ -246,10 +246,7 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
 
         warpSpeed = 1.0f;
 
-        if(isTutorial) {
-            ui.setStatus(tutorialStrings[tutorialStage]);
-        }
-        else {
+        if(!isTutorial) {
             ui.setStatus("Welcome to Icarus Air Traffic Control");
             addAirplane();
         }
@@ -271,7 +268,7 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
         float dt = Gdx.graphics.getDeltaTime() * warpSpeed;
 
         if(isTutorial) {
-            tutorialRender(dt);
+            tutorialRender();
         }
 
         ArrayList<Airplane> toRemove = new ArrayList<>();
@@ -914,7 +911,7 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
         }
     }
 
-    public void tutorialRender(float dt) {
+    public void tutorialRender() {
         switch(tutorialState) {
             case WELCOME:
                 if(tutorialTimer < 5) {
@@ -939,7 +936,6 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                                 )
                         );
                         tutorialState = TutorialState.ARRIVAL;
-//                        tutorialState = TutorialState.FLYOVER;
                         tutorialTimer = 0;
                         tutorialStage = 0;
                     }
@@ -959,16 +955,16 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                         tutorialAirplane = selectedAirplane;
                     }
                     else {
-                        tutorialStage = 1;
+                        tutorialStage++;
                         tutorialTimer = 0;
                     }
                 }
                 else if(tutorialStage == 1) {
                     if(uiState == ProjectIcarus.UiState.SELECT_HEADING){
-                        ui.setStatus("Drag your finger around the circle to 90 degrees.");
+                        ui.setStatus("Drag your finger around the circle to 270 degrees.");
                     }
                     else {
-                        tutorialStage = 2;
+                        tutorialStage++;
                         tutorialTimer = 0;
                     }
                 }
@@ -998,7 +994,7 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                         ui.setStatus("Now, press the second button on the left.");
                     }
                     else {
-                        tutorialStage = 3;
+                        tutorialStage++;
                         tutorialTimer = 0;
                     }
                 }
@@ -1031,7 +1027,7 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                     }
                     else {
                         warpSpeed = 1.0f;
-                        tutorialStage = 4;
+                        tutorialStage++;
                         tutorialTimer = 0;
                     }
                 }
@@ -1040,7 +1036,7 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                         ui.setStatus("Now target waypoint EMPR.");
                     }
                     else {
-                        tutorialStage = 5;
+                        tutorialStage++;
                     }
                 }
                 else if(tutorialStage == 5) {
@@ -1070,7 +1066,7 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                         ui.setStatus("Tap runway 14.");
                     }
                     else {
-                        tutorialStage = 6;
+                        tutorialStage++;
                         tutorialTimer = 0;
                     }
                 }
@@ -1104,7 +1100,7 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                     }
                     else {
                         tutorialTimer = 0;
-                        tutorialStage = 1;
+                        tutorialStage++;
                     }
                 }
                 else if(tutorialStage == 1) {
@@ -1115,7 +1111,7 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                         ui.setStatus("Press the bottom button on the left.");
                     }
                     else {
-                        tutorialStage = 2;
+                        tutorialStage++;
                         tutorialTimer = 0;
                     }
                 }
@@ -1129,7 +1125,7 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                         }
                     }
                     else {
-                        tutorialStage = 3;
+                        tutorialStage++;
                         tutorialTimer = 0;
                     }
                 }
@@ -1138,16 +1134,54 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
                         ui.setStatus("Good job! You're all done with this one.");
                     }
                     else {
+                        selectedAirplane = null;
                         warpSpeed = 1.0f;
                         queueingAirplanes.add(new Airplane("TUT0003", DEPARTURE, null, null, 0f));
                         tutorialState = TutorialState.DEPARTURE;
                         tutorialTimer = 0;
                         tutorialStage = 0;
-                        selectedAirplane = null;
                     }
                 }
                 break;
             case DEPARTURE:
+                if(tutorialStage == 0) {
+                    if(queueingAirplanes.size() > 0) {
+                        if(uiState == ProjectIcarus.UiState.SELECT_AIRPLANE) {
+                            ui.setStatus("Press the button that just appeared.");
+                        }
+                        else if(uiState == ProjectIcarus.UiState.SELECT_AIRPORT) {
+                            ui.setStatus("Select any runway.");
+                        }
+                    }
+                    else {
+                        tutorialStage++;
+                        tutorialTimer = 0;
+                        tutorialAirplane = selectedAirplane;
+                    }
+                }
+                else if(tutorialStage == 1) {
+                    if(tutorialTimer < tutorialMessagePause) {
+                        ui.setStatus("This is a departure. It also must be handed off.");
+                    }
+                    else if(tutorialAirplane.stateType == Airplane.StateType.TAKINGOFF) {
+                        ui.setStatus("But first, wait for it to take off.");
+                    }
+                    else if(uiState == ProjectIcarus.UiState.SELECT_AIRPLANE){
+                        ui.setStatus("Press the handoff button.");
+                    }
+                    else {
+                        tutorialStage++;
+                    }
+                }
+                else if(tutorialStage == 2) {
+                    if(uiState == ProjectIcarus.UiState.SELECT_AIRPORT) {
+                        ui.setStatus("Again, tap any airport.");
+                    }
+                    else {
+                        ui.setStatus("Good job! You're ready to play!");
+                    }
+                }
+                
                 break;
             default:
                 break;
@@ -1163,12 +1197,12 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
     public static String tutorialStrings[] = new String[]{
 //            "Welcome to the Icarus ATC Tutorial.",
 //            "This is the map screen. You can pan and zoom.",
-//            // Wait few seconds
+            // Wait few seconds
 //            "Press and hold to see an overview.",
-//            // Wait until they do that
-//            // Arrival appears on screen
+            // Wait until they do that
+            // Arrival appears on screen
 //            "This is an arrival. It needs to land at a runway.",
-//            // Wait a few seconds
+            // Wait a few seconds
 //            "Tap the airplane to see commands.",
 //            "Press the top button on the left.",
 //            "Drag your finger around the circle to 90 degrees.",
@@ -1182,21 +1216,21 @@ public class PlayScreen extends Game implements Screen, GestureDetector.GestureL
 //            "Press the bottom button on the left.",
 //            "Tap runway 14.",
 //            "Good job! The plane will land by itself.",
-//             // Warp up here, then warp down after the landing
+             // Warp up here, then warp down after the landing
 //            "Tap the plane TUT0002",
 //            "This is a flyover.",
 //            "Press the bottom button on the left.",
 //            "Tap an airport to handoff the plane.",
-            "Good job! You're all done with this one.",
-            "Press the button that just appeared.",
-            "Select any runway.",
-            "This is a departure. It also must be handed off.",
-            "But first, wait for it to take off.",
+//            "Good job! You're all done with this one.",
+//            "Press the button that just appeared.",
+//            "Select any runway.",
+//            "This is a departure. It also must be handed off.",
+//            "But first, wait for it to take off.",
             // Departure takes off
-            "Select the airplane.",
-            "Press the handoff button.",
-            "Again, tap any airport.",
-            "Good job! You're ready to play!"
+//            "Select the airplane.",
+//            "Press the handoff button.",
+//            "Again, tap any airport.",
+//            "Good job! You're ready to play!"
     };
 
     public enum TutorialState {
